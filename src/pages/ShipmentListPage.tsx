@@ -94,6 +94,15 @@ export function ShipmentListPage() {
     setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
   }
 
+  function handleAdminVehicleCancel() {
+    if (!selectedRequest) {
+      return
+    }
+
+    const result = cancelVehicleRequest(selectedRequest.id)
+    setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+  }
+
   function handleStartSupplyEdit(shipmentRequestId: string) {
     const assignment = getShipmentDetail(data, shipmentRequestId)?.vehicleAssignment
     setSelectedId(shipmentRequestId)
@@ -249,10 +258,16 @@ export function ShipmentListPage() {
         title="Sevkiyat tablosu"
         subtitle={`${filteredRequests.length} kayit listeleniyor`}
         actions={
-          selectedRequest && roleKey === 'requester' && canCancelRequest(selectedRequest) ? (
-            <Button variant="danger" size="sm" onClick={handleCancel}>
-              Iptal talebi baslat
-            </Button>
+          selectedRequest && canCancelRequest(selectedRequest) ? (
+            roleKey === 'requester' ? (
+              <Button variant="danger" size="sm" onClick={handleCancel}>
+                Iptal talebi baslat
+              </Button>
+            ) : roleKey === 'admin' ? (
+              <Button variant="danger" size="sm" onClick={handleAdminVehicleCancel}>
+                Arac Iptal Et
+              </Button>
+            ) : undefined
           ) : undefined
         }
       >
