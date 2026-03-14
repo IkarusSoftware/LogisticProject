@@ -43,7 +43,7 @@ export function AppShell({ children }: PropsWithChildren) {
         <div className="logo-block">
           <div className="logo-block__mark">FD</div>
           <div>
-            <strong>FlowDock Logistics</strong>
+            <strong>Gratis Lojistik</strong>
             <p>Sevkiyat operasyon paneli</p>
           </div>
         </div>
