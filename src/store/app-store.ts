@@ -857,7 +857,7 @@ export const useAppStore = create<AppStore>()(
     }),
     {
       name: 'flowdock-logistics-demo',
-      version: 3,
+      version: 4,
       migrate: (persistedState: unknown, version) => {
         if (!persistedState || typeof persistedState !== 'object') {
           return persistedState as AppStore
@@ -897,6 +897,28 @@ export const useAppStore = create<AppStore>()(
         }
 
         if (version < 3) {
+          state.session = { currentUserId: null }
+        }
+
+        if (version < 4 && state.data) {
+          const seededRequestIds = new Set(
+            (state.data.shipmentRequests ?? [])
+              .filter((request) => /^req-\d{3}$/.test(request.id))
+              .map((request) => request.id),
+          )
+
+          state.data.shipmentRequests = (state.data.shipmentRequests ?? []).filter((request) => !seededRequestIds.has(request.id))
+          state.data.vehicleAssignments = (state.data.vehicleAssignments ?? []).filter((item) => !seededRequestIds.has(item.shipmentRequestId))
+          state.data.rampAssignments = (state.data.rampAssignments ?? []).filter((item) => !seededRequestIds.has(item.shipmentRequestId))
+          state.data.gateOperations = (state.data.gateOperations ?? []).filter((item) => !seededRequestIds.has(item.shipmentRequestId))
+          state.data.loadingOperations = (state.data.loadingOperations ?? []).filter((item) => !seededRequestIds.has(item.shipmentRequestId))
+          state.data.statusHistory = (state.data.statusHistory ?? []).filter((item) => !seededRequestIds.has(item.shipmentRequestId))
+          state.data.auditLogs = (state.data.auditLogs ?? []).filter((item) => !seededRequestIds.has(item.entityId))
+          state.data.notifications = (state.data.notifications ?? []).filter(
+            (item) =>
+              !item.id.startsWith('notif-role-') &&
+              (!item.shipmentRequestId || !seededRequestIds.has(item.shipmentRequestId)),
+          )
           state.session = { currentUserId: null }
         }
 
