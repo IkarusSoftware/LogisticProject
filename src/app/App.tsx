@@ -35,8 +35,8 @@ export function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={currentUser ? <Navigate to={defaultPath} replace /> : <LoginPage />} />
-        <Route path="/" element={<Navigate to={defaultPath} replace />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
         <Route
           path="/dashboard"
@@ -127,7 +127,7 @@ export function App() {
           }
         />
 
-        <Route path="*" element={<Navigate to={defaultPath} replace />} />
+        <Route path="*" element={<Navigate to={currentUser ? defaultPath : '/login'} replace />} />
       </Routes>
     </BrowserRouter>
   )

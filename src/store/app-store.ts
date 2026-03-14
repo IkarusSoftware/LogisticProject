@@ -67,7 +67,7 @@ export const useAppStore = create<AppStore>()(
     (set, get) => ({
       data: initialData,
       session: {
-        currentUserId: 'user-admin-eda',
+        currentUserId: null,
       },
 
       loginWithEmail: (email, password) => {
@@ -105,7 +105,7 @@ export const useAppStore = create<AppStore>()(
       resetDemo: () =>
         set({
           data: buildInitialData(),
-          session: { currentUserId: 'user-admin-eda' },
+          session: { currentUserId: null },
         }),
 
       markAllNotificationsRead: () =>
@@ -857,7 +857,7 @@ export const useAppStore = create<AppStore>()(
     }),
     {
       name: 'flowdock-logistics-demo',
-      version: 2,
+      version: 3,
       migrate: (persistedState: unknown, version) => {
         if (!persistedState || typeof persistedState !== 'object') {
           return persistedState as AppStore
@@ -894,6 +894,10 @@ export const useAppStore = create<AppStore>()(
               role.id === 'role-admin' ? { ...role, name: 'Vardiya Amiri / Ekip Lideri' } : role,
             )
           }
+        }
+
+        if (version < 3) {
+          state.session = { currentUserId: null }
         }
 
         return state
