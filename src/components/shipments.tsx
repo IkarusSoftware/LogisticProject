@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { X } from 'lucide-react'
 
 import { getAuditLogs, getShipmentDetail, getStatusHistory } from '../domain/selectors'
@@ -157,6 +158,8 @@ export function ShipmentTable({
   showPhoneColumn = false,
   showRequestDateColumn = false,
   showOperationalTimeColumns = false,
+  actionsHeaderLabel = 'Aksiyon',
+  renderRowActions,
 }: {
   requests: ShipmentRequest[]
   data: DemoData
@@ -166,6 +169,8 @@ export function ShipmentTable({
   showPhoneColumn?: boolean
   showRequestDateColumn?: boolean
   showOperationalTimeColumns?: boolean
+  actionsHeaderLabel?: string
+  renderRowActions?: (request: ShipmentRequest) => ReactNode
 }) {
   if (requests.length === 0) {
     return <EmptyState title="Kayit bulunamadi" description="Secili filtrelere uyan sevkiyat bulunmuyor." />
@@ -192,6 +197,7 @@ export function ShipmentTable({
             {showOperationalTimeColumns && <th>Yukleme Bitis</th>}
             {showOperationalTimeColumns && <th>Rampa Cikis</th>}
             <th>Son islem</th>
+            {renderRowActions && <th>{actionsHeaderLabel}</th>}
           </tr>
         </thead>
         <tbody>
@@ -229,6 +235,11 @@ export function ShipmentTable({
                 {showOperationalTimeColumns && <td>{formatDateTimeLabel(getLoadingCompletedAt(detail))}</td>}
                 {showOperationalTimeColumns && <td>{formatDateTimeLabel(getExitAt(detail))}</td>}
                 <td>{formatDateTimeLabel(request.updatedAt)}</td>
+                {renderRowActions && (
+                  <td className="table-cell-actions" onClick={(event) => event.stopPropagation()}>
+                    {renderRowActions(request)}
+                  </td>
+                )}
               </tr>
             )
           })}

@@ -94,12 +94,17 @@ export function ShipmentListPage() {
     setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
   }
 
-  function handleAdminVehicleCancel() {
+  function handleAdminVehicleCancel(shipmentRequestId: string) {
+    const result = cancelVehicleRequest(shipmentRequestId)
+    setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+  }
+
+  function handleAdminRequestCancel() {
     if (!selectedRequest) {
       return
     }
 
-    const result = cancelVehicleRequest(selectedRequest.id)
+    const result = cancelRequest(selectedRequest.id, cancelNote || 'Talep vardiya amiri tarafindan iptal edildi.')
     setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
   }
 
@@ -264,14 +269,14 @@ export function ShipmentListPage() {
                 Iptal talebi baslat
               </Button>
             ) : roleKey === 'admin' ? (
-              <Button variant="danger" size="sm" onClick={handleAdminVehicleCancel}>
-                Arac Iptal Et
+              <Button variant="secondary" size="sm" onClick={handleAdminRequestCancel}>
+                Talebi Iptal Et
               </Button>
             ) : undefined
           ) : undefined
         }
       >
-        {selectedRequest && roleKey === 'requester' && canCancelRequest(selectedRequest) && (
+        {selectedRequest && ['requester', 'admin'].includes(roleKey ?? '') && canCancelRequest(selectedRequest) && (
           <div className="action-strip">
             <Textarea
               rows={2}
@@ -326,6 +331,18 @@ export function ShipmentListPage() {
             showPhoneColumn
             showRequestDateColumn
             showOperationalTimeColumns={roleKey === 'admin'}
+            renderRowActions={
+              roleKey === 'admin'
+                ? (request) =>
+                    canCancelRequest(request) ? (
+                      <Button variant="danger" size="sm" onClick={() => handleAdminVehicleCancel(request.id)}>
+                        Araci Iptal Et
+                      </Button>
+                    ) : (
+                      <span className="muted-text">-</span>
+                    )
+                : undefined
+            }
           />
         )}
       </Card>
