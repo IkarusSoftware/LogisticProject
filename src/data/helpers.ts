@@ -76,7 +76,7 @@ export function buildCompanies(now: Date): Company[] {
     },
     {
       id: 'company-anadolu',
-      name: 'Anadolu Tedarik Lojistik',
+      name: 'Mars Lojistik',
       type: 'SUPPLIER',
       status: 'ACTIVE',
       createdAt: iso(subDays(now, 180)),
@@ -84,7 +84,7 @@ export function buildCompanies(now: Date): Company[] {
     },
     {
       id: 'company-kuzey',
-      name: 'Kuzey Hat Nakliyat',
+      name: 'Mevlana Lojistik',
       type: 'LOGISTICS',
       status: 'ACTIVE',
       createdAt: iso(subDays(now, 220)),
@@ -92,7 +92,7 @@ export function buildCompanies(now: Date): Company[] {
     },
     {
       id: 'company-trakya',
-      name: 'Trakya Fleet Services',
+      name: 'Horoz Lojistik',
       type: 'SUPPLIER',
       status: 'ACTIVE',
       createdAt: iso(subDays(now, 110)),
@@ -131,7 +131,7 @@ export function buildUsers(now: Date): User[] {
       id: 'user-supplier-mert',
       firstName: 'Mert',
       lastName: 'Demir',
-      email: 'mert.demir@anadolu.demo',
+      email: 'mert.demir@mars.demo',
       phone: '+905551112233',
       roleId: 'role-supplier',
       companyId: 'company-anadolu',
@@ -143,7 +143,7 @@ export function buildUsers(now: Date): User[] {
       id: 'user-supplier-elif',
       firstName: 'Elif',
       lastName: 'Tas',
-      email: 'elif.tas@kuzey.demo',
+      email: 'elif.tas@mevlana.demo',
       phone: '+905441112233',
       roleId: 'role-supplier',
       companyId: 'company-kuzey',
@@ -152,10 +152,22 @@ export function buildUsers(now: Date): User[] {
       updatedAt: iso(subDays(now, 1)),
     },
     {
+      id: 'user-supplier-bora',
+      firstName: 'Bora',
+      lastName: 'Yilmaz',
+      email: 'bora.yilmaz@horoz.demo',
+      phone: '+905331112244',
+      roleId: 'role-supplier',
+      companyId: 'company-trakya',
+      isActive: true,
+      createdAt: iso(subDays(now, 150)),
+      updatedAt: iso(subDays(now, 1)),
+    },
+    {
       id: 'user-control-selin',
-      firstName: 'Selin',
-      lastName: 'Akgun',
-      email: 'selin.akgun@gratis.demo',
+      firstName: 'Fevzi',
+      lastName: 'Uzun',
+      email: 'fevzi.uzun@gratis.demo',
       phone: '+905354440011',
       roleId: 'role-control',
       companyId: 'company-gratis',
@@ -201,9 +213,9 @@ export function buildUsers(now: Date): User[] {
     },
     {
       id: 'user-admin-eda',
-      firstName: 'Eda',
-      lastName: 'Celik',
-      email: 'eda.celik@gratis.demo',
+      firstName: 'Özgür',
+      lastName: 'Çağlayan',
+      email: 'ozgur.caglayan@gratis.demo',
       phone: '+905399991122',
       roleId: 'role-admin',
       companyId: 'company-gratis',
@@ -218,22 +230,36 @@ export function buildLocations() {
   return [
     {
       id: 'loc-istanbul',
-      name: 'Istanbul Esenyurt Dagitim Merkezi',
-      address: 'Akcabat Caddesi No:18 Esenyurt / Istanbul',
+      name: 'Avrupa',
+      address: 'Avrupa Bolgesi Dagitim Merkezi',
       companyId: 'company-gratis',
       isActive: true,
     },
     {
       id: 'loc-ankara',
-      name: 'Ankara Sincan Transfer Merkezi',
-      address: '1. OSB Mah. 2160 Sokak Sincan / Ankara',
+      name: 'Ankara',
+      address: 'Ankara Dagitim Bolgesi',
       companyId: 'company-gratis',
       isActive: true,
     },
     {
       id: 'loc-izmir',
-      name: 'Izmir Cigli Sevkiyat Hub',
-      address: 'Ataturk OSB 10032 Sokak Cigli / Izmir',
+      name: 'Izmir',
+      address: 'Izmir Dagitim Bolgesi',
+      companyId: 'company-gratis',
+      isActive: true,
+    },
+    {
+      id: 'loc-adana',
+      name: 'Adana',
+      address: 'Adana Dagitim Bolgesi',
+      companyId: 'company-gratis',
+      isActive: true,
+    },
+    {
+      id: 'loc-bursa',
+      name: 'Bursa',
+      address: 'Bursa Dagitim Bolgesi',
       companyId: 'company-gratis',
       isActive: true,
     },
@@ -242,12 +268,25 @@ export function buildLocations() {
 
 export function buildRamps(): Ramp[] {
   return [
-    { id: 'ramp-ist-01', locationId: 'loc-istanbul', code: 'IST-01', name: 'Istanbul Rampa 01', status: 'AVAILABLE', isActive: true },
-    { id: 'ramp-ist-02', locationId: 'loc-istanbul', code: 'IST-02', name: 'Istanbul Rampa 02', status: 'BUSY', isActive: true },
-    { id: 'ramp-ist-03', locationId: 'loc-istanbul', code: 'IST-03', name: 'Istanbul Rampa 03', status: 'AVAILABLE', isActive: true },
+    { id: 'ramp-ist-01', locationId: 'loc-istanbul', code: 'AVR-01', name: 'Avrupa Rampa 01', status: 'AVAILABLE', isActive: true },
+    { id: 'ramp-ist-02', locationId: 'loc-istanbul', code: 'AVR-02', name: 'Avrupa Rampa 02', status: 'BUSY', isActive: true },
+    { id: 'ramp-ist-03', locationId: 'loc-istanbul', code: 'AVR-03', name: 'Avrupa Rampa 03', status: 'AVAILABLE', isActive: true },
     { id: 'ramp-ank-01', locationId: 'loc-ankara', code: 'ANK-01', name: 'Ankara Rampa 01', status: 'AVAILABLE', isActive: true },
     { id: 'ramp-ank-02', locationId: 'loc-ankara', code: 'ANK-02', name: 'Ankara Rampa 02', status: 'MAINTENANCE', isActive: true },
     { id: 'ramp-izm-01', locationId: 'loc-izmir', code: 'IZM-01', name: 'Izmir Rampa 01', status: 'AVAILABLE', isActive: true },
+    { id: 'ramp-ada-01', locationId: 'loc-adana', code: 'ADA-01', name: 'Adana Rampa 01', status: 'AVAILABLE', isActive: true },
+    { id: 'ramp-bur-01', locationId: 'loc-bursa', code: 'BUR-01', name: 'Bursa Rampa 01', status: 'AVAILABLE', isActive: true },
+    ...Array.from({ length: 15 }, (_, index) => {
+      const number = String(index + 1).padStart(2, '0')
+      return {
+        id: `ramp-generic-${number}`,
+        locationId: 'loc-istanbul',
+        code: String(index + 1),
+        name: `Rampa ${index + 1}`,
+        status: 'AVAILABLE' as const,
+        isActive: true,
+      }
+    }),
   ]
 }
 

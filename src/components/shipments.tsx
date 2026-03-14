@@ -1,12 +1,15 @@
 import { X } from 'lucide-react'
 
 import { getAuditLogs, getShipmentDetail, getStatusHistory } from '../domain/selectors'
-import type { DemoData, ShipmentRequest } from '../domain/models'
+import type { DemoData, ShipmentRequest, ShipmentStatus } from '../domain/models'
 import {
   formatDateLabel,
   formatDateTimeLabel,
   formatFullName,
   formatPhoneLabel,
+  getExitAt,
+  getLoadingCompletedAt,
+  getRampTakenAt,
   getStatusMeta,
   isDelayed,
 } from '../domain/workflow'
@@ -32,7 +35,12 @@ export const initialShipmentFilters: ShipmentFilters = {
   search: '',
 }
 
-export function applyShipmentFilters(requests: ShipmentRequest[], data: DemoData, filters: ShipmentFilters) {
+export function applyShipmentFilters(
+  requests: ShipmentRequest[],
+  data: DemoData,
+  filters: ShipmentFilters,
+  statusMode: 'workflow' | 'procurement' = 'workflow',
+) {
   return requests.filter((request) => {
     const detail = getShipmentDetail(data, request.id)
     const searchable = [
@@ -49,7 +57,11 @@ export function applyShipmentFilters(requests: ShipmentRequest[], data: DemoData
       .toLowerCase()
 
     const matchesSearch = filters.search ? searchable.includes(filters.search.toLowerCase()) : true
-    const matchesStatus = filters.status === 'ALL' || request.currentStatus === filters.status
+    const matchesStatus =
+      filters.status === 'ALL' ||
+      (statusMode === 'workflow'
+        ? request.currentStatus === filters.status
+        : getProcurementStatusMeta(request, detail?.vehicleAssignment).key === filters.status)
     const matchesLocation = filters.location === 'ALL' || request.targetLocationId === filters.location
     const matchesSupplier = filters.supplier === 'ALL' || request.assignedSupplierCompanyId === filters.supplier
     const matchesVehicleType = filters.vehicleType === 'ALL' || request.vehicleType === filters.vehicleType
@@ -64,10 +76,14 @@ export function ShipmentFiltersBar({
   data,
   filters,
   onChange,
+  statusMode = 'workflow',
+  statusLabelOverrides,
 }: {
   data: DemoData
   filters: ShipmentFilters
   onChange: (next: ShipmentFilters) => void
+  statusMode?: 'workflow' | 'procurement'
+  statusLabelOverrides?: Partial<Record<ShipmentStatus, string>>
 }) {
   return (
     <Card className="filters-card">
@@ -75,11 +91,17 @@ export function ShipmentFiltersBar({
         <FormField label="Durum">
           <Select value={filters.status} onChange={(event) => onChange({ ...filters, status: event.target.value })}>
             <option value="ALL">Tum durumlar</option>
-            {Array.from(new Set(data.shipmentRequests.map((request) => request.currentStatus))).map((status) => (
-              <option key={status} value={status}>
-                {getStatusMeta(status).label}
-              </option>
-            ))}
+            {statusMode === 'workflow'
+              ? Array.from(new Set(data.shipmentRequests.map((request) => request.currentStatus))).map((status) => (
+                  <option key={status} value={status}>
+                    {statusLabelOverrides?.[status] ?? getStatusMeta(status).label}
+                  </option>
+                ))
+              : PROCUREMENT_STATUS_OPTIONS.map((status) => (
+                  <option key={status.key} value={status.key}>
+                    {status.label}
+                  </option>
+                ))}
           </Select>
         </FormField>
         <FormField label="Lokasyon">
@@ -131,11 +153,19 @@ export function ShipmentTable({
   data,
   selectedId,
   onSelect,
+  statusMode = 'workflow',
+  showPhoneColumn = false,
+  showRequestDateColumn = false,
+  showOperationalTimeColumns = false,
 }: {
   requests: ShipmentRequest[]
   data: DemoData
   selectedId?: string | null
   onSelect: (shipmentRequestId: string) => void
+  statusMode?: 'workflow' | 'procurement'
+  showPhoneColumn?: boolean
+  showRequestDateColumn?: boolean
+  showOperationalTimeColumns?: boolean
 }) {
   if (requests.length === 0) {
     return <EmptyState title="Kayit bulunamadi" description="Secili filtrelere uyan sevkiyat bulunmuyor." />
@@ -147,22 +177,28 @@ export function ShipmentTable({
         <thead>
           <tr>
             <th>Durum</th>
-            <th>Lokasyon</th>
             <th>Talep No</th>
+            <th>Lokasyon</th>
+            {showRequestDateColumn && <th>Talep Tarihi</th>}
             <th>Yukleme Tarihi</th>
             <th>Saat</th>
             <th>Tedarikci</th>
             <th>Cekici</th>
             <th>Dorse</th>
             <th>Sofor</th>
+            {showPhoneColumn && <th>Telefon</th>}
             <th>Rampa</th>
+            {showOperationalTimeColumns && <th>Rampaya Alinma</th>}
+            {showOperationalTimeColumns && <th>Yukleme Bitis</th>}
+            {showOperationalTimeColumns && <th>Rampa Cikis</th>}
             <th>Son islem</th>
           </tr>
         </thead>
         <tbody>
           {requests.map((request) => {
             const detail = getShipmentDetail(data, request.id)
-            const statusMeta = getStatusMeta(request.currentStatus)
+            const statusMeta =
+              statusMode === 'procurement' ? getProcurementStatusMeta(request, detail?.vehicleAssignment) : getStatusMeta(request.currentStatus)
             return (
               <tr
                 key={request.id}
@@ -172,18 +208,26 @@ export function ShipmentTable({
                 <td>
                   <div className="status-cell">
                     <Badge tone={statusMeta.tone}>{statusMeta.label}</Badge>
+                    {request.currentStatus === 'CORRECTION_REQUESTED' && detail?.vehicleAssignment?.rejectionReason && (
+                      <span className="table-note">{detail.vehicleAssignment.rejectionReason}</span>
+                    )}
                     {isDelayed(request) && <span className="delay-dot" title="Gecikme riski" />}
                   </div>
                 </td>
-                <td>{detail?.location?.name ?? '-'}</td>
                 <td>{request.requestNo}</td>
+                <td>{detail?.location?.name ?? '-'}</td>
+                {showRequestDateColumn && <td>{formatDateLabel(request.requestDate)}</td>}
                 <td>{formatDateLabel(request.loadDate)}</td>
                 <td>{request.loadTime}</td>
                 <td>{detail?.supplierCompany?.name ?? '-'}</td>
                 <td>{detail?.vehicleAssignment?.tractorPlate ?? '-'}</td>
                 <td>{detail?.vehicleAssignment?.trailerPlate ?? '-'}</td>
                 <td>{detail?.vehicleAssignment ? `${detail.vehicleAssignment.driverFirstName} ${detail.vehicleAssignment.driverLastName}` : '-'}</td>
+                {showPhoneColumn && <td>{formatPhoneLabel(detail?.vehicleAssignment?.driverPhone)}</td>}
                 <td>{detail?.ramp?.code ?? '-'}</td>
+                {showOperationalTimeColumns && <td>{formatDateTimeLabel(getRampTakenAt(detail))}</td>}
+                {showOperationalTimeColumns && <td>{formatDateTimeLabel(getLoadingCompletedAt(detail))}</td>}
+                {showOperationalTimeColumns && <td>{formatDateTimeLabel(getExitAt(detail))}</td>}
                 <td>{formatDateTimeLabel(request.updatedAt)}</td>
               </tr>
             )
@@ -193,6 +237,132 @@ export function ShipmentTable({
     </div>
   )
 }
+
+export function getProcurementStatusMeta(request: ShipmentRequest, assignment?: DemoData['vehicleAssignments'][number]) {
+  if (request.currentStatus === 'VEHICLE_CANCELLED') {
+    return {
+      key: 'VEHICLE_CANCELLED',
+      label: 'Arac iptal edildi',
+      tone: 'danger' as const,
+    }
+  }
+
+  if (request.currentStatus === 'CANCELLED') {
+    return {
+      key: 'CANCELLED',
+      label: 'Iptal edildi',
+      tone: 'danger' as const,
+    }
+  }
+
+  if (request.currentStatus === 'REJECTED') {
+    return {
+      key: 'REJECTED',
+      label: 'Reddedildi',
+      tone: 'danger' as const,
+    }
+  }
+
+  if (request.currentStatus === 'CORRECTION_REQUESTED') {
+    return {
+      key: 'CORRECTION_REQUESTED',
+      label: 'Duzeltme talebi var',
+      tone: 'warning' as const,
+    }
+  }
+
+  if (request.currentStatus === 'APPROVED') {
+    return {
+      key: 'REGISTERED',
+      label: 'Arac kaydi yapildi',
+      tone: 'success' as const,
+    }
+  }
+
+  if (request.currentStatus === 'RAMP_PLANNED') {
+    return {
+      key: 'RAMP_CALLED',
+      label: 'Rampaya cagrildi',
+      tone: 'info' as const,
+    }
+  }
+
+  if (request.currentStatus === 'LOADING') {
+    return {
+      key: 'LOADING',
+      label: 'Yukleniyor',
+      tone: 'info' as const,
+    }
+  }
+
+  if (request.currentStatus === 'LOADED') {
+    return {
+      key: 'LOADED',
+      label: 'Yuklemesi tamamlandi',
+      tone: 'success' as const,
+    }
+  }
+
+  if (request.currentStatus === 'SEALED') {
+    return {
+      key: 'SEALED',
+      label: 'Muhurlendi',
+      tone: 'success' as const,
+    }
+  }
+
+  if (request.currentStatus === 'EXITED') {
+    return {
+      key: 'EXITED',
+      label: 'Cikis yapti',
+      tone: 'success' as const,
+    }
+  }
+
+  if (request.currentStatus === 'COMPLETED') {
+    return {
+      key: 'COMPLETED',
+      label: 'Tamamlandi',
+      tone: 'success' as const,
+    }
+  }
+
+  const isSupplied = Boolean(
+    assignment?.tractorPlate &&
+      assignment?.trailerPlate &&
+      assignment?.driverFirstName &&
+      assignment?.driverLastName &&
+      assignment?.driverPhone,
+  )
+
+  return isSupplied
+    ? {
+        key: 'SUPPLIED',
+        label: 'Tedarik edildi',
+        tone: 'success' as const,
+      }
+    : {
+        key: 'WAITING',
+        label: 'Arac tedarik bekliyor',
+        tone: 'warning' as const,
+      }
+}
+
+const PROCUREMENT_STATUS_OPTIONS = [
+  { key: 'WAITING', label: 'Arac tedarik bekliyor' },
+  { key: 'SUPPLIED', label: 'Tedarik edildi' },
+  { key: 'CORRECTION_REQUESTED', label: 'Duzeltme talebi var' },
+  { key: 'REGISTERED', label: 'Arac kaydi yapildi' },
+  { key: 'RAMP_CALLED', label: 'Rampaya cagrildi' },
+  { key: 'LOADING', label: 'Yukleniyor' },
+  { key: 'LOADED', label: 'Yuklemesi tamamlandi' },
+  { key: 'SEALED', label: 'Muhurlendi' },
+  { key: 'EXITED', label: 'Cikis yapti' },
+  { key: 'COMPLETED', label: 'Tamamlandi' },
+  { key: 'REJECTED', label: 'Reddedildi' },
+  { key: 'VEHICLE_CANCELLED', label: 'Arac iptal edildi' },
+  { key: 'CANCELLED', label: 'Iptal edildi' },
+]
 
 export function ShipmentDetailDrawer({
   data,
@@ -252,7 +422,11 @@ export function ShipmentDetailDrawer({
               <KeyValue label="Dorse plakasi" value={detail.vehicleAssignment?.trailerPlate ?? '-'} />
               <KeyValue label="Sofor" value={detail.vehicleAssignment ? `${detail.vehicleAssignment.driverFirstName} ${detail.vehicleAssignment.driverLastName}` : '-'} />
               <KeyValue label="Telefon" value={formatPhoneLabel(detail.vehicleAssignment?.driverPhone)} />
+              <KeyValue label="Duzeltme notu" value={detail.vehicleAssignment?.rejectionReason ?? '-'} />
               <KeyValue label="Rampa" value={detail.ramp ? `${detail.ramp.code} • ${detail.ramp.name}` : '-'} />
+              <KeyValue label="Rampaya alinma" value={formatDateTimeLabel(getRampTakenAt(detail))} />
+              <KeyValue label="Yukleme bitis" value={formatDateTimeLabel(getLoadingCompletedAt(detail))} />
+              <KeyValue label="Rampa cikis" value={formatDateTimeLabel(getExitAt(detail))} />
               <KeyValue label="Muhur No" value={detail.loadingOperation?.sealNumber ?? '-'} />
             </div>
           </Card>

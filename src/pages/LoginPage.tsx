@@ -2,22 +2,60 @@ import { useState } from 'react'
 import { Languages, LockKeyhole, Mail } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
-import { ROLE_DEFINITIONS } from '../domain/constants'
 import { getCurrentRoleKey } from '../domain/selectors'
 import { getRoleDefinition } from '../domain/workflow'
 import { useAppStore } from '../store/app-store'
-import { Badge, Button, Card, FormField, InlineMessage, Input, Select } from '../components/ui'
+import { Button, Card, FormField, InlineMessage, Input, Select } from '../components/ui'
+
+const DEMO_ROLE_CARDS = [
+  {
+    id: 'demo-role-admin',
+    title: 'Vardiya Amiri / Ekip Lideri',
+    userId: 'user-admin-eda',
+    homePath: '/dashboard',
+  },
+  {
+    id: 'demo-role-supplier-mars',
+    title: 'Tedarikci Firma',
+    userId: 'user-supplier-mert',
+    homePath: '/talepler',
+  },
+  {
+    id: 'demo-role-supplier-mevlana',
+    title: 'Tedarikci Firma',
+    userId: 'user-supplier-elif',
+    homePath: '/talepler',
+  },
+  {
+    id: 'demo-role-supplier-horoz',
+    title: 'Tedarikci Firma',
+    userId: 'user-supplier-bora',
+    homePath: '/talepler',
+  },
+  {
+    id: 'demo-role-operations',
+    title: 'Sevkiyat Operasyon',
+    userId: 'user-control-selin',
+    homePath: '/talepler',
+  },
+  {
+    id: 'demo-role-security',
+    title: 'Dis Guvenlik',
+    userId: 'user-gate-cem',
+    homePath: '/kapi-operasyonu',
+  },
+] as const
 
 export function LoginPage() {
   const navigate = useNavigate()
   const data = useAppStore((state) => state.data)
   const loginWithEmail = useAppStore((state) => state.loginWithEmail)
   const loginAs = useAppStore((state) => state.loginAs)
-  const [email, setEmail] = useState('eda.celik@gratis.demo')
+  const [email, setEmail] = useState('ozgur.caglayan@gratis.demo')
   const [password, setPassword] = useState('demo123')
   const [message, setMessage] = useState<{ kind: 'success' | 'error'; text: string } | null>(null)
 
-  function openUserSession(userId: string) {
+  function openUserSession(userId: string, homePath?: string) {
     const result = loginAs(userId)
     if (!result.ok) {
       setMessage({ kind: 'error', text: result.message })
@@ -26,7 +64,7 @@ export function LoginPage() {
 
     const user = data.users.find((item) => item.id === userId)
     const roleKey = getCurrentRoleKey(user)
-    navigate(getRoleDefinition(roleKey ?? 'admin')?.homePath ?? '/dashboard')
+    navigate(homePath ?? getRoleDefinition(roleKey ?? 'admin')?.homePath ?? '/dashboard')
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -45,27 +83,7 @@ export function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-page__hero">
-        <Badge tone="info">FlowDock Logistics</Badge>
-        <h1>Sevkiyat operasyonlarini tek ekranda yonetin.</h1>
-        <p>
-          Tedarikci atamasindan muhurlu cikisa kadar tum surec, rol bazli ekranlar ve audit log ile ayni is akisi
-          icinde ilerler.
-        </p>
-
-        <div className="login-highlights">
-          <Card>
-            <strong>State-machine akisi</strong>
-            <p>Zorunlu adimlar atlanamaz, kritik gecisler loglanir.</p>
-          </Card>
-          <Card>
-            <strong>Excel aliskanligina yakin</strong>
-            <p>Yuksek okunabilirlikte tablo, filtre ve hizli aksiyon yapisi.</p>
-          </Card>
-          <Card>
-            <strong>Teknik olmayan kullanicilar icin</strong>
-            <p>Buyuk butonlar, sade formlar ve acik dil ile tasarlandi.</p>
-          </Card>
-        </div>
+        <h1 className="login-page__wordmark">Sevkiyat Lojistik</h1>
       </div>
 
       <Card className="login-card">
@@ -119,17 +137,17 @@ export function LoginPage() {
             <span>Tek tikla giris</span>
           </div>
           <div className="demo-users__grid">
-            {ROLE_DEFINITIONS.map((role) => {
-              const user = data.users.find((item) => item.roleId === role.id)
+            {DEMO_ROLE_CARDS.map((card) => {
+              const user = data.users.find((item) => item.id === card.userId)
               if (!user) {
                 return null
               }
 
               const company = data.companies.find((item) => item.id === user.companyId)
               return (
-                <button key={role.id} type="button" className="demo-user-card" onClick={() => openUserSession(user.id)}>
+                <button key={card.id} type="button" className="demo-user-card" onClick={() => openUserSession(user.id, card.homePath)}>
                   <div>
-                    <strong>{role.name}</strong>
+                    <strong>{card.title}</strong>
                     <p>{company?.name}</p>
                   </div>
                   <span>{user.firstName} {user.lastName}</span>

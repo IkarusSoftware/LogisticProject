@@ -57,7 +57,7 @@ export function App() {
         <Route
           path="/talepler"
           element={
-            <ProtectedPage allowedRoles={['requester', 'supplier', 'control', 'ramp', 'gate', 'loading', 'admin']}>
+            <ProtectedPage allowedRoles={['requester', 'supplier', 'control', 'admin']}>
               <ShipmentListPage />
             </ProtectedPage>
           }
@@ -65,7 +65,7 @@ export function App() {
         <Route
           path="/tedarik-atama"
           element={
-            <ProtectedPage allowedRoles={['supplier', 'admin']}>
+            <ProtectedPage allowedRoles={[]}>
               <SupplierAssignmentsPage />
             </ProtectedPage>
           }
@@ -73,7 +73,7 @@ export function App() {
         <Route
           path="/arac-kontrol"
           element={
-            <ProtectedPage allowedRoles={['control', 'admin']}>
+            <ProtectedPage allowedRoles={[]}>
               <VehicleControlPage />
             </ProtectedPage>
           }
@@ -81,7 +81,7 @@ export function App() {
         <Route
           path="/rampa-planlama"
           element={
-            <ProtectedPage allowedRoles={['ramp', 'admin']}>
+            <ProtectedPage allowedRoles={[]}>
               <RampPlanningPage />
             </ProtectedPage>
           }
@@ -89,7 +89,7 @@ export function App() {
         <Route
           path="/kapi-operasyonu"
           element={
-            <ProtectedPage allowedRoles={['gate', 'admin']}>
+            <ProtectedPage allowedRoles={['gate']}>
               <GateOperationsPage />
             </ProtectedPage>
           }
@@ -97,7 +97,7 @@ export function App() {
         <Route
           path="/yukleme-tamamlama"
           element={
-            <ProtectedPage allowedRoles={['loading', 'admin']}>
+            <ProtectedPage allowedRoles={['loading']}>
               <LoadingCompletionPage />
             </ProtectedPage>
           }
@@ -105,7 +105,7 @@ export function App() {
         <Route
           path="/gecmis"
           element={
-            <ProtectedPage allowedRoles={['requester', 'supplier', 'control', 'ramp', 'gate', 'loading', 'admin']}>
+            <ProtectedPage allowedRoles={['requester', 'control', 'ramp', 'gate', 'loading', 'admin']}>
               <HistoryPage />
             </ProtectedPage>
           }
@@ -121,7 +121,7 @@ export function App() {
         <Route
           path="/yonetim"
           element={
-            <ProtectedPage allowedRoles={['admin']}>
+            <ProtectedPage allowedRoles={[]}>
               <AdminPage />
             </ProtectedPage>
           }

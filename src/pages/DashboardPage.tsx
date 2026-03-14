@@ -2,8 +2,17 @@ import { ArrowRight, Clock3 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import { Card, MetricCard, PageHeader } from '../components/ui'
-import { getCurrentRoleKey, getCurrentUser, getDelayedRequests, getPipelineCounts, getRecentAuditLogs, getVisibleRequests, getDashboardMetrics } from '../domain/selectors'
-import { formatDateTimeLabel, formatFullName, getRoleDefinition, getStatusMeta } from '../domain/workflow'
+import {
+  getCurrentRoleKey,
+  getCurrentUser,
+  getDashboardMetrics,
+  getDelayedRequests,
+  getPipelineCounts,
+  getRecentAuditLogs,
+  getShipmentDetail,
+  getVisibleRequests,
+} from '../domain/selectors'
+import { formatDateTimeLabel, formatFullName, getExitAt, getLoadingCompletedAt, getRampTakenAt, getRoleDefinition, getStatusMeta } from '../domain/workflow'
 import { useAppStore } from '../store/app-store'
 
 export function DashboardPage() {
@@ -16,6 +25,19 @@ export function DashboardPage() {
   const delayedRequests = getDelayedRequests(data, currentUser).slice(0, 5)
   const recentLogs = getRecentAuditLogs(data, currentUser)
   const visibleRequests = getVisibleRequests(data, currentUser)
+  const operationalRows = visibleRequests
+    .map((request) => {
+      const detail = getShipmentDetail(data, request.id)
+      return {
+        request,
+        detail,
+        rampTakenAt: getRampTakenAt(detail),
+        loadingCompletedAt: getLoadingCompletedAt(detail),
+        exitAt: getExitAt(detail),
+      }
+    })
+    .filter((item) => item.rampTakenAt || item.loadingCompletedAt || item.exitAt)
+    .slice(0, 6)
 
   return (
     <div className="page-stack">
@@ -38,21 +60,37 @@ export function DashboardPage() {
             label={metric.title}
             value={metric.value}
             helper={metric.value === 1 ? '1 kayit' : `${metric.value} kayit`}
-            tone={index === 5 ? 'success' : index === 6 ? 'warning' : index === 1 || index === 2 ? 'info' : 'neutral'}
+            tone={index === 2 ? 'warning' : index === 3 ? 'success' : index === 4 ? 'info' : 'neutral'}
           />
         ))}
       </section>
 
       <section className="dashboard-grid">
         <Card title="Surec kanali" subtitle={`${visibleRequests.length} gorunur kayit`}>
-          <div className="pipeline">
-            {pipeline.map((item) => (
-              <div key={item.status} className="pipeline__item">
-                <Badge tone={getStatusMeta(item.status).tone}>{getStatusMeta(item.status).label}</Badge>
-                <strong>{item.count}</strong>
-              </div>
-            ))}
-          </div>
+          {pipeline.length === 0 ? (
+            <p className="muted-text">Gosterilecek surec kaydi bulunmuyor.</p>
+          ) : (
+            <div className="pipeline">
+              {pipeline.map((item) => {
+                const statusMeta = getStatusMeta(item.status)
+                const ratio = visibleRequests.length === 0 ? 0 : Math.round((item.count / visibleRequests.length) * 100)
+
+                return (
+                  <article key={item.status} className={`pipeline__item pipeline__item--${statusMeta.tone}`}>
+                    <div className="pipeline__head">
+                      <Badge tone={statusMeta.tone}>{statusMeta.label}</Badge>
+                      <span className="pipeline__ratio">%{ratio}</span>
+                    </div>
+                    <strong className="pipeline__count">{item.count}</strong>
+                    <span className="pipeline__helper">{item.count === 1 ? '1 arac' : `${item.count} arac`}</span>
+                    <div className="pipeline__bar">
+                      <div className="pipeline__fill" style={{ width: `${Math.max(ratio, item.count > 0 ? 10 : 0)}%` }} />
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          )}
         </Card>
 
         <Card title="Bugun oncelikli aksiyonlar" subtitle="Geciken veya dikkat isteyen isler">
@@ -87,7 +125,7 @@ export function DashboardPage() {
                   <strong>{log.actionType}</strong>
                   <p>{log.description}</p>
                   <span>
-                    {formatFullName(actor)} • {formatDateTimeLabel(log.performedAt)}
+                    {formatFullName(actor)} / {formatDateTimeLabel(log.performedAt)}
                   </span>
                 </div>
               )
@@ -95,24 +133,30 @@ export function DashboardPage() {
           </div>
         </Card>
 
-        <Card title="Rol bazli ekran mantigi" subtitle="Bu demoda her rol sade bir ana is akisi gorur">
-          <div className="role-flow">
-            <div>
-              <strong>1. Talep</strong>
-              <p>Talep ac, lokasyon sec, tedarikciyi yonlendir.</p>
-            </div>
-            <div>
-              <strong>2. Tedarik</strong>
-              <p>Arac ve sofor gir, eksik bilgi varsa gonderme.</p>
-            </div>
-            <div>
-              <strong>3. Kontrol</strong>
-              <p>Kayitlari dogrula, onay / red sebebini logla.</p>
-            </div>
-            <div>
-              <strong>4. Operasyon</strong>
-              <p>Rampa, kapi, yukleme ve muhur cikisini tamamla.</p>
-            </div>
+        <Card title="Rampa ve cikis zamanlari" subtitle="Son operasyon saatleri">
+          <div className="audit-list">
+            {operationalRows.length === 0 ? (
+              <p className="muted-text">Henuz operasyon zamani olusan kayit yok.</p>
+            ) : (
+              operationalRows.map((item) => {
+                const plateLabel = item.detail?.vehicleAssignment?.tractorPlate ?? 'Plaka bekleniyor'
+                const locationLabel = item.detail?.location?.name
+                  ?? data.locations.find((location) => location.id === item.request.targetLocationId)?.name
+                  ?? 'Bolge bekleniyor'
+
+                return (
+                  <div key={item.request.id} className="audit-list__item">
+                    <strong>{plateLabel} / {locationLabel}</strong>
+                    <p>
+                      Rampa: {formatDateTimeLabel(item.rampTakenAt)} / Yukleme bitis: {formatDateTimeLabel(item.loadingCompletedAt)}
+                    </p>
+                    <span>
+                      Rampa cikis: {formatDateTimeLabel(item.exitAt)} / {item.detail?.supplierCompany?.name ?? '-'}
+                    </span>
+                  </div>
+                )
+              })
+            )}
           </div>
         </Card>
       </section>

@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware'
 
 import { buildInitialData } from '../data/seed'
 import { TERMINAL_STATUSES } from '../domain/constants'
-import { getCurrentUser, getNotificationsForUser } from '../domain/selectors'
+import { getCurrentUser, getNotificationsForUser, getVisibleRequests } from '../domain/selectors'
 import type {
   CreateRequestInput,
   DemoData,
@@ -12,6 +12,7 @@ import type {
   NotificationItem,
   OperationResult,
   RampPlanningInput,
+  RequestRevisionInput,
   ReviewDecisionInput,
   SessionState,
   ShipmentRequest,
@@ -39,9 +40,16 @@ type AppStore = {
   resetDemo: () => void
   markAllNotificationsRead: () => void
   createShipmentRequest: (input: CreateRequestInput) => OperationResult
+  createShipmentRequests: (inputs: CreateRequestInput[]) => OperationResult
+  clearActiveRequests: () => OperationResult
+  reviseActiveRequest: (shipmentRequestId: string, input: RequestRevisionInput) => OperationResult
+  cancelVehicleRequest: (shipmentRequestId: string) => OperationResult
   cancelRequest: (shipmentRequestId: string, note: string) => OperationResult
   beginSupplierReview: (shipmentRequestId: string) => OperationResult
   submitVehicleAssignment: (shipmentRequestId: string, input: VehicleAssignmentInput) => OperationResult
+  acceptSecurityCorrection: (shipmentRequestId: string) => OperationResult
+  requestSecurityCorrection: (shipmentRequestId: string, note: string) => OperationResult
+  registerVehicleRecord: (shipmentRequestId: string, note: string) => OperationResult
   rejectBySupplier: (shipmentRequestId: string, reason: string) => OperationResult
   reviewVehicleAssignment: (shipmentRequestId: string, input: ReviewDecisionInput) => OperationResult
   assignRamp: (shipmentRequestId: string, input: RampPlanningInput) => OperationResult
@@ -117,49 +125,149 @@ export const useAppStore = create<AppStore>()(
           return { data }
         }),
 
-      createShipmentRequest: (input) => withMutation(set, (data, actor) => {
-        const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-requester' ? 'requester' : undefined
-        if (!['requester', 'admin'].includes(roleKey ?? '')) {
-          throw new Error('Bu islem icin talep olusturma yetkiniz yok.')
-        }
+      createShipmentRequest: (input) => get().createShipmentRequests([input]),
 
-        const now = new Date()
-        const nextNumber = data.shipmentRequests.length + 1
-        const requestNo = `SR-${format(now, 'yyMMdd')}-${String(nextNumber).padStart(3, '0')}`
+      createShipmentRequests: (inputs) =>
+        withMutation(set, (data, actor) => {
+          const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-requester' ? 'requester' : undefined
+          if (!['requester', 'admin'].includes(roleKey ?? '')) {
+            throw new Error('Bu islem icin talep olusturma yetkiniz yok.')
+          }
 
-        const request: ShipmentRequest = {
-          id: `req-${nextNumber.toString().padStart(3, '0')}-${now.getTime()}`,
-          requestNo,
-          requesterCompanyId: actor.companyId,
-          targetLocationId: input.targetLocationId,
-          requestDate: format(now, 'yyyy-MM-dd'),
-          vehicleType: input.vehicleType,
-          loadDate: input.loadDate,
-          loadTime: input.loadTime,
-          quantityInfo: input.quantityInfo,
-          productInfo: input.productInfo,
-          notes: input.notes,
-          currentStatus: 'SENT_TO_SUPPLIER',
-          assignedSupplierCompanyId: input.assignedSupplierCompanyId,
-          createdBy: actor.id,
-          createdAt: now.toISOString(),
-          updatedAt: now.toISOString(),
-        }
+          if (inputs.length === 0) {
+            throw new Error('Kaydedilecek talep bulunamadi.')
+          }
 
-        data.shipmentRequests.unshift(request)
-        pushStatusTransition(data, request, 'NONE', 'REQUEST_CREATED', actor.id, 'Talep kaydi olusturuldu.', now)
-        pushStatusTransition(data, request, 'REQUEST_CREATED', 'SENT_TO_SUPPLIER', actor.id, 'Talep tedarikciye gonderildi.', addMinutes(now, 1))
-        pushNotification(data, {
-          title: 'Yeni tir talebi',
-          message: `${requestNo} talebi aksiyon bekliyor.`,
-          level: 'info',
-          shipmentRequestId: request.id,
-          targetRoleKeys: ['supplier'],
-          targetCompanyIds: [request.assignedSupplierCompanyId],
-        })
+          const createdRequests = inputs.map((input, index) =>
+            createShipmentRequestRecord(data, actor, input, addMinutes(new Date(), index)),
+          )
 
-        return { ok: true, message: `${requestNo} talebi olusturuldu ve tedarikciye gonderildi.` }
-      }),
+          return {
+            ok: true,
+            message:
+              createdRequests.length === 1
+                ? `${createdRequests[0].requestNo} talebi olusturuldu ve tedarikciye gonderildi.`
+                : `${createdRequests.length} talep olusturuldu ve tedarikcilere gonderildi.`,
+          }
+        }),
+
+      clearActiveRequests: () =>
+        withMutation(set, (data, actor) => {
+          const activeRequestIds = new Set(
+            getVisibleRequests(data, actor)
+              .filter((request) => !['COMPLETED', 'REJECTED', 'CANCELLED'].includes(request.currentStatus))
+              .map((request) => request.id),
+          )
+
+          if (activeRequestIds.size === 0) {
+            throw new Error('Temizlenecek aktif talep bulunamadi.')
+          }
+
+          data.shipmentRequests = data.shipmentRequests.filter((request) => !activeRequestIds.has(request.id))
+          data.vehicleAssignments = data.vehicleAssignments.filter((item) => !activeRequestIds.has(item.shipmentRequestId))
+          data.rampAssignments = data.rampAssignments.filter((item) => !activeRequestIds.has(item.shipmentRequestId))
+          data.gateOperations = data.gateOperations.filter((item) => !activeRequestIds.has(item.shipmentRequestId))
+          data.loadingOperations = data.loadingOperations.filter((item) => !activeRequestIds.has(item.shipmentRequestId))
+          data.statusHistory = data.statusHistory.filter((item) => !activeRequestIds.has(item.shipmentRequestId))
+          data.auditLogs = data.auditLogs.filter((item) => !activeRequestIds.has(item.entityId))
+          data.notifications = data.notifications.filter(
+            (item) => !item.shipmentRequestId || !activeRequestIds.has(item.shipmentRequestId),
+          )
+
+          return {
+            ok: true,
+            message:
+              activeRequestIds.size === 1
+                ? '1 aktif talep temizlendi.'
+                : `${activeRequestIds.size} aktif talep temizlendi.`,
+          }
+        }),
+
+      reviseActiveRequest: (shipmentRequestId, input) =>
+        withMutation(set, (data, actor) => {
+          const request = requireRequest(data, shipmentRequestId)
+
+          if (TERMINAL_STATUSES.includes(request.currentStatus)) {
+            throw new Error('Tamamlanan, reddedilen veya iptal edilen kayitlar revize edilemez.')
+          }
+
+          if (['ARRIVED', 'ADMITTED', 'AT_RAMP', 'LOADING', 'LOADED', 'SEALED', 'EXITED'].includes(request.currentStatus)) {
+            throw new Error('Arac sahaya indikten sonra bu kayit bu ekrandan revize edilemez.')
+          }
+
+          const normalizedLoadTime = input.loadTime.trim()
+          if (!normalizedLoadTime) {
+            throw new Error('Yukleme saati zorunludur.')
+          }
+
+          const rampAssignment = data.rampAssignments.find((item) => item.shipmentRequestId === shipmentRequestId)
+          if (rampAssignment) {
+            const conflicting = data.rampAssignments.find((assignment) => {
+              if (assignment.rampId !== rampAssignment.rampId || assignment.shipmentRequestId === shipmentRequestId) {
+                return false
+              }
+
+              const existingRequest = data.shipmentRequests.find((item) => item.id === assignment.shipmentRequestId)
+              return (
+                existingRequest &&
+                !TERMINAL_STATUSES.includes(existingRequest.currentStatus) &&
+                existingRequest.loadDate === request.loadDate &&
+                existingRequest.loadTime === normalizedLoadTime
+              )
+            })
+
+            if (conflicting) {
+              throw new Error('Yeni yukleme saati mevcut rampa planlamasi ile cakisiyor.')
+            }
+          }
+
+          const oldValue = `Tur: ${request.vehicleType}, Saat: ${request.loadTime}`
+          request.vehicleType = input.vehicleType
+          request.loadTime = normalizedLoadTime
+          request.updatedAt = new Date().toISOString()
+
+          pushAudit(data, {
+            entityType: 'ShipmentRequest',
+            entityId: request.id,
+            actionType: 'request_revised',
+            oldValue,
+            newValue: `Tur: ${request.vehicleType}, Saat: ${request.loadTime}`,
+            description: 'Arac turu ve yukleme saati revize edildi.',
+            performedByUserId: actor.id,
+            performedAt: request.updatedAt,
+          })
+
+          pushNotification(data, {
+            title: 'Talep revize edildi',
+            message: `${request.requestNo} icin arac turu veya yukleme saati guncellendi.`,
+            level: 'warning',
+            shipmentRequestId,
+            targetRoleKeys: ['supplier', 'admin'],
+            targetCompanyIds: [request.assignedSupplierCompanyId, request.requesterCompanyId],
+          })
+
+          return { ok: true, message: `${request.requestNo} kaydi revize edildi.` }
+        }),
+
+      cancelVehicleRequest: (shipmentRequestId) =>
+        withMutation(set, (data, actor) => {
+          const request = requireRequest(data, shipmentRequestId)
+          if (!canCancelRequest(request)) {
+            throw new Error('Bu asamadan sonra arac iptal edilemez.')
+          }
+
+          pushStatusTransition(data, request, request.currentStatus, 'VEHICLE_CANCELLED', actor.id, 'Arac iptal edildi.')
+          pushNotification(data, {
+            title: 'Arac iptal edildi',
+            message: `${request.requestNo} icin arac iptal edildi.`,
+            level: 'warning',
+            shipmentRequestId,
+            targetRoleKeys: ['supplier', 'control', 'ramp', 'gate', 'admin'],
+            targetCompanyIds: [request.assignedSupplierCompanyId, request.requesterCompanyId],
+          })
+
+          return { ok: true, message: `${request.requestNo} icin arac iptal edildi.` }
+        }),
 
       cancelRequest: (shipmentRequestId, note) =>
         withMutation(set, (data, actor) => {
@@ -192,6 +300,22 @@ export const useAppStore = create<AppStore>()(
       submitVehicleAssignment: (shipmentRequestId, input) =>
         withMutation(set, (data, actor) => {
           const request = requireRequest(data, shipmentRequestId)
+          const wasCorrectionRequest = request.currentStatus === 'CORRECTION_REQUESTED'
+          const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-supplier' ? 'supplier' : undefined
+          if (!['supplier', 'admin'].includes(roleKey ?? '')) {
+            throw new Error('Bu islem icin tedarik yetkiniz yok.')
+          }
+
+          if (roleKey === 'supplier' && actor.companyId !== request.assignedSupplierCompanyId) {
+            throw new Error('Bu talep sizin firmaniza atanmamis.')
+          }
+
+          ensureStatusTransition(
+            request.currentStatus,
+            ['SENT_TO_SUPPLIER', 'SUPPLIER_REVIEWING', 'CORRECTION_REQUESTED'],
+            'Bu kayit icin tedarik bilgisi giris asamasi tamamlanmis.',
+          )
+
           if (!input.driverFirstName || !input.driverLastName) {
             throw new Error('Sofor adi ve soyadi zorunludur.')
           }
@@ -213,7 +337,7 @@ export const useAppStore = create<AppStore>()(
           const normalizedAssignment = {
             id: assignment?.id ?? `va-${shipmentRequestId}`,
             shipmentRequestId,
-            supplierCompanyId: actor.companyId,
+            supplierCompanyId: request.assignedSupplierCompanyId,
             tractorPlate: normalizePlate(input.tractorPlate),
             trailerPlate: normalizePlate(input.trailerPlate),
             driverFirstName: input.driverFirstName.trim(),
@@ -222,6 +346,9 @@ export const useAppStore = create<AppStore>()(
             assignmentStatus: 'SUBMITTED' as const,
             assignedBy: actor.id,
             assignedAt: now.toISOString(),
+            rejectionReason: undefined,
+            approvedBy: undefined,
+            approvedAt: undefined,
           }
 
           if (assignment) {
@@ -243,17 +370,164 @@ export const useAppStore = create<AppStore>()(
             performedAt: now.toISOString(),
           })
 
-          pushStatusTransition(data, request, request.currentStatus, 'VEHICLE_ASSIGNED', actor.id, 'Arac ve sofor bilgileri onaya gonderildi.')
+          pushStatusTransition(
+            data,
+            request,
+            request.currentStatus,
+            'VEHICLE_ASSIGNED',
+            actor.id,
+            wasCorrectionRequest
+              ? 'Tedarikci duzeltme talebine gore arac bilgilerini guncelledi.'
+              : 'Arac ve sofor bilgileri kaydedildi.',
+          )
           pushNotification(data, {
-            title: 'Onay bekleyen arac',
+            title: 'Dis guvenlik kontrolu bekliyor',
             message: `${request.requestNo} icin arac dogrulamasi bekleniyor.`,
+            level: 'info',
+            shipmentRequestId,
+            targetRoleKeys: ['gate', 'admin'],
+            targetCompanyIds: [request.requesterCompanyId],
+          })
+
+          return {
+            ok: true,
+            message:
+              wasCorrectionRequest
+                ? 'Duzeltilen arac bilgileri tekrar gonderildi.'
+                : 'Arac ve sofor bilgileri kaydedildi.',
+          }
+        }),
+
+      acceptSecurityCorrection: (shipmentRequestId) =>
+        withMutation(set, (data, actor) => {
+          const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-supplier' ? 'supplier' : undefined
+          if (!['supplier', 'admin'].includes(roleKey ?? '')) {
+            throw new Error('Bu islem icin tedarik yetkiniz yok.')
+          }
+
+          const request = requireRequest(data, shipmentRequestId)
+          if (roleKey === 'supplier' && actor.companyId !== request.assignedSupplierCompanyId) {
+            throw new Error('Bu talep sizin firmaniza atanmamis.')
+          }
+
+          ensureStatusTransition(
+            request.currentStatus,
+            ['CORRECTION_REQUESTED'],
+            'Kabul edilebilecek aktif bir duzeltme talebi bulunamadi.',
+          )
+
+          pushStatusTransition(
+            data,
+            request,
+            request.currentStatus,
+            'SUPPLIER_REVIEWING',
+            actor.id,
+            'Tedarikci duzeltme talebini kabul etti.',
+          )
+          pushNotification(data, {
+            title: 'Duzeltme talebi kabul edildi',
+            message: `${request.requestNo} icin tedarikci yeni bilgileri hazirliyor.`,
+            level: 'info',
+            shipmentRequestId,
+            targetRoleKeys: ['gate', 'admin'],
+            targetCompanyIds: [request.requesterCompanyId],
+          })
+
+          return { ok: true, message: 'Duzeltme talebi kabul edildi. Bilgileri guncelleyip gonderebilirsiniz.' }
+        }),
+
+      requestSecurityCorrection: (shipmentRequestId, note) =>
+        withMutation(set, (data, actor) => {
+          const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-gate' ? 'gate' : undefined
+          if (!['gate', 'admin'].includes(roleKey ?? '')) {
+            throw new Error('Bu islem icin dis guvenlik yetkisi gerekir.')
+          }
+
+          const request = requireRequest(data, shipmentRequestId)
+          const assignment = data.vehicleAssignments.find((item) => item.shipmentRequestId === shipmentRequestId)
+          if (!assignment) {
+            throw new Error('Duzeltme istenecek arac bilgisi bulunamadi.')
+          }
+
+          ensureStatusTransition(
+            request.currentStatus,
+            ['VEHICLE_ASSIGNED', 'CORRECTION_REQUESTED'],
+            'Bu kayit icin artik duzeltme talebi gonderilemez.',
+          )
+
+          if (!note.trim()) {
+            throw new Error('Duzeltme talebi icin aciklama zorunludur.')
+          }
+
+          const now = new Date().toISOString()
+          data.vehicleAssignments = data.vehicleAssignments.map((item) =>
+            item.id === assignment.id
+              ? {
+                  ...item,
+                  assignmentStatus: 'REJECTED',
+                  rejectionReason: note.trim(),
+                  approvedBy: actor.id,
+                  approvedAt: now,
+                }
+              : item,
+          )
+
+          pushStatusTransition(data, request, request.currentStatus, 'CORRECTION_REQUESTED', actor.id, note.trim())
+          pushNotification(data, {
+            title: 'Duzeltme talebi var',
+            message: `${request.requestNo} icin arac bilgileri duzeltilmeli.`,
+            level: 'warning',
+            shipmentRequestId,
+            targetRoleKeys: ['supplier', 'admin'],
+            targetCompanyIds: [request.assignedSupplierCompanyId, request.requesterCompanyId],
+          })
+
+          return { ok: true, message: 'Duzeltme talebi tedarikciye gonderildi.' }
+        }),
+
+      registerVehicleRecord: (shipmentRequestId, note) =>
+        withMutation(set, (data, actor) => {
+          const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-gate' ? 'gate' : undefined
+          if (!['gate', 'admin'].includes(roleKey ?? '')) {
+            throw new Error('Bu islem icin dis guvenlik yetkisi gerekir.')
+          }
+
+          const request = requireRequest(data, shipmentRequestId)
+          const assignment = data.vehicleAssignments.find((item) => item.shipmentRequestId === shipmentRequestId)
+          if (!assignment) {
+            throw new Error('Arac kaydi icin tedarik bilgisi bulunamadi.')
+          }
+
+          ensureStatusTransition(
+            request.currentStatus,
+            ['VEHICLE_ASSIGNED', 'CORRECTION_REQUESTED'],
+            'Bu kayit icin arac kaydi bu asamada yapilamaz.',
+          )
+
+          const now = new Date().toISOString()
+          data.vehicleAssignments = data.vehicleAssignments.map((item) =>
+            item.id === assignment.id
+              ? {
+                  ...item,
+                  assignmentStatus: 'APPROVED',
+                  rejectionReason: undefined,
+                  approvedBy: actor.id,
+                  approvedAt: now,
+                }
+              : item,
+          )
+
+          pushStatusTransition(data, request, request.currentStatus, 'APPROVED', actor.id, note.trim() || 'Arac kaydi yapildi.')
+          pushNotification(data, {
+            title: 'Rampa atamasi bekliyor',
+            message: `${request.requestNo} icin sevkiyat operasyon tarafinda rampa secin.`,
             level: 'info',
             shipmentRequestId,
             targetRoleKeys: ['control', 'admin'],
             targetCompanyIds: [request.requesterCompanyId],
           })
 
-          return { ok: true, message: 'Arac ve sofor bilgileri onaya gonderildi.' }
+          return { ok: true, message: 'Arac kaydi yapildi.' }
         }),
 
       rejectBySupplier: (shipmentRequestId, reason) =>
@@ -325,13 +599,19 @@ export const useAppStore = create<AppStore>()(
 
       assignRamp: (shipmentRequestId, input) =>
         withMutation(set, (data, actor) => {
-          const request = requireRequest(data, shipmentRequestId)
-          ensureStatusTransition(request.currentStatus, ['APPROVED'], 'Rampa atamasi icin kaydin onaylanmis olmasi gerekir.')
-
-          const ramp = data.ramps.find((item) => item.id === input.rampId && item.isActive)
-          if (!ramp) {
-            throw new Error('Secilen rampa kullanima uygun degil.')
+          const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-control' ? 'control' : undefined
+          if (!['control', 'admin'].includes(roleKey ?? '')) {
+            throw new Error('Bu islem icin sevkiyat operasyon yetkisi gerekir.')
           }
+
+          const request = requireRequest(data, shipmentRequestId)
+          ensureStatusTransition(
+            request.currentStatus,
+            ['APPROVED', 'RAMP_PLANNED'],
+            'Rampa atamasi icin kaydin arac kaydi yapilmis olmasi gerekir.',
+          )
+
+          const ramp = findOrCreateRamp(data, request, input.rampId)
 
           const conflicting = data.rampAssignments.find((assignment) => {
             if (assignment.rampId !== input.rampId || assignment.shipmentRequestId === shipmentRequestId) {
@@ -379,10 +659,16 @@ export const useAppStore = create<AppStore>()(
             performedByUserId: actor.id,
             performedAt: now,
           })
-          pushStatusTransition(data, request, request.currentStatus, 'RAMP_PLANNED', actor.id, input.note || `${ramp.code} rampasina atandi.`)
+
+          if (request.currentStatus === 'APPROVED') {
+            pushStatusTransition(data, request, request.currentStatus, 'RAMP_PLANNED', actor.id, input.note || `${ramp.code} rampasina atandi.`)
+          } else {
+            request.updatedAt = now
+          }
+
           pushNotification(data, {
-            title: 'Rampa atamasi yapildi',
-            message: `${request.requestNo} icin ${ramp.code} atandi.`,
+            title: 'Rampa cagrisi yapildi',
+            message: `${request.requestNo} icin ${ramp.code}. rampa atandi.`,
             level: 'success',
             shipmentRequestId,
             targetRoleKeys: ['gate', 'admin'],
@@ -457,7 +743,16 @@ export const useAppStore = create<AppStore>()(
       finalizeLoading: (shipmentRequestId, input) =>
         withMutation(set, (data, actor) => {
           const request = requireRequest(data, shipmentRequestId)
-          ensureStatusTransition(request.currentStatus, ['LOADING'], 'Islemi tamamlamak icin kaydin yukleniyor statüsünde olmasi gerekir.')
+          const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-control' ? 'control' : actor.roleId === 'role-loading' ? 'loading' : undefined
+          if (!['control', 'loading', 'admin'].includes(roleKey ?? '')) {
+            throw new Error('Bu islem icin sevkiyat operasyon yetkisi gerekir.')
+          }
+
+          ensureStatusTransition(
+            request.currentStatus,
+            ['RAMP_PLANNED', 'LOADING'],
+            'Islemi tamamlamak icin kaydin rampada veya yukleniyor asamasinda olmasi gerekir.',
+          )
           if (!input.sealNumber.trim()) {
             throw new Error('Sureci kapatmak icin muhur numarasi zorunludur.')
           }
@@ -482,20 +777,38 @@ export const useAppStore = create<AppStore>()(
             data.loadingOperations.unshift(current)
           }
 
-          // Demo akista kapanis tek aksiyonla birden fazla statuyu zincir halinde tamamlar.
-          pushStatusTransition(data, request, request.currentStatus, 'LOADED', actor.id, 'Yukleme tamamlandi.', now)
-          pushStatusTransition(data, request, 'LOADED', 'SEALED', actor.id, `Muhur numarasi kaydedildi: ${current.sealNumber}.`, addMinutes(now, 2))
-          pushStatusTransition(data, request, 'SEALED', 'EXITED', actor.id, 'Arac cikis yapti.', addMinutes(now, 10))
-          pushStatusTransition(data, request, 'EXITED', 'COMPLETED', actor.id, input.note || 'Operasyon tamamlandi.', addMinutes(now, 12))
+          if (request.currentStatus === 'RAMP_PLANNED') {
+            pushStatusTransition(data, request, request.currentStatus, 'LOADING', actor.id, 'Arac rampada yuklemeye alindi.', addMinutes(now, -1))
+            pushStatusTransition(
+              data,
+              request,
+              'LOADING',
+              'LOADED',
+              actor.id,
+              input.note || `Muhur numarasi kaydedildi: ${current.sealNumber}. Arac cikisa hazir.`,
+              now,
+            )
+          } else {
+            pushStatusTransition(
+              data,
+              request,
+              request.currentStatus,
+              'LOADED',
+              actor.id,
+              input.note || `Muhur numarasi kaydedildi: ${current.sealNumber}. Arac cikisa hazir.`,
+              now,
+            )
+          }
+
           pushNotification(data, {
-            title: 'Sevkiyat tamamlandi',
-            message: `${request.requestNo} icin cikis tamamlandi.`,
+            title: 'Yukleme tamamlandi',
+            message: `${request.requestNo} icin muhur kaydi yapildi ve arac cikisa hazir.`,
             level: 'success',
             shipmentRequestId,
-            targetRoleKeys: ['requester', 'admin'],
+            targetRoleKeys: ['requester', 'admin', 'gate'],
             targetCompanyIds: [request.requesterCompanyId],
           })
-          return { ok: true, message: 'Muhur kaydedildi ve cikis tamamlandi.' }
+          return { ok: true, message: 'Muhur kaydedildi ve arac yuklemesi tamamlandi.' }
         }),
 
       toggleCompanyStatus: (companyId) =>
@@ -544,7 +857,47 @@ export const useAppStore = create<AppStore>()(
     }),
     {
       name: 'flowdock-logistics-demo',
-      version: 1,
+      version: 2,
+      migrate: (persistedState: unknown, version) => {
+        if (!persistedState || typeof persistedState !== 'object') {
+          return persistedState as AppStore
+        }
+
+        const state = persistedState as AppStore
+        if (version < 2) {
+          if (state.data?.users) {
+            state.data.users = state.data.users.map((user) => {
+              if (user.id === 'user-admin-eda') {
+                return {
+                  ...user,
+                  firstName: 'Özgür',
+                  lastName: 'Çağlayan',
+                  email: 'ozgur.caglayan@gratis.demo',
+                }
+              }
+
+              if (user.id === 'user-control-selin') {
+                return {
+                  ...user,
+                  firstName: 'Fevzi',
+                  lastName: 'Uzun',
+                  email: 'fevzi.uzun@gratis.demo',
+                }
+              }
+
+              return user
+            })
+          }
+
+          if (state.data?.roles) {
+            state.data.roles = state.data.roles.map((role) =>
+              role.id === 'role-admin' ? { ...role, name: 'Vardiya Amiri / Ekip Lideri' } : role,
+            )
+          }
+        }
+
+        return state
+      },
     },
   ),
 )
@@ -635,6 +988,103 @@ function pushNotification(data: DemoData, notification: Omit<NotificationItem, '
     isReadBy: [],
     ...notification,
   })
+}
+
+function createShipmentRequestRecord(data: DemoData, actor: User, input: CreateRequestInput, createdAt: Date) {
+  if (!input.targetLocationId) {
+    throw new Error('Yukleme bolgesi secilmelidir.')
+  }
+
+  if (!input.assignedSupplierCompanyId) {
+    throw new Error('Tedarikci firma secilmelidir.')
+  }
+
+  if (!input.requestDate || !input.loadDate || !input.loadTime) {
+    throw new Error('Talep tarihi, yukleme tarihi ve saati zorunludur.')
+  }
+
+  const location = data.locations.find((item) => item.id === input.targetLocationId && item.isActive)
+  if (!location) {
+    throw new Error('Secilen yukleme bolgesi kullanima uygun degil.')
+  }
+
+  const supplier = data.companies.find(
+    (item) => item.id === input.assignedSupplierCompanyId && item.status === 'ACTIVE' && item.type !== 'MAIN',
+  )
+  if (!supplier) {
+    throw new Error('Secilen tedarikci firma aktif degil.')
+  }
+
+  const requestDateSource = new Date(`${input.requestDate}T08:00:00`)
+  const numberDate = Number.isNaN(requestDateSource.getTime()) ? createdAt : requestDateSource
+  const nextNumber = data.shipmentRequests.length + 1
+  const requestNo = `SR-${format(numberDate, 'yyMMdd')}-${String(nextNumber).padStart(3, '0')}`
+
+  const request: ShipmentRequest = {
+    id: `req-${nextNumber.toString().padStart(3, '0')}-${createdAt.getTime()}-${Math.random().toString(36).slice(2, 6)}`,
+    requestNo,
+    requesterCompanyId: actor.companyId,
+    targetLocationId: input.targetLocationId,
+    requestDate: input.requestDate,
+    vehicleType: input.vehicleType,
+    loadDate: input.loadDate,
+    loadTime: input.loadTime,
+    quantityInfo: input.quantityInfo,
+    productInfo: input.productInfo,
+    notes: input.notes,
+    currentStatus: 'SENT_TO_SUPPLIER',
+    assignedSupplierCompanyId: input.assignedSupplierCompanyId,
+    createdBy: actor.id,
+    createdAt: createdAt.toISOString(),
+    updatedAt: createdAt.toISOString(),
+  }
+
+  data.shipmentRequests.unshift(request)
+  pushStatusTransition(data, request, 'NONE', 'REQUEST_CREATED', actor.id, 'Talep kaydi olusturuldu.', createdAt)
+  pushStatusTransition(
+    data,
+    request,
+    'REQUEST_CREATED',
+    'SENT_TO_SUPPLIER',
+    actor.id,
+    `${supplier.name} icin talep olusturuldu.`,
+    addMinutes(createdAt, 1),
+  )
+  pushNotification(data, {
+    title: 'Yeni sevkiyat talebi',
+    message: `${requestNo} talebi aksiyon bekliyor.`,
+    level: 'info',
+    shipmentRequestId: request.id,
+    targetRoleKeys: ['supplier'],
+    targetCompanyIds: [request.assignedSupplierCompanyId],
+  })
+
+  return request
+}
+
+function findOrCreateRamp(data: DemoData, request: ShipmentRequest, rampId: string) {
+  const existingRamp = data.ramps.find((item) => item.id === rampId && item.isActive)
+  if (existingRamp) {
+    return existingRamp
+  }
+
+  const match = /^ramp-generic-(\d{2})$/.exec(rampId)
+  if (!match) {
+    throw new Error('Secilen rampa kullanima uygun degil.')
+  }
+
+  const rampNumber = Number(match[1])
+  const ramp = {
+    id: rampId,
+    locationId: request.targetLocationId,
+    code: String(rampNumber),
+    name: `Rampa ${rampNumber}`,
+    status: 'AVAILABLE' as const,
+    isActive: true,
+  }
+
+  data.ramps.unshift(ramp)
+  return ramp
 }
 
 const gateActionMessages: Record<GateAction, string> = {

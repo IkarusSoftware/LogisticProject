@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 
 import { ROLE_DEFINITIONS, STATUS_META, TERMINAL_STATUSES } from './constants'
-import type { ShipmentRequest, ShipmentStatus, User, UserRoleKey, VehicleAssignment } from './models'
+import type { ShipmentDetail, ShipmentRequest, ShipmentStatus, User, UserRoleKey, VehicleAssignment, VehicleType } from './models'
 
 export function getRoleDefinition(roleKey: UserRoleKey) {
   return ROLE_DEFINITIONS.find((role) => role.key === roleKey)
@@ -12,6 +12,14 @@ export function getRoleKeyByRoleId(roleId: string) {
 }
 
 export function getStatusMeta(status: ShipmentStatus) {
+  if (status === 'VEHICLE_CANCELLED') {
+    return {
+      label: 'Arac Iptal Edildi',
+      tone: 'danger' as const,
+      description: 'Arac kaydi iptal edildi.',
+    }
+  }
+
   return STATUS_META[status]
 }
 
@@ -21,6 +29,23 @@ export function formatDateLabel(value?: string) {
   }
 
   return format(new Date(value), 'dd.MM.yyyy')
+}
+
+export function formatVehicleTypeLabel(value?: VehicleType) {
+  if (!value) {
+    return '-'
+  }
+
+  switch (value) {
+    case 'TIR':
+      return 'Tir'
+    case 'KAMYON':
+      return 'Kamyon'
+    case 'KAMYONET':
+      return 'Kamyonet'
+    default:
+      return value
+  }
 }
 
 export function formatTimeLabel(value?: string) {
@@ -103,12 +128,28 @@ export function formatPhoneLabel(value?: string) {
   return `+${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5, 8)} ${digits.slice(8, 10)} ${digits.slice(10)}`
 }
 
+export function getRampTakenAt(detail?: ShipmentDetail) {
+  if (!detail) {
+    return undefined
+  }
+
+  return detail.loadingOperation?.startedAt ?? detail.gateOperation?.rampTakenAt ?? detail.rampAssignment?.assignedAt
+}
+
+export function getLoadingCompletedAt(detail?: ShipmentDetail) {
+  return detail?.loadingOperation?.completedAt
+}
+
+export function getExitAt(detail?: ShipmentDetail) {
+  return detail?.loadingOperation?.exitAt
+}
+
 export function isTerminalStatus(status: ShipmentStatus) {
   return TERMINAL_STATUSES.includes(status)
 }
 
 export function canCancelRequest(request: ShipmentRequest) {
-  return !['COMPLETED', 'REJECTED', 'CANCELLED', 'AT_RAMP', 'LOADING', 'LOADED', 'SEALED', 'EXITED'].includes(
+  return !['COMPLETED', 'REJECTED', 'CANCELLED', 'VEHICLE_CANCELLED', 'AT_RAMP', 'LOADING', 'LOADED', 'SEALED', 'EXITED'].includes(
     request.currentStatus,
   )
 }

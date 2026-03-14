@@ -1,126 +1,171 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
-import { Button, Card, InlineMessage, Input, PageHeader } from '../components/ui'
+import { getProcurementStatusMeta } from '../components/shipments'
+import { Badge, Button, Card, InlineMessage, Input, PageHeader } from '../components/ui'
 import { getCurrentUser, getShipmentDetail, getVisibleRequests } from '../domain/selectors'
-import { formatDateTimeLabel, getStatusMeta, isDelayed } from '../domain/workflow'
+import { formatDateLabel, formatDateTimeLabel, formatPhoneLabel } from '../domain/workflow'
 import { useAppStore } from '../store/app-store'
+
+const SECURITY_QUEUE_STATUSES = ['VEHICLE_ASSIGNED', 'CORRECTION_REQUESTED', 'APPROVED', 'RAMP_PLANNED'] as const
 
 export function GateOperationsPage() {
   const data = useAppStore((state) => state.data)
   const session = useAppStore((state) => state.session)
-  const recordGateAction = useAppStore((state) => state.recordGateAction)
+  const requestSecurityCorrection = useAppStore((state) => state.requestSecurityCorrection)
+  const registerVehicleRecord = useAppStore((state) => state.registerVehicleRecord)
   const currentUser = getCurrentUser(data, session.currentUserId)
-  const baseQueue = getVisibleRequests(data, currentUser).filter((request) =>
-    ['RAMP_PLANNED', 'ARRIVED', 'ADMITTED', 'AT_RAMP'].includes(request.currentStatus),
-  )
+
   const [search, setSearch] = useState('')
-  const [selectedId, setSelectedId] = useState<string | null>(baseQueue[0]?.id ?? null)
+  const [actionNotes, setActionNotes] = useState<Record<string, string>>({})
   const [feedback, setFeedback] = useState<{ kind: 'success' | 'error'; text: string } | null>(null)
 
-  const queue = baseQueue.filter((request) => {
-    const detail = getShipmentDetail(data, request.id)
-    const haystack = [request.requestNo, detail?.vehicleAssignment?.tractorPlate, detail?.vehicleAssignment?.trailerPlate].join(' ').toLowerCase()
-    return haystack.includes(search.toLowerCase())
-  })
-  const detail = selectedId ? getShipmentDetail(data, selectedId) : undefined
+  const queue = useMemo(() => {
+    return getVisibleRequests(data, currentUser)
+      .filter((request) => SECURITY_QUEUE_STATUSES.includes(request.currentStatus as (typeof SECURITY_QUEUE_STATUSES)[number]))
+      .filter((request) => {
+        if (!search.trim()) {
+          return true
+        }
 
-  function handleAction(action: Parameters<typeof recordGateAction>[1]) {
-    if (!selectedId) {
+        const detail = getShipmentDetail(data, request.id)
+        const haystack = [
+          request.requestNo,
+          detail?.supplierCompany?.name,
+          detail?.location?.name,
+          detail?.vehicleAssignment?.tractorPlate,
+          detail?.vehicleAssignment?.trailerPlate,
+          detail?.vehicleAssignment ? `${detail.vehicleAssignment.driverFirstName} ${detail.vehicleAssignment.driverLastName}` : '',
+        ]
+          .join(' ')
+          .toLowerCase()
+
+        return haystack.includes(search.trim().toLowerCase())
+      })
+  }, [currentUser, data, search])
+
+  function updateActionNote(shipmentRequestId: string, value: string) {
+    setActionNotes((current) => ({ ...current, [shipmentRequestId]: value }))
+  }
+
+  function handleRequestCorrection(shipmentRequestId: string) {
+    const note = actionNotes[shipmentRequestId]?.trim()
+    if (!note) {
+      setFeedback({ kind: 'error', text: 'Duzeltme istegi gondermek icin ilgili satira not girin.' })
       return
     }
 
-    const result = recordGateAction(selectedId, action, '')
+    const result = requestSecurityCorrection(shipmentRequestId, note)
     setFeedback({ kind: result.ok ? 'success' : 'error', text: result.message })
+    if (result.ok) {
+      setActionNotes((current) => ({ ...current, [shipmentRequestId]: '' }))
+    }
+  }
+
+  function handleRegisterVehicle(shipmentRequestId: string) {
+    const result = registerVehicleRecord(shipmentRequestId, actionNotes[shipmentRequestId] ?? '')
+    setFeedback({ kind: result.ok ? 'success' : 'error', text: result.message })
+    if (result.ok) {
+      setActionNotes((current) => ({ ...current, [shipmentRequestId]: '' }))
+    }
   }
 
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Kullanici akisi 4/5"
-        title="Kapi ve saha operasyonu"
-        description="Bugun beklenen araclar listelenir; plaka ile arama yapilir ve geldi / giris yapti / rampaya alindi aksiyonlari buyuk butonlarla yonetilir."
+        eyebrow="Dis guvenlik"
+        title="Arac kontrol ekrani"
+        description="Tedarik edilen araclari ortak sevkiyat tablosunda gorun, fiziksel kontrolu tablo uzerinden tamamlayin."
       />
 
       {feedback && <InlineMessage kind={feedback.kind} message={feedback.text} />}
 
-      <Card title="Bugun beklenen araclar" subtitle="Hizli arama ve tek tik aksiyon">
+      <Card title="Sevkiyat tablosu" subtitle={`${queue.length} kayit listeleniyor`}>
         <div className="action-strip">
-          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Plaka ile hizli ara" />
+          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Talep no, tedarikci veya plaka ile ara" />
         </div>
 
-        <div className="split-layout">
-          <div className="selection-list">
-            {queue.map((request) => {
-              const requestDetail = getShipmentDetail(data, request.id)
-              return (
-                <button
-                  key={request.id}
-                  type="button"
-                  className={selectedId === request.id ? 'selection-list__item selection-list__item--active' : 'selection-list__item'}
-                  onClick={() => setSelectedId(request.id)}
-                >
-                  <div>
-                    <strong>{requestDetail?.vehicleAssignment?.tractorPlate ?? request.requestNo}</strong>
-                    <p>{request.requestNo} • {request.loadTime}</p>
-                  </div>
-                  <div className="selection-list__right">
-                    <span className={`chip chip--${getStatusMeta(request.currentStatus).tone}`}>{getStatusMeta(request.currentStatus).label}</span>
-                    {isDelayed(request) && <span className="chip chip--danger">Gecikiyor</span>}
-                  </div>
-                </button>
-              )
-            })}
+        {queue.length === 0 ? (
+          <p className="muted-text">Dis guvenlik kontrolu bekleyen arac bulunmuyor.</p>
+        ) : (
+          <div className="table-shell">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Durum</th>
+                  <th>Talep No</th>
+                  <th>Lokasyon</th>
+                  <th>Talep Tarihi</th>
+                  <th>Yukleme Tarihi</th>
+                  <th>Saat</th>
+                  <th>Tedarikci</th>
+                  <th>Cekici</th>
+                  <th>Dorse</th>
+                  <th>Sofor</th>
+                  <th>Telefon</th>
+                  <th>Rampa</th>
+                  <th>Son islem</th>
+                  <th>Aksiyon</th>
+                </tr>
+              </thead>
+              <tbody>
+                {queue.map((request) => {
+                  const detail = getShipmentDetail(data, request.id)
+                  const assignment = detail?.vehicleAssignment
+                  const statusMeta = getProcurementStatusMeta(request, assignment)
+                  const canTakeAction = ['VEHICLE_ASSIGNED', 'CORRECTION_REQUESTED'].includes(request.currentStatus)
+                  const noteValue = actionNotes[request.id] ?? ''
+
+                  return (
+                    <tr key={request.id} className="data-table__row data-table__row--static">
+                      <td>
+                        <div className="status-cell status-cell--stack">
+                          <Badge tone={statusMeta.tone}>{statusMeta.label}</Badge>
+                          {request.currentStatus === 'CORRECTION_REQUESTED' && assignment?.rejectionReason && (
+                            <span className="table-note">{assignment.rejectionReason}</span>
+                          )}
+                        </div>
+                      </td>
+                      <td>{request.requestNo}</td>
+                      <td>{detail?.location?.name ?? '-'}</td>
+                      <td>{formatDateLabel(request.requestDate)}</td>
+                      <td>{formatDateLabel(request.loadDate)}</td>
+                      <td>{request.loadTime}</td>
+                      <td>{detail?.supplierCompany?.name ?? '-'}</td>
+                      <td>{assignment?.tractorPlate ?? '-'}</td>
+                      <td>{assignment?.trailerPlate ?? '-'}</td>
+                      <td>{assignment ? `${assignment.driverFirstName} ${assignment.driverLastName}` : '-'}</td>
+                      <td>{formatPhoneLabel(assignment?.driverPhone)}</td>
+                      <td>{detail?.ramp?.code ?? '-'}</td>
+                      <td>{formatDateTimeLabel(request.updatedAt)}</td>
+                      <td className="table-cell-actions">
+                        {canTakeAction ? (
+                          <div className="security-action-cell">
+                            <input
+                              className="table-input"
+                              value={noteValue}
+                              onChange={(event) => updateActionNote(request.id, event.target.value)}
+                              placeholder="Duzeltme notu"
+                            />
+                            <div className="table-action-group security-action-buttons">
+                              <Button variant="secondary" size="sm" onClick={() => handleRequestCorrection(request.id)}>
+                                Duzeltme iste
+                              </Button>
+                              <Button variant="success" size="sm" onClick={() => handleRegisterVehicle(request.id)}>
+                                Arac kaydi yapildi
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="muted-text">{request.currentStatus === 'RAMP_PLANNED' ? 'Rampaya cagrildi' : 'Kayit tamamlandi'}</span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
-
-          <Card title="Hizli saha aksiyonlari">
-            {!detail ? (
-              <p className="muted-text">Islem icin bir arac secin.</p>
-            ) : (
-              <div className="gate-panel">
-                <div className="request-summary request-summary--card">
-                  <div>
-                    <strong>{detail.vehicleAssignment?.tractorPlate ?? detail.request.requestNo}</strong>
-                    <p>{detail.vehicleAssignment ? `${detail.vehicleAssignment.driverFirstName} ${detail.vehicleAssignment.driverLastName}` : detail.request.productInfo}</p>
-                  </div>
-                  <div>
-                    <strong>{detail.ramp?.code ?? 'Rampa bekliyor'}</strong>
-                    <p>{detail.location?.name}</p>
-                  </div>
-                </div>
-
-                <div className="detail-grid">
-                  <div className="key-value">
-                    <span className="key-value__label">Tesise geldi</span>
-                    <span className="key-value__value">{formatDateTimeLabel(detail.gateOperation?.arrivedAt)}</span>
-                  </div>
-                  <div className="key-value">
-                    <span className="key-value__label">Saha girisi</span>
-                    <span className="key-value__value">{formatDateTimeLabel(detail.gateOperation?.admittedAt)}</span>
-                  </div>
-                  <div className="key-value">
-                    <span className="key-value__label">Rampaya alindi</span>
-                    <span className="key-value__value">{formatDateTimeLabel(detail.gateOperation?.rampTakenAt)}</span>
-                  </div>
-                </div>
-
-                <div className="quick-actions">
-                  <Button fill size="lg" onClick={() => handleAction('arrive')}>
-                    Arac Geldi
-                  </Button>
-                  <Button fill size="lg" variant="secondary" onClick={() => handleAction('admit')}>
-                    Sahaya Giris Yapti
-                  </Button>
-                  <Button fill size="lg" variant="secondary" onClick={() => handleAction('takeToRamp')}>
-                    Rampaya Alindi
-                  </Button>
-                  <Button fill size="lg" variant="success" onClick={() => handleAction('startLoading')}>
-                    Yuklemeyi Baslat
-                  </Button>
-                </div>
-              </div>
-            )}
-          </Card>
-        </div>
+        )}
       </Card>
     </div>
   )

@@ -16,6 +16,8 @@ export type ShipmentStatus =
   | 'SENT_TO_SUPPLIER'
   | 'SUPPLIER_REVIEWING'
   | 'VEHICLE_ASSIGNED'
+  | 'CORRECTION_REQUESTED'
+  | 'VEHICLE_CANCELLED'
   | 'IN_CONTROL'
   | 'APPROVED'
   | 'RAMP_PLANNED'
@@ -250,6 +252,11 @@ export interface CreateRequestInput {
   productInfo: string
   notes: string
   assignedSupplierCompanyId: string
+}
+
+export interface RequestRevisionInput {
+  vehicleType: VehicleType
+  loadTime: string
 }
 
 export interface VehicleAssignmentInput {

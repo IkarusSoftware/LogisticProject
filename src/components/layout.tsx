@@ -25,7 +25,17 @@ export function AppShell({ children }: PropsWithChildren) {
   const unreadCount = getUnreadNotificationCount(data, currentUser)
   const notifications = getNotificationsForUser(data, currentUser).slice(0, 8)
 
-  const navigationItems = NAVIGATION_ITEMS.filter((item) => item.roleKeys.includes(roleKey ?? 'requester'))
+  const navigationItems = NAVIGATION_ITEMS.filter((item) => item.roleKeys.includes(roleKey ?? 'requester')).filter((item) =>
+    roleKey === 'admin'
+      ? ['/dashboard', '/talep-olustur', '/talepler', '/gecmis', '/raporlar'].includes(item.path)
+      : roleKey === 'supplier'
+        ? ['/dashboard', '/talepler'].includes(item.path)
+        : roleKey === 'control'
+          ? ['/dashboard', '/talepler'].includes(item.path)
+          : roleKey === 'gate'
+            ? ['/dashboard', '/kapi-operasyonu'].includes(item.path)
+        : true,
+  )
 
   return (
     <div className="app-shell">

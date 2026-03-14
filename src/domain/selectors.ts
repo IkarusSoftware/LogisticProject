@@ -1,6 +1,6 @@
 import { differenceInMinutes } from 'date-fns'
 
-import { ACTIVE_STATUSES, DASHBOARD_CARD_DEFINITIONS, TERMINAL_STATUSES } from './constants'
+import { DASHBOARD_CARD_DEFINITIONS, TERMINAL_STATUSES } from './constants'
 import type {
   AuditLog,
   DemoData,
@@ -33,18 +33,20 @@ export function getVisibleRequests(data: DemoData, user?: User) {
   const roleKey = getCurrentRoleKey(user)
 
   if (roleKey === 'admin') {
-    return [...data.shipmentRequests]
+    return sortRequestsByLoadWindow(data.shipmentRequests)
   }
 
   if (roleKey === 'requester') {
-    return data.shipmentRequests.filter((request) => request.requesterCompanyId === user.companyId)
+    return sortRequestsByLoadWindow(
+      data.shipmentRequests.filter((request) => request.createdBy === user.id && !isSeedRequest(request)),
+    )
   }
 
   if (roleKey === 'supplier') {
-    return data.shipmentRequests.filter((request) => request.assignedSupplierCompanyId === user.companyId)
+    return sortRequestsByLoadWindow(data.shipmentRequests.filter((request) => request.assignedSupplierCompanyId === user.companyId))
   }
 
-  return data.shipmentRequests.filter((request) => request.requesterCompanyId === user.companyId)
+  return sortRequestsByLoadWindow(data.shipmentRequests.filter((request) => request.requesterCompanyId === user.companyId))
 }
 
 export function getShipmentDetail(data: DemoData, shipmentRequestId: string): ShipmentDetail | undefined {
@@ -120,13 +122,14 @@ export function getDashboardMetrics(data: DemoData, user?: User) {
   const requests = getVisibleRequests(data, user)
 
   const metrics = {
-    pendingToday: requests.filter((request) => ACTIVE_STATUSES.includes(request.currentStatus)).length,
-    awaitingApproval: requests.filter((request) => ['VEHICLE_ASSIGNED', 'IN_CONTROL'].includes(request.currentStatus)).length,
-    awaitingRamp: requests.filter((request) => request.currentStatus === 'APPROVED').length,
-    arrived: requests.filter((request) => ['ARRIVED', 'ADMITTED', 'AT_RAMP'].includes(request.currentStatus)).length,
+    requested: requests.filter((request) =>
+      ['SENT_TO_SUPPLIER', 'SUPPLIER_REVIEWING', 'VEHICLE_ASSIGNED'].includes(request.currentStatus),
+    ).length,
+    readyForLoading: requests.filter((request) => ['APPROVED', 'RAMP_PLANNED'].includes(request.currentStatus)).length,
     loading: requests.filter((request) => request.currentStatus === 'LOADING').length,
-    completed: requests.filter((request) => request.currentStatus === 'COMPLETED').length,
-    rejected: requests.filter((request) => request.currentStatus === 'REJECTED').length,
+    loaded: requests.filter((request) => ['LOADED', 'SEALED', 'EXITED', 'COMPLETED'].includes(request.currentStatus)).length,
+    correctionQueue: requests.filter((request) => request.currentStatus === 'CORRECTION_REQUESTED').length,
+    cancelled: requests.filter((request) => ['REJECTED', 'CANCELLED', 'VEHICLE_CANCELLED'].includes(request.currentStatus)).length,
   }
 
   return DASHBOARD_CARD_DEFINITIONS.map((card) => ({
@@ -140,11 +143,11 @@ export function getPipelineCounts(data: DemoData, user?: User) {
 
   return [
     { status: 'SENT_TO_SUPPLIER', count: requests.filter((request) => request.currentStatus === 'SENT_TO_SUPPLIER').length },
-    { status: 'VEHICLE_ASSIGNED', count: requests.filter((request) => request.currentStatus === 'VEHICLE_ASSIGNED').length },
+    { status: 'CORRECTION_REQUESTED', count: requests.filter((request) => request.currentStatus === 'CORRECTION_REQUESTED').length },
     { status: 'APPROVED', count: requests.filter((request) => request.currentStatus === 'APPROVED').length },
     { status: 'RAMP_PLANNED', count: requests.filter((request) => request.currentStatus === 'RAMP_PLANNED').length },
-    { status: 'ARRIVED', count: requests.filter((request) => request.currentStatus === 'ARRIVED').length },
     { status: 'LOADING', count: requests.filter((request) => request.currentStatus === 'LOADING').length },
+    { status: 'LOADED', count: requests.filter((request) => request.currentStatus === 'LOADED').length },
     { status: 'COMPLETED', count: requests.filter((request) => request.currentStatus === 'COMPLETED').length },
   ] as Array<{ status: ShipmentStatus; count: number }>
 }
@@ -320,4 +323,21 @@ export function getShipmentSummaryLines(detail: ShipmentDetail) {
     `Sofor: ${detail.vehicleAssignment ? `${detail.vehicleAssignment.driverFirstName} ${detail.vehicleAssignment.driverLastName}` : '-'}`,
     `Rampa: ${detail.ramp?.code ?? '-'}`,
   ]
+}
+
+function sortRequestsByLoadWindow(requests: ShipmentRequest[]) {
+  return [...requests].sort((left, right) => {
+    const leftTime = new Date(`${left.loadDate}T${left.loadTime}:00`).getTime()
+    const rightTime = new Date(`${right.loadDate}T${right.loadTime}:00`).getTime()
+
+    if (leftTime !== rightTime) {
+      return leftTime - rightTime
+    }
+
+    return new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime()
+  })
+}
+
+function isSeedRequest(request: ShipmentRequest) {
+  return /^req-\d{3}$/.test(request.id)
 }

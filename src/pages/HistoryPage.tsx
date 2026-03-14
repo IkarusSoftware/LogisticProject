@@ -10,10 +10,10 @@ export function HistoryPage() {
   const session = useAppStore((state) => state.session)
   const currentUser = getCurrentUser(data, session.currentUserId)
   const requests = getVisibleRequests(data, currentUser).filter((request) =>
-    ['COMPLETED', 'REJECTED', 'CANCELLED'].includes(request.currentStatus),
+    ['COMPLETED', 'REJECTED', 'CANCELLED', 'VEHICLE_CANCELLED'].includes(request.currentStatus),
   )
   const [filters, setFilters] = useState(initialShipmentFilters)
-  const [selectedId, setSelectedId] = useState<string | null>(requests[0]?.id ?? null)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const filtered = applyShipmentFilters(requests, data, filters)
 
   function handleExport() {
@@ -54,7 +54,15 @@ export function HistoryPage() {
 
       <ShipmentFiltersBar data={data} filters={filters} onChange={setFilters} />
       <Card title="Gecmis kayitlari" subtitle={`${filtered.length} kayit`}>
-        <ShipmentTable requests={filtered} data={data} selectedId={selectedId} onSelect={setSelectedId} />
+        <ShipmentTable
+          requests={filtered}
+          data={data}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+          showPhoneColumn
+          showRequestDateColumn
+          showOperationalTimeColumns
+        />
       </Card>
       <ShipmentDetailDrawer data={data} shipmentRequestId={selectedId} onClose={() => setSelectedId(null)} />
     </div>
