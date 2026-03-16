@@ -86,12 +86,33 @@ export function ShipmentFiltersBar({
   statusMode?: 'workflow' | 'procurement'
   statusLabelOverrides?: Partial<Record<ShipmentStatus, string>>
 }) {
+  const hasActiveFilters =
+    filters.status !== 'ALL' ||
+    filters.location !== 'ALL' ||
+    filters.supplier !== 'ALL' ||
+    filters.vehicleType !== 'ALL' ||
+    filters.dateFrom !== '' ||
+    filters.dateTo !== '' ||
+    filters.search !== ''
+
   return (
-    <Card className="filters-card">
+    <Card className="filters-card filters-card--compact">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '0.875rem' }}>
+        <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Filtrele</span>
+        {hasActiveFilters && (
+          <button
+            type="button"
+            style={{ fontSize: '0.75rem', color: 'var(--primary)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0 }}
+            onClick={() => onChange(initialShipmentFilters)}
+          >
+            Temizle
+          </button>
+        )}
+      </div>
       <div className="filters-grid">
         <FormField label="Durum">
           <Select value={filters.status} onChange={(event) => onChange({ ...filters, status: event.target.value })}>
-            <option value="ALL">Tum durumlar</option>
+            <option value="ALL">Tüm durumlar</option>
             {statusMode === 'workflow'
               ? Array.from(new Set(data.shipmentRequests.map((request) => request.currentStatus))).map((status) => (
                   <option key={status} value={status}>
@@ -107,7 +128,7 @@ export function ShipmentFiltersBar({
         </FormField>
         <FormField label="Lokasyon">
           <Select value={filters.location} onChange={(event) => onChange({ ...filters, location: event.target.value })}>
-            <option value="ALL">Tum lokasyonlar</option>
+            <option value="ALL">Tüm lokasyonlar</option>
             {data.locations.map((location) => (
               <option key={location.id} value={location.id}>
                 {location.name}
@@ -115,9 +136,9 @@ export function ShipmentFiltersBar({
             ))}
           </Select>
         </FormField>
-        <FormField label="Tedarikci">
+        <FormField label="Tedarikçi">
           <Select value={filters.supplier} onChange={(event) => onChange({ ...filters, supplier: event.target.value })}>
-            <option value="ALL">Tum firmalar</option>
+            <option value="ALL">Tüm firmalar</option>
             {data.companies
               .filter((company) => company.type !== 'MAIN')
               .map((company) => (
@@ -127,22 +148,22 @@ export function ShipmentFiltersBar({
               ))}
           </Select>
         </FormField>
-        <FormField label="Arac tipi">
+        <FormField label="Araç tipi">
           <Select value={filters.vehicleType} onChange={(event) => onChange({ ...filters, vehicleType: event.target.value })}>
-            <option value="ALL">Tum tipler</option>
+            <option value="ALL">Tüm tipler</option>
             <option value="TIR">TIR</option>
             <option value="KAMYON">Kamyon</option>
             <option value="KAMYONET">Kamyonet</option>
           </Select>
         </FormField>
-        <FormField label="Yukleme baslangic">
+        <FormField label="Yükleme başlangıç">
           <Input type="date" value={filters.dateFrom} onChange={(event) => onChange({ ...filters, dateFrom: event.target.value })} />
         </FormField>
-        <FormField label="Yukleme bitis">
+        <FormField label="Yükleme bitiş">
           <Input type="date" value={filters.dateTo} onChange={(event) => onChange({ ...filters, dateTo: event.target.value })} />
         </FormField>
-        <FormField label="Plaka / sofor / talep no">
-          <Input placeholder="34 ABC 123 / Hakan Kurt / SR-..." value={filters.search} onChange={(event) => onChange({ ...filters, search: event.target.value })} />
+        <FormField label="Plaka / sürücü / talep no">
+          <Input placeholder="34 ABC 123 veya talep no..." value={filters.search} onChange={(event) => onChange({ ...filters, search: event.target.value })} />
         </FormField>
       </div>
     </Card>
@@ -404,11 +425,11 @@ export function ShipmentDetailDrawer({
         <header className="drawer__header">
           <div>
             <p className="drawer__eyebrow">{detail.request.requestNo}</p>
-            <h3>Sevkiyat detayi</h3>
+            <h3>Sevkiyat Detayı</h3>
             <Badge tone={statusMeta.tone}>{statusMeta.label}</Badge>
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>
-            <X size={16} />
+            <X size={15} />
             Kapat
           </Button>
         </header>

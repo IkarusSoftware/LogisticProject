@@ -50,8 +50,12 @@ export function AppShell({ children }: PropsWithChildren) {
 
         <nav className="nav">
           {navigationItems.map((item) => (
-            <NavLink key={item.path} to={item.path} className={({ isActive }) => (isActive ? 'nav__link nav__link--active' : 'nav__link')}>
-              <AppIcon name={item.icon} size={18} />
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) => (isActive ? 'nav__link nav__link--active' : 'nav__link')}
+            >
+              <AppIcon name={item.icon} size={16} />
               <span>{item.label}</span>
             </NavLink>
           ))}
@@ -65,9 +69,14 @@ export function AppShell({ children }: PropsWithChildren) {
               <p>{roleDefinition?.name ?? '-'}</p>
             </div>
           </div>
-          <Button variant="secondary" size="sm" onClick={() => { resetDemo(); navigate('/dashboard') }}>
-            <RefreshCw size={16} />
-            Demo veriyi sifirla
+          <Button
+            variant="ghost"
+            size="sm"
+            style={{ color: '#475569', fontSize: '0.8rem', justifyContent: 'flex-start', padding: '0.375rem 0.5rem' }}
+            onClick={() => { resetDemo(); navigate('/dashboard') }}
+          >
+            <RefreshCw size={14} />
+            Demo veriyi sıfırla
           </Button>
         </div>
       </aside>
@@ -75,7 +84,9 @@ export function AppShell({ children }: PropsWithChildren) {
       <div className="workspace">
         <header className="topbar">
           <div className="topbar__title">
-            <Badge tone="info">{roleDefinition?.name ?? 'Rol seçilmedi'}</Badge>
+            <Badge tone="neutral" style={{ borderRadius: '6px' }}>
+              {roleDefinition?.name ?? 'Rol seçilmedi'}
+            </Badge>
             <span>Son oturum: {formatDateTimeLabel(new Date().toISOString())}</span>
           </div>
 
@@ -88,22 +99,24 @@ export function AppShell({ children }: PropsWithChildren) {
                 markAllNotificationsRead()
               }}
             >
-              <Bell size={18} />
-              {unreadCount > 0 && <span className="notification-button__count">{unreadCount}</span>}
+              <Bell size={16} />
+              {unreadCount > 0 && (
+                <span className="notification-button__count">{unreadCount}</span>
+              )}
             </button>
 
             <div className="topbar__user">
               <div className="topbar__pill">
-                <Building2 size={14} />
+                <Building2 size={13} />
                 <span>{data.companies.find((company) => company.id === currentUser?.companyId)?.name ?? '-'}</span>
               </div>
               <div className="topbar__pill">
-                <UserRound size={14} />
+                <UserRound size={13} />
                 <span>{currentUser?.email}</span>
               </div>
               <Button variant="ghost" size="sm" onClick={() => { logout(); navigate('/login') }}>
-                <LogOut size={16} />
-                Cikis
+                <LogOut size={15} />
+                Çıkış
               </Button>
             </div>
           </div>
@@ -112,13 +125,16 @@ export function AppShell({ children }: PropsWithChildren) {
             <div className="notification-panel">
               <div className="notification-panel__header">
                 <strong>Bildirim merkezi</strong>
-                <span>{unreadCount} okunmamis</span>
+                <span>{unreadCount} okunmamış</span>
               </div>
               {notifications.length === 0 ? (
-                <p className="notification-panel__empty">Bu rol icin yeni bildirim yok.</p>
+                <p className="notification-panel__empty">Bu rol için yeni bildirim yok.</p>
               ) : (
                 notifications.map((notification) => (
-                  <article key={notification.id} className={`notification-panel__item notification-panel__item--${notification.level}`}>
+                  <article
+                    key={notification.id}
+                    className={`notification-panel__item notification-panel__item--${notification.level}`}
+                  >
                     <strong>{notification.title}</strong>
                     <p>{notification.message}</p>
                     <span>{formatDateTimeLabel(notification.createdAt)}</span>
