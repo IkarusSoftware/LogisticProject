@@ -1,7 +1,7 @@
 import { ArrowRight, Clock3 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-import { Card, MetricCard, PageHeader } from '../components/ui'
+import { Badge, Card, MetricCard, PageHeader } from '../components/ui'
 import {
   getCurrentRoleKey,
   getCurrentUser,
@@ -42,12 +42,12 @@ export function DashboardPage() {
   return (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Bilgi mimarisi"
-        title="Rol bazli operasyon dashboard"
-        description={`${getRoleDefinition(roleKey ?? 'admin')?.description ?? ''} Tum akis state-machine mantiginda ilerler; tablo, filtre ve hizli aksiyon her rolde ayni veri omurgasindan beslenir.`}
+        eyebrow="Operasyon özeti"
+        title="Dashboard"
+        description={getRoleDefinition(roleKey ?? 'admin')?.description ?? 'Operasyonlarınıza genel bakış.'}
         actions={
           <Link className="inline-link" to="/talepler">
-            Tum kayitlari ac
+            Tüm kayıtları aç
             <ArrowRight size={16} />
           </Link>
         }
@@ -66,7 +66,7 @@ export function DashboardPage() {
       </section>
 
       <section className="dashboard-grid">
-        <Card title="Surec kanali" subtitle={`${visibleRequests.length} gorunur kayit`}>
+        <Card title="Süreç Kanalı" subtitle={`${visibleRequests.length} görünür kayıt`}>
           {pipeline.length === 0 ? (
             <p className="muted-text">Gosterilecek surec kaydi bulunmuyor.</p>
           ) : (
@@ -93,7 +93,7 @@ export function DashboardPage() {
           )}
         </Card>
 
-        <Card title="Bugun oncelikli aksiyonlar" subtitle="Geciken veya dikkat isteyen isler">
+        <Card title="Öncelikli Aksiyonlar" subtitle="Geciken veya dikkat gerektiren kayıtlar">
           <div className="task-list">
             {delayedRequests.length === 0 ? (
               <p className="muted-text">Aktif gecikme gorunmuyor.</p>
@@ -116,7 +116,7 @@ export function DashboardPage() {
       </section>
 
       <section className="dashboard-grid">
-        <Card title="Son islemler akisi" subtitle="Audit log'un en guncel kayitlari">
+        <Card title="Son İşlemler" subtitle="Audit log – en güncel kayıtlar">
           <div className="audit-list">
             {recentLogs.map((log) => {
               const actor = data.users.find((user) => user.id === log.performedByUserId)
@@ -133,7 +133,7 @@ export function DashboardPage() {
           </div>
         </Card>
 
-        <Card title="Rampa ve cikis zamanlari" subtitle="Son operasyon saatleri">
+        <Card title="Rampa & Çıkış Zamanları" subtitle="Son operasyon saatleri">
           <div className="audit-list">
             {operationalRows.length === 0 ? (
               <p className="muted-text">Henuz operasyon zamani olusan kayit yok.</p>
@@ -164,6 +164,3 @@ export function DashboardPage() {
   )
 }
 
-function Badge({ children, tone }: { children: React.ReactNode; tone: 'neutral' | 'info' | 'success' | 'warning' | 'danger' }) {
-  return <span className={`badge badge--${tone}`}>{children}</span>
-}
