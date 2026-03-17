@@ -57,6 +57,14 @@ export const ROLE_DEFINITIONS: RoleDefinition[] = [
     description: 'Tum surecleri, tanimlari ve raporlari yonetir.',
     permissions: ['*'],
   },
+  {
+    id: 'role-superadmin',
+    key: 'superadmin',
+    name: 'Sistem Yoneticisi',
+    homePath: '/dashboard',
+    description: 'Tum sistemi, kullanicilari, ayarlari ve loglari yonetir.',
+    permissions: ['*', 'system:*', 'user:manage', 'settings:manage', 'audit:view'],
+  },
 ]
 
 export const STATUS_META: Record<ShipmentStatus, StatusMeta> = {
@@ -189,16 +197,19 @@ export const RAMP_STATUS_LABELS: Record<RampStatus, string> = {
 
 export const NAVIGATION_ITEMS: NavigationItem[] = [
   { label: 'Dashboard', path: '/dashboard', icon: 'layout-dashboard', roleKeys: ROLE_DEFINITIONS.map((role) => role.key) },
-  { label: 'Talep Olustur', path: '/talep-olustur', icon: 'clipboard-plus', roleKeys: ['requester', 'admin'] },
+  { label: 'Talep Olustur', path: '/talep-olustur', icon: 'clipboard-plus', roleKeys: ['requester', 'admin', 'superadmin'] },
   { label: 'Talep Listesi', path: '/talepler', icon: 'clipboard-list', roleKeys: ROLE_DEFINITIONS.map((role) => role.key) },
-  { label: 'Tedarik Atama', path: '/tedarik-atama', icon: 'truck', roleKeys: ['supplier', 'admin'] },
-  { label: 'Arac Kontrol', path: '/arac-kontrol', icon: 'shield-check', roleKeys: ['control', 'admin'] },
-  { label: 'Rampa Planlama', path: '/rampa-planlama', icon: 'warehouse', roleKeys: ['ramp', 'admin'] },
-  { label: 'Dis Guvenlik', path: '/kapi-operasyonu', icon: 'scan-line', roleKeys: ['gate', 'admin'] },
-  { label: 'Yukleme Tamamlama', path: '/yukleme-tamamlama', icon: 'package-check', roleKeys: ['loading', 'admin'] },
+  { label: 'Tedarik Atama', path: '/tedarik-atama', icon: 'truck', roleKeys: ['supplier', 'admin', 'superadmin'] },
+  { label: 'Arac Kontrol', path: '/arac-kontrol', icon: 'shield-check', roleKeys: ['control', 'admin', 'superadmin'] },
+  { label: 'Rampa Planlama', path: '/rampa-planlama', icon: 'warehouse', roleKeys: ['ramp', 'admin', 'superadmin'] },
+  { label: 'Dis Guvenlik', path: '/kapi-operasyonu', icon: 'scan-line', roleKeys: ['gate', 'admin', 'superadmin'] },
+  { label: 'Yukleme Tamamlama', path: '/yukleme-tamamlama', icon: 'package-check', roleKeys: ['loading', 'admin', 'superadmin'] },
   { label: 'Gecmis', path: '/gecmis', icon: 'history', roleKeys: ROLE_DEFINITIONS.map((role) => role.key) },
-  { label: 'Raporlar', path: '/raporlar', icon: 'chart-no-axes-column', roleKeys: ['admin'] },
-  { label: 'Yonetim', path: '/yonetim', icon: 'settings-2', roleKeys: ['admin'] },
+  { label: 'Raporlar', path: '/raporlar', icon: 'chart-no-axes-column', roleKeys: ['admin', 'superadmin'] },
+  { label: 'Yonetim', path: '/yonetim', icon: 'settings-2', roleKeys: ['admin', 'superadmin'] },
+  { label: 'Kullanici Yonetimi', path: '/kullanici-yonetim', icon: 'users', roleKeys: ['superadmin'] },
+  { label: 'Aktivite Log', path: '/aktivite-log', icon: 'scroll-text', roleKeys: ['superadmin'] },
+  { label: 'Sistem Ayarlari', path: '/ayarlar', icon: 'cog', roleKeys: ['superadmin'] },
 ]
 
 export const DASHBOARD_CARD_DEFINITIONS = [

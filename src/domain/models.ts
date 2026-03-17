@@ -10,6 +10,7 @@ export type UserRoleKey =
   | 'gate'
   | 'loading'
   | 'admin'
+  | 'superadmin'
 
 export type ShipmentStatus =
   | 'REQUEST_CREATED'
@@ -63,6 +64,7 @@ export interface User {
   email: string
   phone: string
   roleId: string
+  roleKey?: UserRoleKey
   companyId: string
   isActive: boolean
   createdAt: string
@@ -187,6 +189,17 @@ export interface NotificationItem {
   isReadBy: string[]
 }
 
+export interface SystemSettings {
+  companyName: string
+  workStartHour: string
+  workEndHour: string
+  maxDailyShipments: number
+  defaultVehicleType: VehicleType
+  notificationsEnabled: boolean
+  autoAssignRamp: boolean
+  maintenanceMode: boolean
+}
+
 export interface DemoData {
   companies: Company[]
   users: User[]
@@ -201,6 +214,7 @@ export interface DemoData {
   auditLogs: AuditLog[]
   statusHistory: StatusHistory[]
   notifications: NotificationItem[]
+  systemSettings: SystemSettings
 }
 
 export interface ShipmentDetail {
@@ -280,6 +294,24 @@ export interface RampPlanningInput {
 export interface LoadingCompletionInput {
   sealNumber: string
   note: string
+}
+
+export interface CreateUserInput {
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  roleId: string
+  companyId: string
+}
+
+export interface UpdateUserInput {
+  firstName?: string
+  lastName?: string
+  email?: string
+  phone?: string
+  roleId?: string
+  companyId?: string
 }
 
 export interface OperationResult {

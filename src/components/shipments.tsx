@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { type ReactNode, useMemo } from 'react'
 import { X } from 'lucide-react'
 
 import { getAuditLogs, getShipmentDetail, getStatusHistory } from '../domain/selectors'
@@ -14,7 +14,8 @@ import {
   getStatusMeta,
   isDelayed,
 } from '../domain/workflow'
-import { Badge, Button, Card, EmptyState, FormField, Input, KeyValue, Select } from './ui'
+import { Badge, Button, Card, FormField, Input, KeyValue, Select } from './ui'
+import { DataTable, createColumnHelper, type ColumnDef } from './data-table'
 
 export type ShipmentFilters = {
   status: string
@@ -170,6 +171,8 @@ export function ShipmentFiltersBar({
   )
 }
 
+const colHelper = createColumnHelper<ShipmentRequest>()
+
 export function ShipmentTable({
   requests,
   data,
@@ -193,80 +196,171 @@ export function ShipmentTable({
   actionsHeaderLabel?: string
   renderRowActions?: (request: ShipmentRequest) => ReactNode
 }) {
-  if (requests.length === 0) {
-    return <EmptyState title="Kayit bulunamadi" description="Secili filtrelere uyan sevkiyat bulunmuyor." />
-  }
+  const columns = useMemo<ColumnDef<ShipmentRequest, any>[]>(() => {
+    const cols: ColumnDef<ShipmentRequest, any>[] = [
+      colHelper.display({
+        id: 'status',
+        header: 'Durum',
+        cell: ({ row }) => {
+          const req = row.original
+          const detail = getShipmentDetail(data, req.id)
+          const meta = statusMode === 'procurement'
+            ? getProcurementStatusMeta(req, detail?.vehicleAssignment)
+            : getStatusMeta(req.currentStatus)
+          return (
+            <div className="status-cell">
+              <Badge tone={meta.tone}>{meta.label}</Badge>
+              {req.currentStatus === 'CORRECTION_REQUESTED' && detail?.vehicleAssignment?.rejectionReason && (
+                <span className="table-note">{detail.vehicleAssignment.rejectionReason}</span>
+              )}
+              {isDelayed(req) && <span className="delay-dot" title="Gecikme riski" />}
+            </div>
+          )
+        },
+        meta: {
+          exportValue: (req) => {
+            const detail = getShipmentDetail(data, req.id)
+            return statusMode === 'procurement'
+              ? getProcurementStatusMeta(req, detail?.vehicleAssignment).label
+              : getStatusMeta(req.currentStatus).label
+          },
+        },
+      }),
+      colHelper.accessor('requestNo', { header: 'Talep No' }),
+      colHelper.display({
+        id: 'location',
+        header: 'Lokasyon',
+        cell: ({ row }) => getShipmentDetail(data, row.original.id)?.location?.name ?? '-',
+        meta: { exportValue: (req) => getShipmentDetail(data, req.id)?.location?.name ?? '-' },
+      }),
+    ]
+
+    if (showRequestDateColumn) {
+      cols.push(colHelper.accessor('requestDate', {
+        id: 'requestDate',
+        header: 'Talep Tarihi',
+        cell: ({ getValue }) => formatDateLabel(getValue()),
+        meta: { exportValue: (req) => req.requestDate },
+      }))
+    }
+
+    cols.push(
+      colHelper.accessor('loadDate', {
+        header: 'Yukleme Tarihi',
+        cell: ({ getValue }) => formatDateLabel(getValue()),
+        meta: { exportValue: (req) => req.loadDate },
+      }),
+      colHelper.accessor('loadTime', { header: 'Saat' }),
+      colHelper.display({
+        id: 'supplier',
+        header: 'Tedarikci',
+        cell: ({ row }) => getShipmentDetail(data, row.original.id)?.supplierCompany?.name ?? '-',
+        meta: { exportValue: (req) => getShipmentDetail(data, req.id)?.supplierCompany?.name ?? '-' },
+      }),
+      colHelper.display({
+        id: 'tractorPlate',
+        header: 'Cekici',
+        cell: ({ row }) => getShipmentDetail(data, row.original.id)?.vehicleAssignment?.tractorPlate ?? '-',
+        meta: { exportValue: (req) => getShipmentDetail(data, req.id)?.vehicleAssignment?.tractorPlate ?? '-' },
+      }),
+      colHelper.display({
+        id: 'trailerPlate',
+        header: 'Dorse',
+        cell: ({ row }) => getShipmentDetail(data, row.original.id)?.vehicleAssignment?.trailerPlate ?? '-',
+        meta: { exportValue: (req) => getShipmentDetail(data, req.id)?.vehicleAssignment?.trailerPlate ?? '-' },
+      }),
+      colHelper.display({
+        id: 'driver',
+        header: 'Sofor',
+        cell: ({ row }) => {
+          const va = getShipmentDetail(data, row.original.id)?.vehicleAssignment
+          return va ? `${va.driverFirstName} ${va.driverLastName}` : '-'
+        },
+        meta: {
+          exportValue: (req) => {
+            const va = getShipmentDetail(data, req.id)?.vehicleAssignment
+            return va ? `${va.driverFirstName} ${va.driverLastName}` : '-'
+          },
+        },
+      }),
+    )
+
+    if (showPhoneColumn) {
+      cols.push(colHelper.display({
+        id: 'phone',
+        header: 'Telefon',
+        cell: ({ row }) => formatPhoneLabel(getShipmentDetail(data, row.original.id)?.vehicleAssignment?.driverPhone),
+        meta: { exportValue: (req) => getShipmentDetail(data, req.id)?.vehicleAssignment?.driverPhone ?? '-' },
+      }))
+    }
+
+    cols.push(colHelper.display({
+      id: 'ramp',
+      header: 'Rampa',
+      cell: ({ row }) => getShipmentDetail(data, row.original.id)?.ramp?.code ?? '-',
+      meta: { exportValue: (req) => getShipmentDetail(data, req.id)?.ramp?.code ?? '-' },
+    }))
+
+    if (showOperationalTimeColumns) {
+      cols.push(
+        colHelper.display({
+          id: 'rampTakenAt',
+          header: 'Rampaya Alinma',
+          cell: ({ row }) => formatDateTimeLabel(getRampTakenAt(getShipmentDetail(data, row.original.id))),
+          meta: { exportValue: (req) => formatDateTimeLabel(getRampTakenAt(getShipmentDetail(data, req.id))) ?? '-' },
+        }),
+        colHelper.display({
+          id: 'loadingDone',
+          header: 'Yukleme Bitis',
+          cell: ({ row }) => formatDateTimeLabel(getLoadingCompletedAt(getShipmentDetail(data, row.original.id))),
+          meta: { exportValue: (req) => formatDateTimeLabel(getLoadingCompletedAt(getShipmentDetail(data, req.id))) ?? '-' },
+        }),
+        colHelper.display({
+          id: 'exitAt',
+          header: 'Rampa Cikis',
+          cell: ({ row }) => formatDateTimeLabel(getExitAt(getShipmentDetail(data, row.original.id))),
+          meta: { exportValue: (req) => formatDateTimeLabel(getExitAt(getShipmentDetail(data, req.id))) ?? '-' },
+        }),
+      )
+    }
+
+    cols.push(colHelper.accessor('updatedAt', {
+      id: 'lastUpdate',
+      header: 'Son islem',
+      cell: ({ getValue }) => formatDateTimeLabel(getValue()),
+      meta: { exportValue: (req) => formatDateTimeLabel(req.updatedAt) ?? '-' },
+    }))
+
+    if (renderRowActions) {
+      cols.push(colHelper.display({
+        id: 'actions',
+        header: actionsHeaderLabel,
+        cell: ({ row }) => (
+          <div className="table-cell-actions" onClick={(e) => e.stopPropagation()}>
+            {renderRowActions(row.original)}
+          </div>
+        ),
+        meta: { noExport: true },
+        enableSorting: false,
+        enableGlobalFilter: false,
+      }))
+    }
+
+    return cols
+  }, [data, statusMode, showPhoneColumn, showRequestDateColumn, showOperationalTimeColumns, renderRowActions, actionsHeaderLabel])
 
   return (
-    <div className="table-shell">
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>Durum</th>
-            <th>Talep No</th>
-            <th>Lokasyon</th>
-            {showRequestDateColumn && <th>Talep Tarihi</th>}
-            <th>Yukleme Tarihi</th>
-            <th>Saat</th>
-            <th>Tedarikci</th>
-            <th>Cekici</th>
-            <th>Dorse</th>
-            <th>Sofor</th>
-            {showPhoneColumn && <th>Telefon</th>}
-            <th>Rampa</th>
-            {showOperationalTimeColumns && <th>Rampaya Alinma</th>}
-            {showOperationalTimeColumns && <th>Yukleme Bitis</th>}
-            {showOperationalTimeColumns && <th>Rampa Cikis</th>}
-            <th>Son islem</th>
-            {renderRowActions && <th>{actionsHeaderLabel}</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {requests.map((request) => {
-            const detail = getShipmentDetail(data, request.id)
-            const statusMeta =
-              statusMode === 'procurement' ? getProcurementStatusMeta(request, detail?.vehicleAssignment) : getStatusMeta(request.currentStatus)
-            return (
-              <tr
-                key={request.id}
-                className={selectedId === request.id ? 'data-table__row data-table__row--selected' : 'data-table__row'}
-                onClick={() => onSelect(request.id)}
-              >
-                <td>
-                  <div className="status-cell">
-                    <Badge tone={statusMeta.tone}>{statusMeta.label}</Badge>
-                    {request.currentStatus === 'CORRECTION_REQUESTED' && detail?.vehicleAssignment?.rejectionReason && (
-                      <span className="table-note">{detail.vehicleAssignment.rejectionReason}</span>
-                    )}
-                    {isDelayed(request) && <span className="delay-dot" title="Gecikme riski" />}
-                  </div>
-                </td>
-                <td>{request.requestNo}</td>
-                <td>{detail?.location?.name ?? '-'}</td>
-                {showRequestDateColumn && <td>{formatDateLabel(request.requestDate)}</td>}
-                <td>{formatDateLabel(request.loadDate)}</td>
-                <td>{request.loadTime}</td>
-                <td>{detail?.supplierCompany?.name ?? '-'}</td>
-                <td>{detail?.vehicleAssignment?.tractorPlate ?? '-'}</td>
-                <td>{detail?.vehicleAssignment?.trailerPlate ?? '-'}</td>
-                <td>{detail?.vehicleAssignment ? `${detail.vehicleAssignment.driverFirstName} ${detail.vehicleAssignment.driverLastName}` : '-'}</td>
-                {showPhoneColumn && <td>{formatPhoneLabel(detail?.vehicleAssignment?.driverPhone)}</td>}
-                <td>{detail?.ramp?.code ?? '-'}</td>
-                {showOperationalTimeColumns && <td>{formatDateTimeLabel(getRampTakenAt(detail))}</td>}
-                {showOperationalTimeColumns && <td>{formatDateTimeLabel(getLoadingCompletedAt(detail))}</td>}
-                {showOperationalTimeColumns && <td>{formatDateTimeLabel(getExitAt(detail))}</td>}
-                <td>{formatDateTimeLabel(request.updatedAt)}</td>
-                {renderRowActions && (
-                  <td className="table-cell-actions" onClick={(event) => event.stopPropagation()}>
-                    {renderRowActions(request)}
-                  </td>
-                )}
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-    </div>
+    <DataTable
+      data={requests}
+      columns={columns}
+      filename="sevkiyatlar"
+      searchPlaceholder="Talep no, plaka, sofor..."
+      defaultPageSize={20}
+      getRowId={(row) => row.id}
+      selectedRowId={selectedId}
+      onRowClick={(row) => onSelect(row.id)}
+      noDataMessage="Secili filtrelere uyan sevkiyat bulunmuyor."
+    />
   )
 }
 
