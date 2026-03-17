@@ -4,6 +4,7 @@ import { Card, FormField, InlineMessage, PageHeader, Textarea, Button, KeyValue 
 import { getCurrentUser, getShipmentDetail, getVisibleRequests } from '../domain/selectors'
 import { formatPhoneLabel, getStatusMeta } from '../domain/workflow'
 import { useAppStore } from '../store/app-store'
+import { hasTokens, shipmentApi } from '../services/api'
 
 export function VehicleControlPage() {
   const data = useAppStore((state) => state.data)
@@ -17,11 +18,18 @@ export function VehicleControlPage() {
 
   const detail = selectedId ? getShipmentDetail(data, selectedId) : undefined
 
-  function handleDecision(decision: 'approve' | 'reject') {
+  async function handleDecision(decision: 'approve' | 'reject') {
     if (!selectedId) {
       return
     }
 
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.review(selectedId, { decision, note })
+        setFeedback({ kind: result.ok ? 'success' : 'error', text: result.message })
+        return
+      } catch { /* fallback */ }
+    }
     const result = reviewVehicleAssignment(selectedId, { decision, note })
     setFeedback({ kind: result.ok ? 'success' : 'error', text: result.message })
   }

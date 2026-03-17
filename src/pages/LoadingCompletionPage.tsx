@@ -4,6 +4,7 @@ import { Button, Card, FormField, InlineMessage, Input, PageHeader, Textarea } f
 import { getCurrentUser, getShipmentDetail, getVisibleRequests } from '../domain/selectors'
 import { formatDateTimeLabel } from '../domain/workflow'
 import { useAppStore } from '../store/app-store'
+import { hasTokens, shipmentApi } from '../services/api'
 
 export function LoadingCompletionPage() {
   const data = useAppStore((state) => state.data)
@@ -17,12 +18,19 @@ export function LoadingCompletionPage() {
   const [feedback, setFeedback] = useState<{ kind: 'success' | 'error'; text: string } | null>(null)
   const detail = selectedId ? getShipmentDetail(data, selectedId) : undefined
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!selectedId) {
       return
     }
 
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.finalize(selectedId, { sealNumber, note })
+        setFeedback({ kind: result.ok ? 'success' : 'error', text: result.message })
+        return
+      } catch { /* fallback */ }
+    }
     const result = finalizeLoading(selectedId, { sealNumber, note })
     setFeedback({ kind: result.ok ? 'success' : 'error', text: result.message })
   }

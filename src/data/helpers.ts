@@ -13,6 +13,7 @@ import type {
   ShipmentRequest,
   ShipmentStatus,
   StatusHistory,
+  SystemSettings,
   User,
   VehicleAssignment,
 } from '../domain/models'
@@ -223,7 +224,32 @@ export function buildUsers(now: Date): User[] {
       createdAt: iso(subDays(now, 250)),
       updatedAt: iso(subDays(now, 1)),
     },
+    {
+      id: 'user-superadmin-kerem',
+      firstName: 'Kerem',
+      lastName: 'Başaran',
+      email: 'kerem.basaran@gratis.demo',
+      phone: '+905301234567',
+      roleId: 'role-superadmin',
+      companyId: 'company-gratis',
+      isActive: true,
+      createdAt: iso(subDays(now, 300)),
+      updatedAt: iso(subDays(now, 1)),
+    },
   ]
+}
+
+export function buildDefaultSystemSettings(): SystemSettings {
+  return {
+    companyName: 'Gratis Lojistik',
+    workStartHour: '08:00',
+    workEndHour: '18:00',
+    maxDailyShipments: 50,
+    defaultVehicleType: 'TIR',
+    notificationsEnabled: true,
+    autoAssignRamp: false,
+    maintenanceMode: false,
+  }
 }
 
 export function buildLocations() {

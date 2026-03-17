@@ -5,13 +5,16 @@ import {
   CircleDashed,
   ClipboardList,
   ClipboardPlus,
+  Cog,
   History,
   LayoutDashboard,
   PackageCheck,
   ScanLine,
+  ScrollText,
   Settings2,
   ShieldCheck,
   Truck,
+  Users,
   Warehouse,
 } from 'lucide-react'
 
@@ -45,6 +48,12 @@ export function AppIcon({ name, ...props }: Props) {
       return <Settings2 {...props} />
     case 'bell':
       return <Bell {...props} />
+    case 'users':
+      return <Users {...props} />
+    case 'scroll-text':
+      return <ScrollText {...props} />
+    case 'cog':
+      return <Cog {...props} />
     default:
       return <CircleDashed {...props} />
   }

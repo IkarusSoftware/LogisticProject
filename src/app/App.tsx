@@ -5,6 +5,7 @@ import { AppShell } from '../components/layout'
 import { ROLE_DEFINITIONS } from '../domain/constants'
 import { getCurrentRoleKey, getCurrentUser } from '../domain/selectors'
 import type { UserRoleKey } from '../domain/models'
+import { ActivityLogPage } from '../pages/ActivityLogPage'
 import { AdminPage } from '../pages/AdminPage'
 import { CreateRequestPage } from '../pages/CreateRequestPage'
 import { DashboardPage } from '../pages/DashboardPage'
@@ -14,8 +15,10 @@ import { LoadingCompletionPage } from '../pages/LoadingCompletionPage'
 import { LoginPage } from '../pages/LoginPage'
 import { RampPlanningPage } from '../pages/RampPlanningPage'
 import { ReportsPage } from '../pages/ReportsPage'
+import { SettingsPage } from '../pages/SettingsPage'
 import { ShipmentListPage } from '../pages/ShipmentListPage'
 import { SupplierAssignmentsPage } from '../pages/SupplierAssignmentsPage'
+import { UserManagementPage } from '../pages/UserManagementPage'
 import { VehicleControlPage } from '../pages/VehicleControlPage'
 import { useAppStore } from '../store/app-store'
 
@@ -41,7 +44,7 @@ export function App() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedPage allowedRoles={['requester', 'supplier', 'control', 'ramp', 'gate', 'loading', 'admin']}>
+            <ProtectedPage allowedRoles={['requester', 'supplier', 'control', 'ramp', 'gate', 'loading', 'admin', 'superadmin']}>
               <DashboardPage />
             </ProtectedPage>
           }
@@ -49,7 +52,7 @@ export function App() {
         <Route
           path="/talep-olustur"
           element={
-            <ProtectedPage allowedRoles={['requester', 'admin']}>
+            <ProtectedPage allowedRoles={['requester', 'admin', 'superadmin']}>
               <CreateRequestPage />
             </ProtectedPage>
           }
@@ -57,7 +60,7 @@ export function App() {
         <Route
           path="/talepler"
           element={
-            <ProtectedPage allowedRoles={['requester', 'supplier', 'control', 'admin']}>
+            <ProtectedPage allowedRoles={['requester', 'supplier', 'control', 'admin', 'superadmin']}>
               <ShipmentListPage />
             </ProtectedPage>
           }
@@ -105,7 +108,7 @@ export function App() {
         <Route
           path="/gecmis"
           element={
-            <ProtectedPage allowedRoles={['requester', 'control', 'ramp', 'gate', 'loading', 'admin']}>
+            <ProtectedPage allowedRoles={['requester', 'control', 'ramp', 'gate', 'loading', 'admin', 'superadmin']}>
               <HistoryPage />
             </ProtectedPage>
           }
@@ -113,7 +116,7 @@ export function App() {
         <Route
           path="/raporlar"
           element={
-            <ProtectedPage allowedRoles={['admin']}>
+            <ProtectedPage allowedRoles={['admin', 'superadmin']}>
               <ReportsPage />
             </ProtectedPage>
           }
@@ -121,8 +124,32 @@ export function App() {
         <Route
           path="/yonetim"
           element={
-            <ProtectedPage allowedRoles={[]}>
+            <ProtectedPage allowedRoles={['admin', 'superadmin']}>
               <AdminPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path="/kullanici-yonetim"
+          element={
+            <ProtectedPage allowedRoles={['superadmin']}>
+              <UserManagementPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path="/aktivite-log"
+          element={
+            <ProtectedPage allowedRoles={['superadmin']}>
+              <ActivityLogPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path="/ayarlar"
+          element={
+            <ProtectedPage allowedRoles={['superadmin']}>
+              <SettingsPage />
             </ProtectedPage>
           }
         />

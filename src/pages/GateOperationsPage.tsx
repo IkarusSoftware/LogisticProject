@@ -5,6 +5,7 @@ import { Badge, Button, Card, InlineMessage, Input, PageHeader } from '../compon
 import { getCurrentUser, getShipmentDetail, getVisibleRequests } from '../domain/selectors'
 import { formatDateLabel, formatDateTimeLabel, formatPhoneLabel } from '../domain/workflow'
 import { useAppStore } from '../store/app-store'
+import { hasTokens, shipmentApi } from '../services/api'
 
 const SECURITY_QUEUE_STATUSES = ['VEHICLE_ASSIGNED', 'CORRECTION_REQUESTED', 'APPROVED', 'RAMP_PLANNED'] as const
 
@@ -47,13 +48,21 @@ export function GateOperationsPage() {
     setActionNotes((current) => ({ ...current, [shipmentRequestId]: value }))
   }
 
-  function handleRequestCorrection(shipmentRequestId: string) {
+  async function handleRequestCorrection(shipmentRequestId: string) {
     const note = actionNotes[shipmentRequestId]?.trim()
     if (!note) {
       setFeedback({ kind: 'error', text: 'Duzeltme istegi gondermek icin ilgili satira not girin.' })
       return
     }
 
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.requestCorrection(shipmentRequestId, note)
+        setFeedback({ kind: result.ok ? 'success' : 'error', text: result.message })
+        if (result.ok) setActionNotes((current) => ({ ...current, [shipmentRequestId]: '' }))
+        return
+      } catch { /* fallback */ }
+    }
     const result = requestSecurityCorrection(shipmentRequestId, note)
     setFeedback({ kind: result.ok ? 'success' : 'error', text: result.message })
     if (result.ok) {
@@ -61,8 +70,17 @@ export function GateOperationsPage() {
     }
   }
 
-  function handleRegisterVehicle(shipmentRequestId: string) {
-    const result = registerVehicleRecord(shipmentRequestId, actionNotes[shipmentRequestId] ?? '')
+  async function handleRegisterVehicle(shipmentRequestId: string) {
+    const note = actionNotes[shipmentRequestId] ?? ''
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.registerVehicle(shipmentRequestId, note || undefined)
+        setFeedback({ kind: result.ok ? 'success' : 'error', text: result.message })
+        if (result.ok) setActionNotes((current) => ({ ...current, [shipmentRequestId]: '' }))
+        return
+      } catch { /* fallback */ }
+    }
+    const result = registerVehicleRecord(shipmentRequestId, note)
     setFeedback({ kind: result.ok ? 'success' : 'error', text: result.message })
     if (result.ok) {
       setActionNotes((current) => ({ ...current, [shipmentRequestId]: '' }))

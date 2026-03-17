@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# .NET Backend
+backend/FlowDock.Api/bin/
+backend/FlowDock.Api/obj/
+backend/FlowDock.Api/logs/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -21,4 +26,5 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
+!backend/*.sln
 *.sw?

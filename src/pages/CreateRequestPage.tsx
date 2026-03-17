@@ -6,6 +6,7 @@ import { getCurrentUser, getShipmentDetail, getVisibleRequests } from '../domain
 import type { CreateRequestInput, DemoData, RequestRevisionInput, ShipmentStatus } from '../domain/models'
 import { canCancelRequest, formatDateLabel, formatDateTimeLabel, formatVehicleTypeLabel, getExitAt, getRampTakenAt, getStatusMeta } from '../domain/workflow'
 import { useAppStore } from '../store/app-store'
+import { hasTokens, shipmentApi } from '../services/api'
 
 type DraftRequest = CreateRequestInput & {
   draftId: string
@@ -56,18 +57,42 @@ export function CreateRequestPage() {
     })
   }
 
-  function handleSubmitAll() {
-    const result = createShipmentRequests(
-      drafts.map(({ draftId, ...request }) => normalizeDraftRequest(request, data)),
-    )
-    setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+  async function handleSubmitAll() {
+    const normalized = drafts.map(({ draftId, ...request }) => normalizeDraftRequest(request, data))
 
-    if (result.ok) {
-      setDrafts([createDraftRow()])
+    if (hasTokens()) {
+      try {
+        const items = normalized.map((r) => ({
+          targetLocationId: r.targetLocationId,
+          assignedSupplierCompanyId: r.assignedSupplierCompanyId,
+          vehicleType: r.vehicleType,
+          requestDate: r.requestDate,
+          loadDate: r.loadDate,
+          loadTime: r.loadTime,
+          quantityInfo: r.quantityInfo,
+          productInfo: r.productInfo,
+          notes: r.notes ?? '',
+        }))
+        const result = await shipmentApi.createBatch({ items })
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        if (result.ok) setDrafts([createDraftRow()])
+        return
+      } catch { /* fallback */ }
     }
+
+    const result = createShipmentRequests(normalized)
+    setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+    if (result.ok) setDrafts([createDraftRow()])
   }
 
-  function handleClearActiveRequests() {
+  async function handleClearActiveRequests() {
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.clearActive()
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        return
+      } catch { /* fallback */ }
+    }
     const result = clearActiveRequests()
     setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
   }
@@ -78,26 +103,39 @@ export function CreateRequestPage() {
     setMessage(null)
   }
 
-  function handleSaveRevision(shipmentRequestId: string) {
+  async function handleSaveRevision(shipmentRequestId: string) {
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.revise(shipmentRequestId, {
+          vehicleType: revisionForm.vehicleType,
+          loadTime: revisionForm.loadTime,
+        })
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        if (result.ok) setEditingRequestId(null)
+        return
+      } catch { /* fallback */ }
+    }
     const result = reviseActiveRequest(shipmentRequestId, revisionForm)
     setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
-
-    if (result.ok) {
-      setEditingRequestId(null)
-    }
+    if (result.ok) setEditingRequestId(null)
   }
 
   function handleCancelRevision() {
     setEditingRequestId(null)
   }
 
-  function handleCancelVehicle(shipmentRequestId: string) {
+  async function handleCancelVehicle(shipmentRequestId: string) {
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.cancelVehicle(shipmentRequestId)
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        if (result.ok && editingRequestId === shipmentRequestId) setEditingRequestId(null)
+        return
+      } catch { /* fallback */ }
+    }
     const result = cancelVehicleRequest(shipmentRequestId)
     setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
-
-    if (result.ok && editingRequestId === shipmentRequestId) {
-      setEditingRequestId(null)
-    }
+    if (result.ok && editingRequestId === shipmentRequestId) setEditingRequestId(null)
   }
 
   return (
