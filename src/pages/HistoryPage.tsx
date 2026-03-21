@@ -5,15 +5,19 @@ import { Button, Card, PageHeader } from '../components/ui'
 import { getCurrentUser, getVisibleRequests } from '../domain/selectors'
 import { useAppStore } from '../store/app-store'
 
+const TERMINAL_STATUSES = ['COMPLETED', 'REJECTED', 'CANCELLED', 'VEHICLE_CANCELLED']
+
 export function HistoryPage() {
   const data = useAppStore((state) => state.data)
   const session = useAppStore((state) => state.session)
   const currentUser = getCurrentUser(data, session.currentUserId)
-  const requests = getVisibleRequests(data, currentUser).filter((request) =>
-    ['COMPLETED', 'REJECTED', 'CANCELLED', 'VEHICLE_CANCELLED'].includes(request.currentStatus),
-  )
+
   const [filters, setFilters] = useState(initialShipmentFilters)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+
+  const requests = getVisibleRequests(data, currentUser).filter((request) =>
+    TERMINAL_STATUSES.includes(request.currentStatus),
+  )
   const filtered = applyShipmentFilters(requests, data, filters)
 
   function handleExport() {
@@ -28,9 +32,7 @@ export function HistoryPage() {
         assignment ? `${assignment.driverFirstName} ${assignment.driverLastName}` : '',
       ].join(';')
     })
-
-    const csv = ['TalepNo;Durum;YuklemeTarihi;Saat;Cekici;Sofor', ...rows].join('\n')
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const blob = new Blob([['TalepNo;Durum;YuklemeTarihi;Saat;Cekici;Sofor', ...rows].join('\n')], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
@@ -52,7 +54,8 @@ export function HistoryPage() {
         }
       />
 
-      <ShipmentFiltersBar data={data} filters={filters} onChange={setFilters} />
+      <ShipmentFiltersBar data={data} filters={filters} onChange={(f) => setFilters(f)} />
+
       <Card title="Gecmis kayitlari" subtitle={`${filtered.length} kayit`}>
         <ShipmentTable
           requests={filtered}

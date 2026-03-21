@@ -1,11 +1,13 @@
 import type { PropsWithChildren } from 'react'
-import { useState } from 'react'
-import { Bell, Building2, LogOut, RefreshCw, UserRound } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Bell, Building2, KeyRound, LogOut, RefreshCw, UserRound } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 
 import { NAVIGATION_ITEMS } from '../domain/constants'
 import { getCurrentRoleKey, getCurrentUser, getNotificationsForUser, getUnreadNotificationCount } from '../domain/selectors'
 import { formatDateTimeLabel, formatFullName, getRoleDefinition, getUserInitials } from '../domain/workflow'
+import { hasTokens, notificationApi } from '../services/api'
+import type { NotificationApiDto } from '../services/types'
 import { useAppStore } from '../store/app-store'
 import { AppIcon } from './icon-map'
 import { Badge, Button } from './ui'
@@ -13,6 +15,10 @@ import { Badge, Button } from './ui'
 export function AppShell({ children }: PropsWithChildren) {
   const navigate = useNavigate()
   const [showNotifications, setShowNotifications] = useState(false)
+  const [apiNotifications, setApiNotifications] = useState<NotificationApiDto[] | null>(null)
+  const [apiUnreadCount, setApiUnreadCount] = useState<number | null>(null)
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
   const data = useAppStore((state) => state.data)
   const session = useAppStore((state) => state.session)
   const resetDemo = useAppStore((state) => state.resetDemo)
@@ -22,19 +28,69 @@ export function AppShell({ children }: PropsWithChildren) {
   const currentUser = getCurrentUser(data, session.currentUserId)
   const roleKey = getCurrentRoleKey(currentUser)
   const roleDefinition = roleKey ? getRoleDefinition(roleKey) : undefined
-  const unreadCount = getUnreadNotificationCount(data, currentUser)
-  const notifications = getNotificationsForUser(data, currentUser).slice(0, 8)
+
+  // Zustand fallback
+  const zustandNotifications = getNotificationsForUser(data, currentUser).slice(0, 8)
+  const zustandUnreadCount = getUnreadNotificationCount(data, currentUser)
+
+  const notifications = apiNotifications
+    ? apiNotifications.slice(0, 8).map((n) => ({
+        id: n.id, title: n.title, message: n.message,
+        level: n.level, createdAt: n.createdAt,
+        targetRoleKeys: n.targetRoleKeys as never[],
+        targetCompanyIds: n.targetCompanyIds,
+        shipmentRequestId: n.shipmentRequestId ?? undefined,
+        isReadBy: n.isRead ? [currentUser?.id ?? ''] : [],
+      }))
+    : zustandNotifications
+
+  const unreadCount = apiUnreadCount !== null ? apiUnreadCount : zustandUnreadCount
+
+  const fetchNotifications = useCallback(async () => {
+    if (!hasTokens()) return
+    try {
+      const [items, countRes] = await Promise.all([
+        notificationApi.list(),
+        notificationApi.unreadCount(),
+      ])
+      setApiNotifications(items)
+      setApiUnreadCount(countRes.count)
+    } catch {
+      // fallback to Zustand
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchNotifications()
+    pollingRef.current = setInterval(fetchNotifications, 30_000)
+    return () => { if (pollingRef.current) clearInterval(pollingRef.current) }
+  }, [fetchNotifications])
+
+  const handleBellClick = async () => {
+    setShowNotifications((v) => !v)
+    if (hasTokens()) {
+      try {
+        await notificationApi.markAllRead()
+        setApiUnreadCount(0)
+        setApiNotifications((prev) => prev ? prev.map((n) => ({ ...n, isRead: true })) : prev)
+      } catch { /* ignore */ }
+    } else {
+      markAllNotificationsRead()
+    }
+  }
 
   const navigationItems = NAVIGATION_ITEMS.filter((item) => item.roleKeys.includes(roleKey ?? 'requester')).filter((item) =>
-    roleKey === 'admin'
-      ? ['/dashboard', '/talep-olustur', '/talepler', '/gecmis', '/raporlar'].includes(item.path)
-      : roleKey === 'supplier'
-        ? ['/dashboard', '/talepler'].includes(item.path)
-        : roleKey === 'control'
+    roleKey === 'superadmin'
+      ? ['/dashboard', '/talepler', '/raporlar', '/yukleme-bolgeleri', '/tedarikci-firmalar', '/rol-yonetimi', '/kullanici-rol-esleme', '/kullanici-yonetim', '/aktivite-log', '/ayarlar'].includes(item.path)
+      : roleKey === 'admin'
+        ? ['/dashboard', '/talep-olustur', '/talepler', '/gecmis', '/raporlar'].includes(item.path)
+        : roleKey === 'supplier'
           ? ['/dashboard', '/talepler'].includes(item.path)
-          : roleKey === 'gate'
-            ? ['/dashboard', '/kapi-operasyonu'].includes(item.path)
-        : true,
+          : roleKey === 'control'
+            ? ['/dashboard', '/talepler'].includes(item.path)
+            : roleKey === 'gate'
+              ? ['/dashboard', '/kapi-operasyonu'].includes(item.path)
+          : true,
   )
 
   return (
@@ -50,8 +106,12 @@ export function AppShell({ children }: PropsWithChildren) {
 
         <nav className="nav">
           {navigationItems.map((item) => (
-            <NavLink key={item.path} to={item.path} className={({ isActive }) => (isActive ? 'nav__link nav__link--active' : 'nav__link')}>
-              <AppIcon name={item.icon} size={18} />
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) => (isActive ? 'nav__link nav__link--active' : 'nav__link')}
+            >
+              <AppIcon name={item.icon} size={16} />
               <span>{item.label}</span>
             </NavLink>
           ))}
@@ -65,9 +125,14 @@ export function AppShell({ children }: PropsWithChildren) {
               <p>{roleDefinition?.name ?? '-'}</p>
             </div>
           </div>
-          <Button variant="secondary" size="sm" onClick={() => { resetDemo(); navigate('/dashboard') }}>
-            <RefreshCw size={16} />
-            Demo veriyi sifirla
+          <Button
+            variant="ghost"
+            size="sm"
+            style={{ color: '#475569', fontSize: '0.8rem', justifyContent: 'flex-start', padding: '0.375rem 0.5rem' }}
+            onClick={() => { resetDemo(); navigate('/dashboard') }}
+          >
+            <RefreshCw size={14} />
+            Demo veriyi sıfırla
           </Button>
         </div>
       </aside>
@@ -75,7 +140,9 @@ export function AppShell({ children }: PropsWithChildren) {
       <div className="workspace">
         <header className="topbar">
           <div className="topbar__title">
-            <Badge tone="info">{roleDefinition?.name ?? 'Rol seçilmedi'}</Badge>
+            <Badge tone="neutral" style={{ borderRadius: '6px' }}>
+              {roleDefinition?.name ?? 'Rol seçilmedi'}
+            </Badge>
             <span>Son oturum: {formatDateTimeLabel(new Date().toISOString())}</span>
           </div>
 
@@ -83,27 +150,30 @@ export function AppShell({ children }: PropsWithChildren) {
             <button
               type="button"
               className="notification-button"
-              onClick={() => {
-                setShowNotifications((current) => !current)
-                markAllNotificationsRead()
-              }}
+              onClick={handleBellClick}
             >
-              <Bell size={18} />
-              {unreadCount > 0 && <span className="notification-button__count">{unreadCount}</span>}
+              <Bell size={16} />
+              {unreadCount > 0 && (
+                <span className="notification-button__count">{unreadCount}</span>
+              )}
             </button>
 
             <div className="topbar__user">
               <div className="topbar__pill">
-                <Building2 size={14} />
+                <Building2 size={13} />
                 <span>{data.companies.find((company) => company.id === currentUser?.companyId)?.name ?? '-'}</span>
               </div>
               <div className="topbar__pill">
-                <UserRound size={14} />
+                <UserRound size={13} />
                 <span>{currentUser?.email}</span>
               </div>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/profil')}>
+                <KeyRound size={15} />
+                Profil
+              </Button>
               <Button variant="ghost" size="sm" onClick={() => { logout(); navigate('/login') }}>
-                <LogOut size={16} />
-                Cikis
+                <LogOut size={15} />
+                Çıkış
               </Button>
             </div>
           </div>
@@ -112,13 +182,16 @@ export function AppShell({ children }: PropsWithChildren) {
             <div className="notification-panel">
               <div className="notification-panel__header">
                 <strong>Bildirim merkezi</strong>
-                <span>{unreadCount} okunmamis</span>
+                <span>{unreadCount} okunmamış</span>
               </div>
               {notifications.length === 0 ? (
-                <p className="notification-panel__empty">Bu rol icin yeni bildirim yok.</p>
+                <p className="notification-panel__empty">Bu rol için yeni bildirim yok.</p>
               ) : (
                 notifications.map((notification) => (
-                  <article key={notification.id} className={`notification-panel__item notification-panel__item--${notification.level}`}>
+                  <article
+                    key={notification.id}
+                    className={`notification-panel__item notification-panel__item--${notification.level}`}
+                  >
                     <strong>{notification.title}</strong>
                     <p>{notification.message}</p>
                     <span>{formatDateTimeLabel(notification.createdAt)}</span>

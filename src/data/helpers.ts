@@ -13,6 +13,7 @@ import type {
   ShipmentRequest,
   ShipmentStatus,
   StatusHistory,
+  SystemSettings,
   User,
   VehicleAssignment,
 } from '../domain/models'
@@ -114,6 +115,8 @@ export function buildUsers(now: Date): User[] {
       isActive: true,
       createdAt: iso(subDays(now, 210)),
       updatedAt: iso(subDays(now, 1)),
+      password: DEMO_PASSWORD,
+      mustChangePassword: false,
     },
     {
       id: 'user-requester-melis',
@@ -126,6 +129,8 @@ export function buildUsers(now: Date): User[] {
       isActive: true,
       createdAt: iso(subDays(now, 200)),
       updatedAt: iso(subDays(now, 2)),
+      password: DEMO_PASSWORD,
+      mustChangePassword: false,
     },
     {
       id: 'user-supplier-mert',
@@ -138,6 +143,8 @@ export function buildUsers(now: Date): User[] {
       isActive: true,
       createdAt: iso(subDays(now, 180)),
       updatedAt: iso(subDays(now, 1)),
+      password: DEMO_PASSWORD,
+      mustChangePassword: false,
     },
     {
       id: 'user-supplier-elif',
@@ -150,6 +157,8 @@ export function buildUsers(now: Date): User[] {
       isActive: true,
       createdAt: iso(subDays(now, 165)),
       updatedAt: iso(subDays(now, 1)),
+      password: DEMO_PASSWORD,
+      mustChangePassword: false,
     },
     {
       id: 'user-supplier-bora',
@@ -162,6 +171,8 @@ export function buildUsers(now: Date): User[] {
       isActive: true,
       createdAt: iso(subDays(now, 150)),
       updatedAt: iso(subDays(now, 1)),
+      password: DEMO_PASSWORD,
+      mustChangePassword: false,
     },
     {
       id: 'user-control-selin',
@@ -174,6 +185,8 @@ export function buildUsers(now: Date): User[] {
       isActive: true,
       createdAt: iso(subDays(now, 190)),
       updatedAt: iso(subDays(now, 1)),
+      password: DEMO_PASSWORD,
+      mustChangePassword: false,
     },
     {
       id: 'user-ramp-emre',
@@ -186,6 +199,8 @@ export function buildUsers(now: Date): User[] {
       isActive: true,
       createdAt: iso(subDays(now, 170)),
       updatedAt: iso(subDays(now, 2)),
+      password: DEMO_PASSWORD,
+      mustChangePassword: false,
     },
     {
       id: 'user-gate-cem',
@@ -198,6 +213,8 @@ export function buildUsers(now: Date): User[] {
       isActive: true,
       createdAt: iso(subDays(now, 140)),
       updatedAt: iso(subDays(now, 1)),
+      password: DEMO_PASSWORD,
+      mustChangePassword: false,
     },
     {
       id: 'user-loading-deniz',
@@ -210,6 +227,8 @@ export function buildUsers(now: Date): User[] {
       isActive: true,
       createdAt: iso(subDays(now, 125)),
       updatedAt: iso(subDays(now, 1)),
+      password: DEMO_PASSWORD,
+      mustChangePassword: false,
     },
     {
       id: 'user-admin-eda',
@@ -222,8 +241,37 @@ export function buildUsers(now: Date): User[] {
       isActive: true,
       createdAt: iso(subDays(now, 250)),
       updatedAt: iso(subDays(now, 1)),
+      password: DEMO_PASSWORD,
+      mustChangePassword: false,
+    },
+    {
+      id: 'user-superadmin-kerem',
+      firstName: 'Kerem',
+      lastName: 'Başaran',
+      email: 'kerem.basaran@gratis.demo',
+      phone: '+905301234567',
+      roleId: 'role-superadmin',
+      companyId: 'company-gratis',
+      isActive: true,
+      createdAt: iso(subDays(now, 300)),
+      updatedAt: iso(subDays(now, 1)),
+      password: DEMO_PASSWORD,
+      mustChangePassword: false,
     },
   ]
+}
+
+export function buildDefaultSystemSettings(): SystemSettings {
+  return {
+    companyName: 'Gratis Lojistik',
+    workStartHour: '08:00',
+    workEndHour: '18:00',
+    maxDailyShipments: 50,
+    defaultVehicleType: 'TIR',
+    notificationsEnabled: true,
+    autoAssignRamp: false,
+    maintenanceMode: false,
+  }
 }
 
 export function buildLocations() {
@@ -260,6 +308,13 @@ export function buildLocations() {
       id: 'loc-bursa',
       name: 'Bursa',
       address: 'Bursa Dagitim Bolgesi',
+      companyId: 'company-gratis',
+      isActive: true,
+    },
+    {
+      id: 'loc-diyarbakir',
+      name: 'Diyarbakır',
+      address: 'Diyarbakır Dagitim Bolgesi',
       companyId: 'company-gratis',
       isActive: true,
     },

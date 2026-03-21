@@ -4,6 +4,7 @@ import { Card, FormField, InlineMessage, PageHeader, Select, Textarea, Button } 
 import { getCurrentUser, getRampOccupancy, getShipmentDetail, getVisibleRequests } from '../domain/selectors'
 import { getStatusMeta } from '../domain/workflow'
 import { useAppStore } from '../store/app-store'
+import { hasTokens, shipmentApi } from '../services/api'
 
 export function RampPlanningPage() {
   const data = useAppStore((state) => state.data)
@@ -20,11 +21,18 @@ export function RampPlanningPage() {
 
   const detail = selectedId ? getShipmentDetail(data, selectedId) : undefined
 
-  function handleAssign() {
+  async function handleAssign() {
     if (!selectedId) {
       return
     }
 
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.assignRamp(selectedId, { rampId, note })
+        setFeedback({ kind: result.ok ? 'success' : 'error', text: result.message })
+        return
+      } catch { /* fallback */ }
+    }
     const result = assignRamp(selectedId, { rampId, note })
     setFeedback({ kind: result.ok ? 'success' : 'error', text: result.message })
   }

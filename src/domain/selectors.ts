@@ -22,7 +22,7 @@ export function getCurrentRoleKey(user?: User): UserRoleKey | undefined {
     return undefined
   }
 
-  return getRoleKeyByRoleId(user.roleId)
+  return user.roleKey ?? getRoleKeyByRoleId(user.roleId)
 }
 
 export function getVisibleRequests(data: DemoData, user?: User) {
@@ -32,7 +32,7 @@ export function getVisibleRequests(data: DemoData, user?: User) {
 
   const roleKey = getCurrentRoleKey(user)
 
-  if (roleKey === 'admin') {
+  if (roleKey === 'admin' || roleKey === 'superadmin') {
     return sortRequestsByLoadWindow(data.shipmentRequests)
   }
 
@@ -81,12 +81,16 @@ export function getNotificationsForUser(data: DemoData, user?: User) {
     return []
   }
 
+  const isAdmin = roleKey === 'admin' || roleKey === 'superadmin'
+
   return [...data.notifications]
-    .filter(
-      (notification) =>
-        notification.targetRoleKeys.includes(roleKey) &&
-        (notification.targetCompanyIds.length === 0 || notification.targetCompanyIds.includes(user.companyId)),
-    )
+    .filter((notification) => {
+      const isBroadcast = notification.targetRoleKeys.length === 0 && notification.targetCompanyIds.length === 0
+      if (isBroadcast || isAdmin) return true
+      const roleMatch = notification.targetRoleKeys.length === 0 || notification.targetRoleKeys.includes(roleKey)
+      const companyMatch = notification.targetCompanyIds.length === 0 || notification.targetCompanyIds.includes(user.companyId)
+      return roleMatch && companyMatch
+    })
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 }
 
@@ -96,6 +100,10 @@ export function getUnreadNotificationCount(data: DemoData, user?: User) {
   }
 
   return getNotificationsForUser(data, user).filter((notification) => !notification.isReadBy.includes(user.id)).length
+}
+
+export function getAllAuditLogs(data: DemoData) {
+  return [...data.auditLogs].sort((a, b) => new Date(b.performedAt).getTime() - new Date(a.performedAt).getTime())
 }
 
 export function getRecentAuditLogs(data: DemoData, user?: User) {

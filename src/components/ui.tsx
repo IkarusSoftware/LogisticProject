@@ -28,11 +28,17 @@ export function Badge({
   children,
   tone = 'neutral',
   className,
+  style,
 }: PropsWithChildren<{
   tone?: 'neutral' | 'info' | 'success' | 'warning' | 'danger'
   className?: string
+  style?: React.CSSProperties
 }>) {
-  return <span className={clsx('badge', `badge--${tone}`, className)}>{children}</span>
+  return (
+    <span className={clsx('badge', `badge--${tone}`, className)} style={style}>
+      {children}
+    </span>
+  )
 }
 
 export function Card({
@@ -118,7 +124,7 @@ export function EmptyState({
   return (
     <div className="empty-state">
       <div className="empty-state__icon">
-        <Info size={18} />
+        <Info size={16} />
       </div>
       <h3>{title}</h3>
       <p>{description}</p>
@@ -137,7 +143,11 @@ export function FormField({
     <label className="form-field">
       <span className="form-field__label">{label}</span>
       {children}
-      {(hint || error) && <span className={clsx('form-field__hint', error && 'form-field__hint--error')}>{error || hint}</span>}
+      {(hint || error) && (
+        <span className={clsx('form-field__hint', error && 'form-field__hint--error')}>
+          {error || hint}
+        </span>
+      )}
     </label>
   )
 }
@@ -163,15 +173,15 @@ export function InlineMessage({
 }) {
   const icon =
     kind === 'success' ? (
-      <CircleCheckBig size={16} />
+      <CircleCheckBig size={15} />
     ) : kind === 'warning' ? (
-      <AlertTriangle size={16} />
+      <AlertTriangle size={15} />
     ) : kind === 'error' ? (
-      <XCircle size={16} />
+      <XCircle size={15} />
     ) : kind === 'loading' ? (
-      <LoaderCircle size={16} className="spin" />
+      <LoaderCircle size={15} className="spin" />
     ) : (
-      <Info size={16} />
+      <Info size={15} />
     )
 
   return (
@@ -192,7 +202,7 @@ export function KeyValue({
   return (
     <div className="key-value">
       <span className="key-value__label">{label}</span>
-      <span className="key-value__value">{value}</span>
+      <span className="key-value__value">{value ?? '—'}</span>
     </div>
   )
 }

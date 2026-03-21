@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "npm run dev"],
+      "port": 4173
+    },
+    {
+      "name": "preview",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "npm run preview"],
+      "port": 4173
+    },
+    {
+      "name": "backend",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "dotnet run --project backend/FlowDock.Api/FlowDock.Api.csproj"],
+      "port": 5000
+    }
+  ]
+}

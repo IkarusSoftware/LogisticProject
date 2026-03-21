@@ -1,4 +1,4 @@
-import { buildCompanies, buildLocations, buildRamps, buildRoles, buildUsers } from './helpers'
+import { buildCompanies, buildDefaultSystemSettings, buildLocations, buildRamps, buildRoles, buildUsers } from './helpers'
 
 export function buildReferenceData(now: Date) {
   return {
@@ -7,5 +7,6 @@ export function buildReferenceData(now: Date) {
     users: buildUsers(now),
     locations: buildLocations(),
     ramps: buildRamps(),
+    systemSettings: buildDefaultSystemSettings(),
   }
 }

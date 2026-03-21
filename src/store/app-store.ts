@@ -6,19 +6,27 @@ import { buildInitialData } from '../data/seed'
 import { TERMINAL_STATUSES } from '../domain/constants'
 import { getCurrentUser, getNotificationsForUser, getVisibleRequests } from '../domain/selectors'
 import type {
+  CompanyType,
   CreateRequestInput,
+  CreateUserInput,
   DemoData,
   LoadingCompletionInput,
   NotificationItem,
   OperationResult,
   RampPlanningInput,
+  RampStatus,
+  RecordStatus,
   RequestRevisionInput,
   ReviewDecisionInput,
   SessionState,
   ShipmentRequest,
   ShipmentStatus,
+  SystemSettings,
+  UpdateUserInput,
   User,
+  UserRoleKey,
   VehicleAssignmentInput,
+  VehicleType,
 } from '../domain/models'
 import {
   canCancelRequest,
@@ -35,7 +43,7 @@ type AppStore = {
   data: DemoData
   session: SessionState
   loginWithEmail: (email: string, password: string) => OperationResult
-  loginAs: (userId: string) => OperationResult
+  loginAs: (userId: string, mustChangePassword?: boolean) => OperationResult
   logout: () => void
   resetDemo: () => void
   markAllNotificationsRead: () => void
@@ -55,9 +63,27 @@ type AppStore = {
   assignRamp: (shipmentRequestId: string, input: RampPlanningInput) => OperationResult
   recordGateAction: (shipmentRequestId: string, action: GateAction, note: string) => OperationResult
   finalizeLoading: (shipmentRequestId: string, input: LoadingCompletionInput) => OperationResult
+  approveSeal: (shipmentRequestId: string) => OperationResult
+  rejectSeal: (shipmentRequestId: string, note: string) => OperationResult
   toggleCompanyStatus: (companyId: string) => void
   toggleUserActive: (userId: string) => void
   toggleRampActive: (rampId: string) => void
+  createUser: (input: CreateUserInput) => OperationResult
+  updateUser: (userId: string, input: UpdateUserInput) => OperationResult
+  toggleUserStatus: (userId: string) => OperationResult
+  deleteUser: (userId: string) => OperationResult
+  updateSystemSettings: (settings: Partial<SystemSettings>) => OperationResult
+  loadFromApi: () => Promise<void>
+  loadingZones: { name: string; locationId: string }[]
+  addLoadingZone: (name: string, locationId: string, address?: string) => void
+  removeLoadingZone: (name: string) => void
+  customRoles: { id: string; name: string; description: string }[]
+  addCustomRole: (name: string, description: string) => void
+  removeCustomRole: (id: string) => void
+  assignUserRole: (userId: string, roleId: string) => void
+  addCompany: (name: string, type: 'SUPPLIER' | 'LOGISTICS') => void
+  changePassword: (currentPassword: string, newPassword: string) => OperationResult
+  updateProfile: (input: { firstName?: string; lastName?: string; phone?: string }) => OperationResult
 }
 
 const initialData = buildInitialData()
@@ -69,44 +95,223 @@ export const useAppStore = create<AppStore>()(
       session: {
         currentUserId: null,
       },
+      loadingZones: [],
+      addLoadingZone: (name, locationId, address) =>
+        set((state) => {
+          if (state.loadingZones.some((z) => z.name === name)) return state
+          const data = structuredClone(state.data)
+          if (!data.locations.some((l) => l.id === locationId)) {
+            data.locations.push({ id: locationId, name, address: address ?? `${name} Dagitim Bolgesi`, companyId: 'company-gratis', isActive: true })
+          } else {
+            const existing = data.locations.find((l) => l.id === locationId)
+            if (existing) existing.isActive = true
+          }
+          return { loadingZones: [...state.loadingZones, { name, locationId }], data }
+        }),
+      removeLoadingZone: (name) =>
+        set((state) => ({ loadingZones: state.loadingZones.filter((z) => z.name !== name) })),
+      customRoles: [],
+      addCustomRole: (name, description) =>
+        set((state) => ({
+          customRoles: [...state.customRoles, { id: `custom-${Date.now()}`, name, description }],
+        })),
+      removeCustomRole: (id) =>
+        set((state) => ({ customRoles: state.customRoles.filter((r) => r.id !== id) })),
+      assignUserRole: (userId, roleId) =>
+        set((state) => {
+          const data = structuredClone(state.data)
+          const user = data.users.find((u) => u.id === userId)
+          if (user) {
+            user.roleId = roleId
+            const role = data.roles.find((r) => r.id === roleId)
+            if (role) user.roleKey = role.key
+          }
+          return { data }
+        }),
+
+      addCompany: (name, type) =>
+        set((state) => {
+          const data = structuredClone(state.data)
+          const now = new Date().toISOString()
+          data.companies.push({
+            id: `company-${Date.now()}`,
+            name,
+            type,
+            status: 'ACTIVE',
+            createdAt: now,
+            updatedAt: now,
+          })
+          return { data }
+        }),
+
+      changePassword: (currentPassword, newPassword) => {
+        let result: OperationResult = { ok: false, message: 'Islem basarisiz.' }
+        set((state) => {
+          const user = state.data.users.find((u) => u.id === state.session.currentUserId)
+          if (!user) {
+            result = { ok: false, message: 'Kullanici bulunamadi.' }
+            return {}
+          }
+          const storedPassword = user.password ?? 'demo123'
+          if (currentPassword !== storedPassword) {
+            result = { ok: false, message: 'Mevcut sifre yanlis.' }
+            return {}
+          }
+          if (!newPassword || newPassword.length < 6) {
+            result = { ok: false, message: 'Yeni sifre en az 6 karakter olmalidir.' }
+            return {}
+          }
+          const data = structuredClone(state.data)
+          const target = data.users.find((u) => u.id === state.session.currentUserId)!
+          target.password = newPassword
+          target.mustChangePassword = false
+          target.updatedAt = new Date().toISOString()
+          result = { ok: true, message: 'Sifreniz basariyla guncellendi.' }
+          return { data, session: { ...state.session, mustChangePassword: false } }
+        })
+        return result
+      },
+
+      updateProfile: (input) => {
+        let result: OperationResult = { ok: false, message: 'Islem basarisiz.' }
+        set((state) => {
+          const data = structuredClone(state.data)
+          const user = data.users.find((u) => u.id === state.session.currentUserId)
+          if (!user) {
+            result = { ok: false, message: 'Kullanici bulunamadi.' }
+            return {}
+          }
+          if (input.firstName) user.firstName = input.firstName
+          if (input.lastName) user.lastName = input.lastName
+          if (input.phone !== undefined) user.phone = input.phone
+          user.updatedAt = new Date().toISOString()
+          result = { ok: true, message: 'Profil bilgileriniz guncellendi.' }
+          return { data }
+        })
+        return result
+      },
 
       loginWithEmail: (email, password) => {
         let result: OperationResult = { ok: false, message: 'Giris yapilamadi.' }
         set((state) => {
           const user = state.data.users.find((item) => item.email.toLowerCase() === email.trim().toLowerCase())
           if (!user) {
-            result = { ok: false, message: 'Bu e-posta ile kayitli demo kullanici bulunamadi.' }
+            result = { ok: false, message: 'Bu e-posta ile kayitli kullanici bulunamadi.' }
             return {}
           }
 
-          if (password !== 'demo123') {
-            result = { ok: false, message: 'Demo sifresi demo123 olmali.' }
+          const storedPassword = user.password ?? 'demo123'
+          if (password !== storedPassword) {
+            result = { ok: false, message: 'Sifre hatali.' }
             return {}
           }
 
           result = { ok: true, message: `${user.firstName} ${user.lastName} olarak giris yapildi.` }
-          return { session: { currentUserId: user.id } }
+          return { session: { currentUserId: user.id, mustChangePassword: user.mustChangePassword ?? false } }
         })
         return result
       },
 
-      loginAs: (userId) => {
+      loginAs: (userId, mustChangePassword) => {
         const user = get().data.users.find((item) => item.id === userId)
         if (!user) {
           return { ok: false, message: 'Kullanici bulunamadi.' }
         }
 
-        set({ session: { currentUserId: user.id } })
+        const mcp = mustChangePassword ?? user.mustChangePassword ?? false
+        set({ session: { currentUserId: user.id, mustChangePassword: mcp } })
         return { ok: true, message: `${user.firstName} ${user.lastName} olarak giris yapildi.` }
       },
 
-      logout: () => set({ session: { currentUserId: null } }),
+      logout: () => {
+        import('../services/api').then(({ clearTokens, authApi, hasTokens }) => {
+          if (hasTokens()) authApi.logout().catch(() => {})
+          clearTokens()
+        })
+        set({ session: { currentUserId: null } })
+      },
 
       resetDemo: () =>
         set({
           data: buildInitialData(),
           session: { currentUserId: null },
         }),
+
+      loadFromApi: async () => {
+        const { lookupApi } = await import('../services/api')
+        const bootstrap = await lookupApi.bootstrap()
+        // Preserve all operational data (requests, assignments, operations, etc.)
+        // so that switching users does not wipe in-progress work
+        const current = get().data
+        const data: DemoData = {
+          companies: bootstrap.companies.map((c) => ({
+            id: c.id,
+            name: c.name,
+            type: c.type.toUpperCase() as CompanyType,
+            status: c.status.toUpperCase() as RecordStatus,
+            createdAt: c.createdAt,
+            updatedAt: c.updatedAt,
+          })),
+          roles: bootstrap.roles.map((r) => ({
+            id: r.id,
+            key: r.key as UserRoleKey,
+            name: r.name,
+            permissions: r.permissions,
+          })),
+          users: (() => {
+            const apiUsers = bootstrap.users.map((u) => ({
+              id: u.id,
+              firstName: u.firstName,
+              lastName: u.lastName,
+              email: u.email,
+              phone: u.phone,
+              roleId: u.roleId,
+              roleKey: u.roleKey as UserRoleKey,
+              companyId: u.companyId,
+              isActive: u.isActive,
+              createdAt: '',
+              updatedAt: '',
+            }))
+            const apiIds = new Set(apiUsers.map((u) => u.id))
+            const localOnly = current.users.filter((u) => !apiIds.has(u.id))
+            return [...apiUsers, ...localOnly]
+          })(),
+          locations: bootstrap.locations.map((l) => ({
+            id: l.id,
+            name: l.name,
+            address: l.address,
+            companyId: l.companyId,
+            isActive: l.isActive,
+          })),
+          ramps: bootstrap.ramps.map((r) => ({
+            id: r.id,
+            locationId: r.locationId,
+            code: r.code,
+            name: r.name,
+            status: r.status.toUpperCase() as RampStatus,
+            isActive: r.isActive,
+          })),
+          shipmentRequests: current.shipmentRequests,
+          vehicleAssignments: current.vehicleAssignments,
+          rampAssignments: current.rampAssignments,
+          gateOperations: current.gateOperations,
+          loadingOperations: current.loadingOperations,
+          auditLogs: current.auditLogs,
+          statusHistory: current.statusHistory,
+          notifications: current.notifications,
+          systemSettings: {
+            companyName: bootstrap.settings.companyName,
+            workStartHour: bootstrap.settings.workStartHour,
+            workEndHour: bootstrap.settings.workEndHour,
+            maxDailyShipments: bootstrap.settings.maxDailyShipments,
+            defaultVehicleType: bootstrap.settings.defaultVehicleType.toUpperCase() as VehicleType,
+            notificationsEnabled: bootstrap.settings.notificationsEnabled,
+            autoAssignRamp: bootstrap.settings.autoAssignRamp,
+            maintenanceMode: bootstrap.settings.maintenanceMode,
+          },
+        }
+        set({ data })
+      },
 
       markAllNotificationsRead: () =>
         set((state) => {
@@ -129,7 +334,7 @@ export const useAppStore = create<AppStore>()(
 
       createShipmentRequests: (inputs) =>
         withMutation(set, (data, actor) => {
-          const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-requester' ? 'requester' : undefined
+          const roleKey = isAdminLike(actorRoleKey(actor)) ? 'admin' : actorRoleKey(actor) === 'requester' ? 'requester' : undefined
           if (!['requester', 'admin'].includes(roleKey ?? '')) {
             throw new Error('Bu islem icin talep olusturma yetkiniz yok.')
           }
@@ -301,7 +506,7 @@ export const useAppStore = create<AppStore>()(
         withMutation(set, (data, actor) => {
           const request = requireRequest(data, shipmentRequestId)
           const wasCorrectionRequest = request.currentStatus === 'CORRECTION_REQUESTED'
-          const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-supplier' ? 'supplier' : undefined
+          const roleKey = isAdminLike(actorRoleKey(actor)) ? 'admin' : actorRoleKey(actor) === 'supplier' ? 'supplier' : undefined
           if (!['supplier', 'admin'].includes(roleKey ?? '')) {
             throw new Error('Bu islem icin tedarik yetkiniz yok.')
           }
@@ -400,7 +605,7 @@ export const useAppStore = create<AppStore>()(
 
       acceptSecurityCorrection: (shipmentRequestId) =>
         withMutation(set, (data, actor) => {
-          const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-supplier' ? 'supplier' : undefined
+          const roleKey = isAdminLike(actorRoleKey(actor)) ? 'admin' : actorRoleKey(actor) === 'supplier' ? 'supplier' : undefined
           if (!['supplier', 'admin'].includes(roleKey ?? '')) {
             throw new Error('Bu islem icin tedarik yetkiniz yok.')
           }
@@ -438,7 +643,7 @@ export const useAppStore = create<AppStore>()(
 
       requestSecurityCorrection: (shipmentRequestId, note) =>
         withMutation(set, (data, actor) => {
-          const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-gate' ? 'gate' : undefined
+          const roleKey = isAdminLike(actorRoleKey(actor)) ? 'admin' : actorRoleKey(actor) === 'gate' ? 'gate' : undefined
           if (!['gate', 'admin'].includes(roleKey ?? '')) {
             throw new Error('Bu islem icin dis guvenlik yetkisi gerekir.')
           }
@@ -487,7 +692,7 @@ export const useAppStore = create<AppStore>()(
 
       registerVehicleRecord: (shipmentRequestId, note) =>
         withMutation(set, (data, actor) => {
-          const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-gate' ? 'gate' : undefined
+          const roleKey = isAdminLike(actorRoleKey(actor)) ? 'admin' : actorRoleKey(actor) === 'gate' ? 'gate' : undefined
           if (!['gate', 'admin'].includes(roleKey ?? '')) {
             throw new Error('Bu islem icin dis guvenlik yetkisi gerekir.')
           }
@@ -599,7 +804,7 @@ export const useAppStore = create<AppStore>()(
 
       assignRamp: (shipmentRequestId, input) =>
         withMutation(set, (data, actor) => {
-          const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-control' ? 'control' : undefined
+          const roleKey = isAdminLike(actorRoleKey(actor)) ? 'admin' : actorRoleKey(actor) === 'control' ? 'control' : undefined
           if (!['control', 'admin'].includes(roleKey ?? '')) {
             throw new Error('Bu islem icin sevkiyat operasyon yetkisi gerekir.')
           }
@@ -743,7 +948,7 @@ export const useAppStore = create<AppStore>()(
       finalizeLoading: (shipmentRequestId, input) =>
         withMutation(set, (data, actor) => {
           const request = requireRequest(data, shipmentRequestId)
-          const roleKey = actor.roleId === 'role-admin' ? 'admin' : actor.roleId === 'role-control' ? 'control' : actor.roleId === 'role-loading' ? 'loading' : undefined
+          const roleKey = isAdminLike(actorRoleKey(actor)) ? 'admin' : actorRoleKey(actor) === 'control' ? 'control' : actorRoleKey(actor) === 'loading' ? 'loading' : undefined
           if (!['control', 'loading', 'admin'].includes(roleKey ?? '')) {
             throw new Error('Bu islem icin sevkiyat operasyon yetkisi gerekir.')
           }
@@ -770,6 +975,9 @@ export const useAppStore = create<AppStore>()(
           current.finalizedBy = actor.id
           current.exitAt = addMinutes(now, 10).toISOString()
           current.notes = input.note
+          // Clear any previous rejection so operator re-submission is clean
+          current.sealRejected = false
+          current.sealRejectionNote = undefined
 
           if (loadingOperation) {
             data.loadingOperations = data.loadingOperations.map((item) => (item.shipmentRequestId === shipmentRequestId ? current : item))
@@ -808,7 +1016,233 @@ export const useAppStore = create<AppStore>()(
             targetRoleKeys: ['requester', 'admin', 'gate'],
             targetCompanyIds: [request.requesterCompanyId],
           })
-          return { ok: true, message: 'Muhur kaydedildi ve arac yuklemesi tamamlandi.' }
+          return { ok: true, message: 'Muhur kaydedildi. Guvenlik onayina gonderildi.' }
+        }),
+
+      approveSeal: (shipmentRequestId) =>
+        withMutation(set, (data, actor) => {
+          const request = requireRequest(data, shipmentRequestId)
+          if (!['gate', 'admin', 'superadmin'].includes(actorRoleKey(actor) ?? '')) {
+            throw new Error('Muhur onayı için güvenlik yetkisi gerekir.')
+          }
+          ensureStatusTransition(request.currentStatus, ['LOADED'], 'Muhur onayı yalnızca yükleme tamamlanmış kayıtlar için yapılabilir.')
+          const loadingOp = data.loadingOperations.find((item) => item.shipmentRequestId === shipmentRequestId)
+          if (!loadingOp?.sealNumber) {
+            throw new Error('Onaylanacak muhur numarası bulunamadı.')
+          }
+          const now = new Date()
+          loadingOp.sealApprovedBy = actor.id
+          loadingOp.sealApprovedAt = now.toISOString()
+          loadingOp.sealRejected = false
+          data.loadingOperations = data.loadingOperations.map((item) => (item.shipmentRequestId === shipmentRequestId ? loadingOp : item))
+          pushStatusTransition(data, request, 'LOADED', 'COMPLETED', actor.id, `Muhur onaylandi: ${loadingOp.sealNumber}. Sevkiyat tamamlandi.`, now)
+          pushNotification(data, {
+            title: 'Sevkiyat tamamlandi',
+            message: `${request.requestNo} muhur onaylandi ve sevkiyat kapatildi.`,
+            level: 'success',
+            shipmentRequestId,
+            targetRoleKeys: ['requester', 'admin', 'loading'],
+            targetCompanyIds: [request.requesterCompanyId],
+          })
+          return { ok: true, message: `${request.requestNo} muhur onaylandi. Sevkiyat tamamlandi.` }
+        }),
+
+      rejectSeal: (shipmentRequestId, note) =>
+        withMutation(set, (data, actor) => {
+          const request = requireRequest(data, shipmentRequestId)
+          if (!['gate', 'admin', 'superadmin'].includes(actorRoleKey(actor) ?? '')) {
+            throw new Error('Muhur reddi için güvenlik yetkisi gerekir.')
+          }
+          ensureStatusTransition(request.currentStatus, ['LOADED'], 'Muhur reddi yalnızca yükleme tamamlanmış kayıtlar için yapılabilir.')
+          if (!note.trim()) {
+            throw new Error('Red için açıklama notu zorunludur.')
+          }
+          const loadingOp = data.loadingOperations.find((item) => item.shipmentRequestId === shipmentRequestId)
+          if (loadingOp) {
+            loadingOp.sealRejected = true
+            loadingOp.sealRejectionNote = note.trim()
+            data.loadingOperations = data.loadingOperations.map((item) => (item.shipmentRequestId === shipmentRequestId ? loadingOp : item))
+          }
+          const now = new Date()
+          pushStatusTransition(data, request, 'LOADED', 'LOADING', actor.id, `Muhur reddedildi: ${note.trim()}`, now)
+          pushNotification(data, {
+            title: 'Muhur reddedildi',
+            message: `${request.requestNo} muhur numarasi reddedildi. Operatör düzeltme yapmalı.`,
+            level: 'warning',
+            shipmentRequestId,
+            targetRoleKeys: ['loading', 'admin'],
+            targetCompanyIds: [request.requesterCompanyId],
+          })
+          return { ok: true, message: `Muhur reddedildi. Operatörün düzeltmesi bekleniyor.` }
+        }),
+
+      createUser: (input) =>
+        withMutation(set, (data, actor) => {
+          if (!isAdminLike(actorRoleKey(actor))) {
+            throw new Error('Bu islem icin yetkiniz bulunmuyor.')
+          }
+
+          if (!input.firstName || !input.lastName || !input.email || !input.roleId || !input.companyId) {
+            throw new Error('Tum zorunlu alanlar doldurulmalidir.')
+          }
+
+          if (data.users.some((user) => user.email === input.email)) {
+            throw new Error('Bu e-posta adresi ile kayitli bir kullanici zaten mevcut.')
+          }
+
+          const newUser: User = {
+            id: `user-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            firstName: input.firstName,
+            lastName: input.lastName,
+            email: input.email,
+            phone: input.phone || '',
+            roleId: input.roleId,
+            companyId: input.companyId,
+            isActive: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            password: input.password || 'demo123',
+            mustChangePassword: true,
+          }
+
+          data.users.push(newUser)
+
+          pushAudit(data, {
+            entityType: 'User',
+            entityId: newUser.id,
+            actionType: 'user_created',
+            oldValue: '-',
+            newValue: `${newUser.firstName} ${newUser.lastName} (${newUser.email})`,
+            description: `Yeni kullanici olusturuldu: ${newUser.firstName} ${newUser.lastName}`,
+            performedByUserId: actor.id,
+            performedAt: new Date().toISOString(),
+          })
+
+          return { ok: true, message: `${newUser.firstName} ${newUser.lastName} basariyla eklendi.` }
+        }),
+
+      updateUser: (userId, input) =>
+        withMutation(set, (data, actor) => {
+          if (!isAdminLike(actorRoleKey(actor))) {
+            throw new Error('Bu islem icin yetkiniz bulunmuyor.')
+          }
+
+          const targetUser = data.users.find((user) => user.id === userId)
+          if (!targetUser) {
+            throw new Error('Kullanici bulunamadi.')
+          }
+
+          if (input.email && input.email !== targetUser.email && data.users.some((user) => user.email === input.email)) {
+            throw new Error('Bu e-posta adresi ile kayitli bir kullanici zaten mevcut.')
+          }
+
+          const oldValue = `${targetUser.firstName} ${targetUser.lastName} (${targetUser.email})`
+
+          if (input.firstName !== undefined) targetUser.firstName = input.firstName
+          if (input.lastName !== undefined) targetUser.lastName = input.lastName
+          if (input.email !== undefined) targetUser.email = input.email
+          if (input.phone !== undefined) targetUser.phone = input.phone
+          if (input.roleId !== undefined) targetUser.roleId = input.roleId
+          if (input.companyId !== undefined) targetUser.companyId = input.companyId
+          targetUser.updatedAt = new Date().toISOString()
+
+          pushAudit(data, {
+            entityType: 'User',
+            entityId: userId,
+            actionType: 'user_updated',
+            oldValue,
+            newValue: `${targetUser.firstName} ${targetUser.lastName} (${targetUser.email})`,
+            description: `Kullanici bilgileri guncellendi: ${targetUser.firstName} ${targetUser.lastName}`,
+            performedByUserId: actor.id,
+            performedAt: new Date().toISOString(),
+          })
+
+          return { ok: true, message: `${targetUser.firstName} ${targetUser.lastName} basariyla guncellendi.` }
+        }),
+
+      toggleUserStatus: (userId) =>
+        withMutation(set, (data, actor) => {
+          if (!isAdminLike(actorRoleKey(actor))) {
+            throw new Error('Bu islem icin yetkiniz bulunmuyor.')
+          }
+
+          const targetUser = data.users.find((user) => user.id === userId)
+          if (!targetUser) {
+            throw new Error('Kullanici bulunamadi.')
+          }
+
+          targetUser.isActive = !targetUser.isActive
+          targetUser.updatedAt = new Date().toISOString()
+
+          pushAudit(data, {
+            entityType: 'User',
+            entityId: userId,
+            actionType: 'user_status_toggled',
+            oldValue: targetUser.isActive ? 'Pasif' : 'Aktif',
+            newValue: targetUser.isActive ? 'Aktif' : 'Pasif',
+            description: `${targetUser.firstName} ${targetUser.lastName} ${targetUser.isActive ? 'aktif' : 'pasif'} yapildi.`,
+            performedByUserId: actor.id,
+            performedAt: new Date().toISOString(),
+          })
+
+          return { ok: true, message: `${targetUser.firstName} ${targetUser.lastName} ${targetUser.isActive ? 'aktif' : 'pasif'} yapildi.` }
+        }),
+
+      deleteUser: (userId) =>
+        withMutation(set, (data, actor) => {
+          if (!isAdminLike(actorRoleKey(actor))) {
+            throw new Error('Bu islem icin yetkiniz bulunmuyor.')
+          }
+
+          const targetUser = data.users.find((u) => u.id === userId)
+          if (!targetUser) {
+            throw new Error('Kullanici bulunamadi.')
+          }
+
+          // Aktif oturumu olan kullanıcı silinemez
+          const session = get().session
+          if (session.currentUserId === userId) {
+            throw new Error('Kendi hesabinizi silemezsiniz.')
+          }
+
+          const fullName = `${targetUser.firstName} ${targetUser.lastName}`
+          data.users = data.users.filter((u) => u.id !== userId)
+
+          pushAudit(data, {
+            entityType: 'User',
+            entityId: userId,
+            actionType: 'user_deleted',
+            oldValue: fullName,
+            newValue: '',
+            description: `Kullanici silindi: ${fullName} (${targetUser.email})`,
+            performedByUserId: actor.id,
+            performedAt: new Date().toISOString(),
+          })
+
+          return { ok: true, message: `${fullName} kalici olarak silindi.` }
+        }),
+
+      updateSystemSettings: (settings) =>
+        withMutation(set, (data, actor) => {
+          if (!isAdminLike(actorRoleKey(actor))) {
+            throw new Error('Bu islem icin yetkiniz bulunmuyor.')
+          }
+
+          const oldSettings = JSON.stringify(data.systemSettings)
+          data.systemSettings = { ...data.systemSettings, ...settings }
+
+          pushAudit(data, {
+            entityType: 'SystemSettings',
+            entityId: 'system',
+            actionType: 'settings_updated',
+            oldValue: oldSettings,
+            newValue: JSON.stringify(data.systemSettings),
+            description: 'Sistem ayarlari guncellendi.',
+            performedByUserId: actor.id,
+            performedAt: new Date().toISOString(),
+          })
+
+          return { ok: true, message: 'Sistem ayarlari basariyla guncellendi.' }
         }),
 
       toggleCompanyStatus: (companyId) =>
@@ -857,7 +1291,7 @@ export const useAppStore = create<AppStore>()(
     }),
     {
       name: 'flowdock-logistics-demo',
-      version: 4,
+      version: 9,
       migrate: (persistedState: unknown, version) => {
         if (!persistedState || typeof persistedState !== 'object') {
           return persistedState as AppStore
@@ -920,6 +1354,82 @@ export const useAppStore = create<AppStore>()(
               (!item.shipmentRequestId || !seededRequestIds.has(item.shipmentRequestId)),
           )
           state.session = { currentUserId: null }
+        }
+
+        if (version < 5 && state.data) {
+          const data = state.data as DemoData & { systemSettings?: DemoData['systemSettings'] }
+          if (!data.systemSettings) {
+            data.systemSettings = {
+              companyName: 'Gratis Lojistik',
+              workStartHour: '08:00',
+              workEndHour: '18:00',
+              maxDailyShipments: 50,
+              defaultVehicleType: 'TIR',
+              notificationsEnabled: true,
+              autoAssignRamp: false,
+              maintenanceMode: false,
+            }
+          }
+
+          if (!data.roles.some((role) => role.id === 'role-superadmin')) {
+            data.roles.push({
+              id: 'role-superadmin',
+              key: 'superadmin',
+              name: 'Sistem Yoneticisi',
+              permissions: ['*', 'system:*', 'user:manage', 'settings:manage', 'audit:view'],
+            })
+          }
+
+          if (!data.users.some((user) => user.id === 'user-superadmin-kerem')) {
+            data.users.push({
+              id: 'user-superadmin-kerem',
+              firstName: 'Kerem',
+              lastName: 'Başaran',
+              email: 'kerem.basaran@gratis.demo',
+              phone: '+905301234567',
+              roleId: 'role-superadmin',
+              companyId: 'company-gratis',
+              isActive: true,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            })
+          }
+
+          state.session = { currentUserId: null }
+        }
+
+        if (version < 6) {
+          // loadingZones format changed from string[] to {name, locationId}[]
+          const zones = (state as AppStore & { loadingZones: unknown }).loadingZones
+          if (Array.isArray(zones) && zones.length > 0 && typeof zones[0] === 'string') {
+            ;(state as AppStore & { loadingZones: unknown }).loadingZones = []
+          }
+          if (state.data) {
+            const locs = state.data.locations ?? []
+            if (!locs.some((l) => l.id === 'loc-diyarbakir')) {
+              locs.push({ id: 'loc-diyarbakir', name: 'Diyarbakır', address: 'Diyarbakır Dagitim Bolgesi', companyId: 'company-gratis', isActive: true })
+              state.data.locations = locs
+            }
+          }
+        }
+
+        if (version < 8) {
+          // Clear any loadingZones whose locationId doesn't match a real data.locations entry
+          // (old entries used hardcoded loc-* IDs; real data uses UUIDs from the backend)
+          if (state.data && Array.isArray(state.loadingZones)) {
+            const validIds = new Set((state.data.locations ?? []).map((l) => l.id))
+            state.loadingZones = state.loadingZones.filter(
+              (z) => typeof z === 'object' && z !== null && validIds.has(z.locationId),
+            )
+          }
+        }
+
+        if (version < 9 && state.data?.users) {
+          state.data.users = state.data.users.map((user) => ({
+            ...user,
+            password: user.password ?? 'demo123',
+            mustChangePassword: user.mustChangePassword ?? false,
+          }))
         }
 
         return state
@@ -1111,6 +1621,14 @@ function findOrCreateRamp(data: DemoData, request: ShipmentRequest, rampId: stri
 
   data.ramps.unshift(ramp)
   return ramp
+}
+
+function actorRoleKey(actor: User): string {
+  return actor.roleKey ?? actor.roleId
+}
+
+function isAdminLike(roleIdOrKey: string) {
+  return roleIdOrKey === 'role-admin' || roleIdOrKey === 'role-superadmin' || roleIdOrKey === 'admin' || roleIdOrKey === 'superadmin'
 }
 
 const gateActionMessages: Record<GateAction, string> = {

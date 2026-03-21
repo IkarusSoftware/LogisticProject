@@ -23,6 +23,7 @@ import {
   getStatusMeta,
 } from '../domain/workflow'
 import { useAppStore } from '../store/app-store'
+import { hasTokens, shipmentApi } from '../services/api'
 
 type SupplierSupplyForm = {
   tractorPlate: string
@@ -68,7 +69,10 @@ export function ShipmentListPage() {
   const finalizeLoading = useAppStore((state) => state.finalizeLoading)
   const currentUser = getCurrentUser(data, session.currentUserId)
   const roleKey = getCurrentRoleKey(currentUser)
-  const visibleRequests = getVisibleRequests(data, currentUser).filter((request) => !isSeedRequest(request.id))
+  const ACTIVE_STATUSES_EXCLUDE = ['COMPLETED', 'REJECTED', 'CANCELLED', 'VEHICLE_CANCELLED']
+  const visibleRequests = getVisibleRequests(data, currentUser).filter(
+    (request) => !isSeedRequest(request.id) && !ACTIVE_STATUSES_EXCLUDE.includes(request.currentStatus),
+  )
   const statusMode = roleKey === 'control' ? 'workflow' : 'procurement'
 
   const [filters, setFilters] = useState(initialShipmentFilters)
@@ -85,26 +89,48 @@ export function ShipmentListPage() {
   const filteredRequests = applyShipmentFilters(visibleRequests, data, filters, statusMode)
   const selectedRequest = filteredRequests.find((request) => request.id === selectedId) ?? visibleRequests.find((request) => request.id === selectedId)
 
-  function handleCancel() {
+  async function handleCancel() {
     if (!selectedRequest) {
       return
     }
 
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.cancel(selectedRequest.id, { note: cancelNote })
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        return
+      } catch { /* fallback */ }
+    }
     const result = cancelRequest(selectedRequest.id, cancelNote)
     setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
   }
 
-  function handleAdminVehicleCancel(shipmentRequestId: string) {
+  async function handleAdminVehicleCancel(shipmentRequestId: string) {
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.cancelVehicle(shipmentRequestId)
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        return
+      } catch { /* fallback */ }
+    }
     const result = cancelVehicleRequest(shipmentRequestId)
     setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
   }
 
-  function handleAdminRequestCancel() {
+  async function handleAdminRequestCancel() {
     if (!selectedRequest) {
       return
     }
 
-    const result = cancelRequest(selectedRequest.id, cancelNote || 'Talep vardiya amiri tarafindan iptal edildi.')
+    const note = cancelNote || 'Talep vardiya amiri tarafindan iptal edildi.'
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.cancel(selectedRequest.id, { note })
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        return
+      } catch { /* fallback */ }
+    }
+    const result = cancelRequest(selectedRequest.id, note)
     setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
   }
 
@@ -130,16 +156,33 @@ export function ShipmentListPage() {
     setSupplyForm(EMPTY_SUPPLY_FORM)
   }
 
-  function handleAcceptCorrection(shipmentRequestId: string) {
-    const result = acceptSecurityCorrection(shipmentRequestId)
-    setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
-
-    if (result.ok) {
+  async function handleAcceptCorrection(shipmentRequestId: string) {
+    let ok = false
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.acceptCorrection(shipmentRequestId)
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        ok = result.ok
+      } catch { /* fallback */ }
+    }
+    if (!ok) {
+      const result = acceptSecurityCorrection(shipmentRequestId)
+      setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+      ok = result.ok
+    }
+    if (ok) {
       handleStartSupplyEdit(shipmentRequestId)
     }
   }
 
-  function handleCancelCorrection(shipmentRequestId: string) {
+  async function handleCancelCorrection(shipmentRequestId: string) {
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.cancelVehicle(shipmentRequestId)
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        return
+      } catch { /* fallback */ }
+    }
     const result = cancelVehicleRequest(shipmentRequestId)
     setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
   }
@@ -148,7 +191,7 @@ export function ShipmentListPage() {
     setSupplyForm((current) => ({ ...current, [field]: value }))
   }
 
-  function handleSupplySubmit(shipmentRequestId: string) {
+  async function handleSupplySubmit(shipmentRequestId: string) {
     const driverName = splitDriverFullName(supplyForm.driverFullName)
     if (!driverName) {
       setMessage({ kind: 'error', text: 'Sofor ad soyad bilgisini tek alanda eksiksiz girin.' })
@@ -163,10 +206,21 @@ export function ShipmentListPage() {
       driverPhone: supplyForm.driverPhone,
     }
 
-    const result = submitVehicleAssignment(shipmentRequestId, payload)
-    setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+    let ok = false
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.submitVehicleAssignment(shipmentRequestId, payload)
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        ok = result.ok
+      } catch { /* fallback */ }
+    }
+    if (!ok) {
+      const result = submitVehicleAssignment(shipmentRequestId, payload)
+      setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+      ok = result.ok
+    }
 
-    if (result.ok) {
+    if (ok) {
       setEditingSupplyRequestId(null)
       setSupplyForm(EMPTY_SUPPLY_FORM)
     }
@@ -213,29 +267,54 @@ export function ShipmentListPage() {
     setSealForm((current) => ({ ...current, [field]: value }))
   }
 
-  function handleRampSubmit(shipmentRequestId: string) {
+  async function handleRampSubmit(shipmentRequestId: string) {
     if (!selectedRampId) {
       setMessage({ kind: 'error', text: 'Kaydetmeden once bir rampa secin.' })
       return
     }
 
-    const result = assignRamp(shipmentRequestId, { rampId: selectedRampId, note: '' })
-    setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+    let ok = false
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.assignRamp(shipmentRequestId, { rampId: selectedRampId })
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        ok = result.ok
+      } catch { /* fallback */ }
+    }
+    if (!ok) {
+      const result = assignRamp(shipmentRequestId, { rampId: selectedRampId, note: '' })
+      setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+      ok = result.ok
+    }
 
-    if (result.ok) {
+    if (ok) {
       setEditingRampRequestId(null)
       setSelectedRampId('')
     }
   }
 
-  function handleSealSubmit(shipmentRequestId: string) {
-    const result = finalizeLoading(shipmentRequestId, {
-      sealNumber: sealForm.sealNumber,
-      note: sealForm.note,
-    })
-    setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+  async function handleSealSubmit(shipmentRequestId: string) {
+    let ok = false
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.finalize(shipmentRequestId, {
+          sealNumber: sealForm.sealNumber,
+          note: sealForm.note,
+        })
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        ok = result.ok
+      } catch { /* fallback */ }
+    }
+    if (!ok) {
+      const result = finalizeLoading(shipmentRequestId, {
+        sealNumber: sealForm.sealNumber,
+        note: sealForm.note,
+      })
+      setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+      ok = result.ok
+    }
 
-    if (result.ok) {
+    if (ok) {
       setEditingSealRequestId(null)
       setSealForm(EMPTY_SEAL_FORM)
     }
@@ -268,7 +347,7 @@ export function ShipmentListPage() {
               <Button variant="danger" size="sm" onClick={handleCancel}>
                 Iptal talebi baslat
               </Button>
-            ) : roleKey === 'admin' ? (
+            ) : (roleKey === 'admin' || roleKey === 'superadmin') ? (
               <Button variant="secondary" size="sm" onClick={handleAdminRequestCancel}>
                 Talebi Iptal Et
               </Button>
@@ -276,7 +355,7 @@ export function ShipmentListPage() {
           ) : undefined
         }
       >
-        {selectedRequest && ['requester', 'admin'].includes(roleKey ?? '') && canCancelRequest(selectedRequest) && (
+        {selectedRequest && ['requester', 'admin', 'superadmin'].includes(roleKey ?? '') && canCancelRequest(selectedRequest) && (
           <div className="action-strip">
             <Textarea
               rows={2}
@@ -330,9 +409,9 @@ export function ShipmentListPage() {
             statusMode={statusMode}
             showPhoneColumn
             showRequestDateColumn
-            showOperationalTimeColumns={roleKey === 'admin'}
+            showOperationalTimeColumns={(roleKey === 'admin' || roleKey === 'superadmin')}
             renderRowActions={
-              roleKey === 'admin'
+              (roleKey === 'admin' || roleKey === 'superadmin')
                 ? (request) =>
                     canCancelRequest(request) ? (
                       <Button variant="danger" size="sm" onClick={() => handleAdminVehicleCancel(request.id)}>

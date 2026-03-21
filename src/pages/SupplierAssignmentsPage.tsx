@@ -4,6 +4,7 @@ import { ShipmentFiltersBar, ShipmentTable, applyShipmentFilters, initialShipmen
 import { Button, Card, FormField, InlineMessage, Input, PageHeader } from '../components/ui'
 import { getCurrentRoleKey, getCurrentUser, getShipmentDetail, getVisibleRequests } from '../domain/selectors'
 import { useAppStore } from '../store/app-store'
+import { hasTokens, shipmentApi } from '../services/api'
 
 export function SupplierAssignmentsPage() {
   const data = useAppStore((state) => state.data)
@@ -40,12 +41,19 @@ export function SupplierAssignmentsPage() {
     })
   }, [selectedDetail?.vehicleAssignment, selectedId])
 
-  function handleSupplySubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSupplySubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!selectedRequest) {
       return
     }
 
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.submitVehicleAssignment(selectedRequest.id, supplyForm)
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        return
+      } catch { /* fallback */ }
+    }
     const result = submitVehicleAssignment(selectedRequest.id, supplyForm)
     setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
   }

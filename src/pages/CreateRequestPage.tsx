@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { addDays, format } from 'date-fns'
 
 import { Badge, Button, Card, InlineMessage, PageHeader } from '../components/ui'
@@ -6,17 +6,16 @@ import { getCurrentUser, getShipmentDetail, getVisibleRequests } from '../domain
 import type { CreateRequestInput, DemoData, RequestRevisionInput, ShipmentStatus } from '../domain/models'
 import { canCancelRequest, formatDateLabel, formatDateTimeLabel, formatVehicleTypeLabel, getExitAt, getRampTakenAt, getStatusMeta } from '../domain/workflow'
 import { useAppStore } from '../store/app-store'
+import { hasTokens, shipmentApi } from '../services/api'
 
 type DraftRequest = CreateRequestInput & {
   draftId: string
 }
 
-const CREATE_LOCATION_IDS = ['loc-izmir', 'loc-istanbul', 'loc-ankara', 'loc-adana', 'loc-bursa']
-const CREATE_SUPPLIER_IDS = ['company-anadolu', 'company-kuzey', 'company-trakya']
-
 export function CreateRequestPage() {
   const data = useAppStore((state) => state.data)
   const session = useAppStore((state) => state.session)
+  const loadingZones = useAppStore((state) => state.loadingZones)
   const createShipmentRequests = useAppStore((state) => state.createShipmentRequests)
   const clearActiveRequests = useAppStore((state) => state.clearActiveRequests)
   const reviseActiveRequest = useAppStore((state) => state.reviseActiveRequest)
@@ -26,16 +25,45 @@ export function CreateRequestPage() {
     (request) => !['COMPLETED', 'REJECTED', 'CANCELLED'].includes(request.currentStatus),
   )
 
-  const locationOptions = useMemo(
-    () => CREATE_LOCATION_IDS.map((id) => data.locations.find((location) => location.id === id)).filter(isPresent),
-    [data.locations],
-  )
   const supplierOptions = useMemo(
-    () => CREATE_SUPPLIER_IDS.map((id) => data.companies.find((company) => company.id === id)).filter(isPresent),
+    () => data.companies.filter((c) => (c.type === 'SUPPLIER' || c.type === 'LOGISTICS') && c.status === 'ACTIVE'),
     [data.companies],
   )
 
-  const [drafts, setDrafts] = useState<DraftRequest[]>(() => [createDraftRow()])
+  // Zones configured by admin filter which locations are shown.
+  // IDs always come from data.locations so validation in the store always passes.
+  const locationOptions = useMemo(() => {
+    const activeLocs = data.locations.filter((l) => l.isActive)
+    if (!Array.isArray(loadingZones) || loadingZones.length === 0) {
+      return activeLocs.map((l) => ({ id: l.id, name: l.name }))
+    }
+    const validZones = loadingZones.filter(
+      (z): z is { name: string; locationId: string } => typeof z === 'object' && z !== null && Boolean(z.locationId),
+    )
+    if (validZones.length === 0) return activeLocs.map((l) => ({ id: l.id, name: l.name }))
+    // Match by exact locationId first, fall back to name match (handles legacy loc-* IDs)
+    const filtered = activeLocs.filter((l) =>
+      validZones.some((z) => z.locationId === l.id || z.name.toLowerCase() === l.name.toLowerCase()),
+    )
+    return filtered.length > 0 ? filtered.map((l) => ({ id: l.id, name: l.name })) : activeLocs.map((l) => ({ id: l.id, name: l.name }))
+  }, [loadingZones, data.locations])
+
+  const [drafts, setDrafts] = useState<DraftRequest[]>(() => [
+    createDraftRow(locationOptions[0]?.id ?? '', supplierOptions[0]?.id ?? ''),
+  ])
+
+  // Keep draft location and supplier IDs in sync when available options change
+  useEffect(() => {
+    const locIds = new Set(locationOptions.map((l) => l.id))
+    const supIds = new Set(supplierOptions.map((c) => c.id))
+    setDrafts((prev) =>
+      prev.map((d) => ({
+        ...d,
+        targetLocationId: locIds.has(d.targetLocationId) ? d.targetLocationId : (locationOptions[0]?.id ?? d.targetLocationId),
+        assignedSupplierCompanyId: supIds.has(d.assignedSupplierCompanyId) ? d.assignedSupplierCompanyId : (supplierOptions[0]?.id ?? d.assignedSupplierCompanyId),
+      }))
+    )
+  }, [locationOptions, supplierOptions])
   const [editingRequestId, setEditingRequestId] = useState<string | null>(null)
   const [revisionForm, setRevisionForm] = useState<RequestRevisionInput>({ vehicleType: 'TIR', loadTime: '09:00' })
   const [message, setMessage] = useState<{ kind: 'success' | 'error'; text: string } | null>(null)
@@ -45,29 +73,57 @@ export function CreateRequestPage() {
   }
 
   function handleAddRow() {
-    setDrafts((current) => [...current, createDraftRow()])
+    setDrafts((current) => [...current, createDraftRow(locationOptions[0]?.id ?? '', supplierOptions[0]?.id ?? '')])
     setMessage(null)
   }
 
   function handleRemoveRow(draftId: string) {
     setDrafts((current) => {
       const remaining = current.filter((draft) => draft.draftId !== draftId)
-      return remaining.length > 0 ? remaining : [createDraftRow()]
+      return remaining.length > 0 ? remaining : [createDraftRow(locationOptions[0]?.id ?? '', supplierOptions[0]?.id ?? '')]
     })
   }
 
-  function handleSubmitAll() {
-    const result = createShipmentRequests(
-      drafts.map(({ draftId, ...request }) => normalizeDraftRequest(request, data)),
-    )
-    setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+  async function handleSubmitAll() {
+    const normalized = drafts.map(({ draftId, ...request }) => normalizeDraftRequest(request, data))
 
-    if (result.ok) {
-      setDrafts([createDraftRow()])
+    if (hasTokens()) {
+      try {
+        const items = normalized.map((r) => ({
+          targetLocationId: r.targetLocationId,
+          assignedSupplierCompanyId: r.assignedSupplierCompanyId,
+          vehicleType: r.vehicleType,
+          requestDate: r.requestDate,
+          loadDate: r.loadDate,
+          loadTime: r.loadTime,
+          quantityInfo: r.quantityInfo,
+          productInfo: r.productInfo,
+          notes: r.notes ?? '',
+        }))
+        const result = await shipmentApi.createBatch({ items })
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        if (result.ok) {
+          // Also persist to local Zustand so requests survive user switches
+          createShipmentRequests(normalized)
+          setDrafts([createDraftRow(locationOptions[0]?.id ?? '', supplierOptions[0]?.id ?? '')])
+        }
+        return
+      } catch { /* fallback */ }
     }
+
+    const result = createShipmentRequests(normalized)
+    setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+    if (result.ok) setDrafts([createDraftRow(locationOptions[0]?.id ?? '', supplierOptions[0]?.id ?? '')])
   }
 
-  function handleClearActiveRequests() {
+  async function handleClearActiveRequests() {
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.clearActive()
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        return
+      } catch { /* fallback */ }
+    }
     const result = clearActiveRequests()
     setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
   }
@@ -78,26 +134,39 @@ export function CreateRequestPage() {
     setMessage(null)
   }
 
-  function handleSaveRevision(shipmentRequestId: string) {
+  async function handleSaveRevision(shipmentRequestId: string) {
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.revise(shipmentRequestId, {
+          vehicleType: revisionForm.vehicleType,
+          loadTime: revisionForm.loadTime,
+        })
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        if (result.ok) setEditingRequestId(null)
+        return
+      } catch { /* fallback */ }
+    }
     const result = reviseActiveRequest(shipmentRequestId, revisionForm)
     setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
-
-    if (result.ok) {
-      setEditingRequestId(null)
-    }
+    if (result.ok) setEditingRequestId(null)
   }
 
   function handleCancelRevision() {
     setEditingRequestId(null)
   }
 
-  function handleCancelVehicle(shipmentRequestId: string) {
+  async function handleCancelVehicle(shipmentRequestId: string) {
+    if (hasTokens()) {
+      try {
+        const result = await shipmentApi.cancelVehicle(shipmentRequestId)
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        if (result.ok && editingRequestId === shipmentRequestId) setEditingRequestId(null)
+        return
+      } catch { /* fallback */ }
+    }
     const result = cancelVehicleRequest(shipmentRequestId)
     setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
-
-    if (result.ok && editingRequestId === shipmentRequestId) {
-      setEditingRequestId(null)
-    }
+    if (result.ok && editingRequestId === shipmentRequestId) setEditingRequestId(null)
   }
 
   return (
@@ -152,10 +221,8 @@ export function CreateRequestPage() {
                       value={draft.targetLocationId}
                       onChange={(event) => handleRowChange(draft.draftId, 'targetLocationId', event.target.value)}
                     >
-                      {locationOptions.map((location) => (
-                        <option key={location.id} value={location.id}>
-                          {location.name}
-                        </option>
+                      {locationOptions.map((loc) => (
+                        <option key={loc.id} value={loc.id}>{loc.name}</option>
                       ))}
                     </select>
                   </td>
@@ -345,17 +412,17 @@ export function CreateRequestPage() {
   )
 }
 
-function createDraftRow(): DraftRequest {
+function createDraftRow(defaultZone = '', defaultSupplier = ''): DraftRequest {
   return {
     draftId: `draft-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    targetLocationId: 'loc-izmir',
+    targetLocationId: defaultZone,
     vehicleType: 'TIR',
     requestDate: format(new Date(), 'yyyy-MM-dd'),
     loadDate: format(addDays(new Date(), 1), 'yyyy-MM-dd'),
     loadTime: '09:00',
-    assignedSupplierCompanyId: 'company-anadolu',
+    assignedSupplierCompanyId: defaultSupplier,
     quantityInfo: '1 tir',
-    productInfo: 'Izmir bolgesi sevkiyati',
+    productInfo: 'Sevkiyat talebi',
     notes: '',
   }
 }
@@ -368,9 +435,6 @@ function getCompanyName(data: DemoData, companyId: string) {
   return data.companies.find((company) => company.id === companyId)?.name ?? '-'
 }
 
-function isPresent<T>(value: T | null | undefined): value is T {
-  return value != null
-}
 
 function normalizeDraftRequest(request: CreateRequestInput, data: DemoData): CreateRequestInput {
   const locationName = getLocationName(data, request.targetLocationId)
