@@ -34,4 +34,11 @@ public class UserProfile
     public string RoleName { get; set; } = string.Empty;
     public Guid CompanyId { get; set; }
     public string CompanyName { get; set; } = string.Empty;
+    public bool MustChangePassword { get; set; }
+}
+
+public class ChangePasswordRequest
+{
+    public string CurrentPassword { get; set; } = string.Empty;
+    public string NewPassword { get; set; } = string.Empty;
 }

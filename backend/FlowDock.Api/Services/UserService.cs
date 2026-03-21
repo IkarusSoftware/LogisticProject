@@ -14,6 +14,7 @@ public interface IUserService
     Task<OperationResult> CreateAsync(CreateUserRequest request);
     Task<OperationResult> UpdateAsync(Guid id, UpdateUserRequest request);
     Task<OperationResult> ToggleStatusAsync(Guid id);
+    Task<OperationResult> DeleteAsync(Guid id);
 }
 
 public class UserService : IUserService
@@ -109,6 +110,7 @@ public class UserService : IUserService
             RoleId = role.Id,
             CompanyId = request.CompanyId,
             IsActive = true,
+            MustChangePassword = true,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
         };
@@ -221,6 +223,39 @@ public class UserService : IUserService
 
         await _db.SaveChangesAsync();
         return OperationResult.Success($"{user.FirstName} {user.LastName} {statusText} yapildi.");
+    }
+
+    public async Task<OperationResult> DeleteAsync(Guid id)
+    {
+        var requestingUserId = _currentUser.UserId ?? Guid.Empty;
+        if (id == requestingUserId)
+            return OperationResult.Fail("Kendi hesabinizi silemezsiniz.");
+
+        var user = await _db.Users.FindAsync(id);
+        if (user == null)
+            return OperationResult.Fail("Kullanici bulunamadi.");
+
+        var fullName = $"{user.FirstName} {user.LastName}";
+        var email = user.Email;
+
+        _db.Users.Remove(user);
+
+        _ = _auditFileLogger.WriteAsync(new Models.AuditLogEntry
+        {
+            Id = Guid.NewGuid().ToString(),
+            EntityType = "User",
+            EntityId = id.ToString(),
+            ActionType = "user_deleted",
+            OldValue = fullName,
+            NewValue = string.Empty,
+            Description = $"Kullanici silindi: {fullName} ({email})",
+            PerformedByUserId = _currentUser.UserId ?? Guid.Empty,
+            PerformedByName = _currentUser.FullName ?? "-",
+            PerformedAt = DateTime.UtcNow,
+        });
+
+        await _db.SaveChangesAsync();
+        return OperationResult.Success($"{fullName} kalici olarak silindi.");
     }
 
     private static UserDto MapDto(User user) => new()

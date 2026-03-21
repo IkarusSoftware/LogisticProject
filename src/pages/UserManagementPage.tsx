@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { AlertTriangle, Trash2 } from 'lucide-react'
 
 import { ROLE_DEFINITIONS } from '../domain/constants'
 import type { CreateUserInput, UpdateUserInput } from '../domain/models'
@@ -18,6 +19,7 @@ const EMPTY_FORM: CreateUserInput = {
   phone: '',
   roleId: '',
   companyId: '',
+  password: '',
 }
 
 export function UserManagementPage() {
@@ -25,9 +27,12 @@ export function UserManagementPage() {
   const createUser = useAppStore((state) => state.createUser)
   const updateUser = useAppStore((state) => state.updateUser)
   const toggleUserStatus = useAppStore((state) => state.toggleUserStatus)
+  const deleteUser = useAppStore((state) => state.deleteUser)
+  const currentUserId = useAppStore((state) => state.session.currentUserId)
 
   const [mode, setMode] = useState<FormMode>('list')
   const [editingUserId, setEditingUserId] = useState<string | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; fullName: string } | null>(null)
   const [form, setForm] = useState<CreateUserInput>(EMPTY_FORM)
   const [message, setMessage] = useState<{ kind: 'success' | 'error'; text: string } | null>(null)
 
@@ -144,6 +149,15 @@ export function UserManagementPage() {
             >
               {row.original.isActive ? 'Pasif Yap' : 'Aktif Yap'}
             </Button>
+            {row.original.id !== currentUserId && (
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={() => setDeleteConfirm({ id: row.original.id, fullName: row.original.fullName })}
+              >
+                <Trash2 size={13} />
+              </Button>
+            )}
           </div>
         ),
         meta: { noExport: true },
@@ -184,6 +198,7 @@ export function UserManagementPage() {
         phone: user.phone,
         roleId,
         companyId,
+        password: '',
       })
       setMessage(null)
     } else {
@@ -198,6 +213,7 @@ export function UserManagementPage() {
         phone: user.phone,
         roleId: user.roleId,
         companyId: user.companyId,
+        password: '',
       })
       setMessage(null)
     }
@@ -227,6 +243,7 @@ export function UserManagementPage() {
             phone: form.phone,
             roleKey,
             companyId,
+            password: form.password || undefined,
           })
           setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
           if (result.ok) {
@@ -281,6 +298,33 @@ export function UserManagementPage() {
     }
   }
 
+  async function handleConfirmDelete() {
+    if (!deleteConfirm) return
+    const { id, fullName } = deleteConfirm
+    setDeleteConfirm(null)
+
+    if (useApi) {
+      try {
+        const result = await userApi.delete(id)
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        if (result.ok) {
+          // Optimistic: remove from apiUsers without re-fetch (re-fetch would bring it back if API failed)
+          setApiUsers((prev) => prev ? prev.filter((u) => u.id !== id) : prev)
+          // Also remove from local Zustand for consistency
+          deleteUser(id)
+        }
+      } catch {
+        // API unavailable – fall back to local only
+        const result = deleteUser(id)
+        setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+        if (result.ok) setApiUsers((prev) => prev ? prev.filter((u) => u.id !== id) : prev)
+      }
+    } else {
+      const result = deleteUser(id)
+      setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+    }
+  }
+
   async function handleToggleStatus(userId: string) {
     if (useApi) {
       try {
@@ -308,6 +352,39 @@ export function UserManagementPage() {
 
   return (
     <div className="page-stack">
+      {/* Delete Confirm Modal */}
+      {deleteConfirm && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.55)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
+          onClick={() => setDeleteConfirm(null)}
+        >
+          <div
+            style={{ background: '#fff', borderRadius: 16, padding: '2rem', maxWidth: 420, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', marginBottom: '1.25rem' }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <AlertTriangle size={22} color="#DC2626" />
+              </div>
+              <div>
+                <div style={{ fontFamily: 'Manrope', fontWeight: 700, fontSize: '1rem', color: '#0F172A' }}>Kullanıcıyı Sil</div>
+                <div style={{ fontSize: '0.8125rem', color: '#64748B', marginTop: '0.125rem' }}>Bu işlem geri alınamaz.</div>
+              </div>
+            </div>
+            <p style={{ fontSize: '0.875rem', color: '#334155', margin: '0 0 1.5rem', lineHeight: 1.6 }}>
+              <strong style={{ color: '#DC2626' }}>{deleteConfirm.fullName}</strong> adlı kullanıcıyı kalıcı olarak silmek istediğinizden emin misiniz? Kullanıcıya ait tüm oturum ve atama bilgileri kaybolacaktır.
+            </p>
+            <div style={{ display: 'flex', gap: '0.625rem', justifyContent: 'flex-end' }}>
+              <Button variant="secondary" onClick={() => setDeleteConfirm(null)}>Vazgeç</Button>
+              <Button variant="danger" onClick={handleConfirmDelete}>
+                <Trash2 size={14} />
+                Evet, Kalıcı Olarak Sil
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <PageHeader
         eyebrow="Sistem"
         title={`Kullanici Yonetimi${useApi && apiUsers ? ' (API)' : ''}`}
@@ -381,6 +458,17 @@ export function UserManagementPage() {
                   ))}
                 </Select>
               </FormField>
+              {mode === 'create' && (
+                <FormField label="Başlangıç Şifresi" hint="Kullanıcı ilk girişinde değiştirmek zorunda kalacak.">
+                  <Input
+                    type="text"
+                    value={form.password}
+                    onChange={(e) => handleFormChange('password', e.target.value)}
+                    placeholder="Örn: Gratis2026!"
+                    required
+                  />
+                </FormField>
+              )}
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
               <Button type="button" variant="secondary" onClick={handleCancel}>

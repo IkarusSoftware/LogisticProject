@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Bell, Building2, LogOut, RefreshCw, UserRound } from 'lucide-react'
+import { Bell, Building2, KeyRound, LogOut, RefreshCw, UserRound } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 
 import { NAVIGATION_ITEMS } from '../domain/constants'
@@ -81,7 +81,7 @@ export function AppShell({ children }: PropsWithChildren) {
 
   const navigationItems = NAVIGATION_ITEMS.filter((item) => item.roleKeys.includes(roleKey ?? 'requester')).filter((item) =>
     roleKey === 'superadmin'
-      ? ['/dashboard', '/talepler', '/raporlar', '/kullanici-yonetim', '/aktivite-log', '/ayarlar'].includes(item.path)
+      ? ['/dashboard', '/talepler', '/raporlar', '/yukleme-bolgeleri', '/tedarikci-firmalar', '/rol-yonetimi', '/kullanici-rol-esleme', '/kullanici-yonetim', '/aktivite-log', '/ayarlar'].includes(item.path)
       : roleKey === 'admin'
         ? ['/dashboard', '/talep-olustur', '/talepler', '/gecmis', '/raporlar'].includes(item.path)
         : roleKey === 'supplier'
@@ -167,6 +167,10 @@ export function AppShell({ children }: PropsWithChildren) {
                 <UserRound size={13} />
                 <span>{currentUser?.email}</span>
               </div>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/profil')}>
+                <KeyRound size={15} />
+                Profil
+              </Button>
               <Button variant="ghost" size="sm" onClick={() => { logout(); navigate('/login') }}>
                 <LogOut size={15} />
                 Çıkış

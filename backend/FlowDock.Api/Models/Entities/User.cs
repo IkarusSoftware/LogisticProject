@@ -11,6 +11,7 @@ public class User
     public Guid RoleId { get; set; }
     public Guid CompanyId { get; set; }
     public bool IsActive { get; set; }
+    public bool MustChangePassword { get; set; }
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiresAt { get; set; }
     public DateTime CreatedAt { get; set; }

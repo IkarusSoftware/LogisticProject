@@ -1018,6 +1018,14 @@ button, input, select, textarea {
   background: var(--primary-soft);
 }
 
+.data-table__row--highlighted {
+  background: #f0fdfa !important;
+}
+
+.data-table__row--highlighted:hover {
+  background: #f0fdfa !important;
+}
+
 .table-input {
   width: 100%;
   min-width: 120px;

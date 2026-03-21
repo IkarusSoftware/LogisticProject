@@ -69,7 +69,10 @@ export function ShipmentListPage() {
   const finalizeLoading = useAppStore((state) => state.finalizeLoading)
   const currentUser = getCurrentUser(data, session.currentUserId)
   const roleKey = getCurrentRoleKey(currentUser)
-  const visibleRequests = getVisibleRequests(data, currentUser).filter((request) => !isSeedRequest(request.id))
+  const ACTIVE_STATUSES_EXCLUDE = ['COMPLETED', 'REJECTED', 'CANCELLED', 'VEHICLE_CANCELLED']
+  const visibleRequests = getVisibleRequests(data, currentUser).filter(
+    (request) => !isSeedRequest(request.id) && !ACTIVE_STATUSES_EXCLUDE.includes(request.currentStatus),
+  )
   const statusMode = roleKey === 'control' ? 'workflow' : 'procurement'
 
   const [filters, setFilters] = useState(initialShipmentFilters)

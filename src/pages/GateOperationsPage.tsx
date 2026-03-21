@@ -14,11 +14,19 @@ export function GateOperationsPage() {
   const session = useAppStore((state) => state.session)
   const requestSecurityCorrection = useAppStore((state) => state.requestSecurityCorrection)
   const registerVehicleRecord = useAppStore((state) => state.registerVehicleRecord)
+  const approveSeal = useAppStore((state) => state.approveSeal)
+  const rejectSeal = useAppStore((state) => state.rejectSeal)
   const currentUser = getCurrentUser(data, session.currentUserId)
 
   const [search, setSearch] = useState('')
   const [actionNotes, setActionNotes] = useState<Record<string, string>>({})
+  const [sealNotes, setSealNotes] = useState<Record<string, string>>({})
   const [feedback, setFeedback] = useState<{ kind: 'success' | 'error'; text: string } | null>(null)
+
+  const sealQueue = useMemo(
+    () => getVisibleRequests(data, currentUser).filter((request) => request.currentStatus === 'LOADED'),
+    [data, currentUser],
+  )
 
   const queue = useMemo(() => {
     return getVisibleRequests(data, currentUser)
@@ -70,6 +78,22 @@ export function GateOperationsPage() {
     }
   }
 
+  async function handleApproveSeal(shipmentRequestId: string) {
+    const result = approveSeal(shipmentRequestId)
+    setFeedback({ kind: result.ok ? 'success' : 'error', text: result.message })
+  }
+
+  async function handleRejectSeal(shipmentRequestId: string) {
+    const note = sealNotes[shipmentRequestId]?.trim()
+    if (!note) {
+      setFeedback({ kind: 'error', text: 'Red için açıklama notu zorunludur.' })
+      return
+    }
+    const result = rejectSeal(shipmentRequestId, note)
+    setFeedback({ kind: result.ok ? 'success' : 'error', text: result.message })
+    if (result.ok) setSealNotes((current) => ({ ...current, [shipmentRequestId]: '' }))
+  }
+
   async function handleRegisterVehicle(shipmentRequestId: string) {
     const note = actionNotes[shipmentRequestId] ?? ''
     if (hasTokens()) {
@@ -96,6 +120,61 @@ export function GateOperationsPage() {
       />
 
       {feedback && <InlineMessage kind={feedback.kind} message={feedback.text} />}
+
+      {sealQueue.length > 0 && (
+        <Card title="Muhur onay kuyruğu" subtitle={`${sealQueue.length} kayit muhur onayı bekliyor`}>
+          <div className="table-shell">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Talep No</th>
+                  <th>Lokasyon</th>
+                  <th>Tedarikci</th>
+                  <th>Cekici</th>
+                  <th>Muhur No</th>
+                  <th>Aksiyon</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sealQueue.map((request) => {
+                  const detail = getShipmentDetail(data, request.id)
+                  const loadingOp = detail?.loadingOperation
+                  const noteValue = sealNotes[request.id] ?? ''
+                  return (
+                    <tr key={request.id} className="data-table__row data-table__row--static">
+                      <td>{request.requestNo}</td>
+                      <td>{detail?.location?.name ?? '-'}</td>
+                      <td>{detail?.supplierCompany?.name ?? '-'}</td>
+                      <td>{detail?.vehicleAssignment?.tractorPlate ?? '-'}</td>
+                      <td>
+                        <strong style={{ fontFamily: 'monospace' }}>{loadingOp?.sealNumber ?? '-'}</strong>
+                      </td>
+                      <td className="table-cell-actions">
+                        <div className="security-action-cell">
+                          <input
+                            className="table-input"
+                            value={noteValue}
+                            onChange={(e) => setSealNotes((cur) => ({ ...cur, [request.id]: e.target.value }))}
+                            placeholder="Red notu (red için zorunlu)"
+                          />
+                          <div className="table-action-group security-action-buttons">
+                            <Button variant="danger" size="sm" onClick={() => handleRejectSeal(request.id)}>
+                              Reddet
+                            </Button>
+                            <Button variant="success" size="sm" onClick={() => handleApproveSeal(request.id)}>
+                              Onayla
+                            </Button>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
 
       <Card title="Sevkiyat tablosu" subtitle={`${queue.length} kayit listeleniyor`}>
         <div className="action-strip">
