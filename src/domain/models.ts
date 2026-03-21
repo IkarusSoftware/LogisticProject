@@ -69,6 +69,8 @@ export interface User {
   isActive: boolean
   createdAt: string
   updatedAt: string
+  password?: string
+  mustChangePassword?: boolean
 }
 
 export interface Location {
@@ -153,6 +155,10 @@ export interface LoadingOperation {
   finalizedBy?: string
   exitAt?: string
   notes?: string
+  sealRejected?: boolean
+  sealRejectionNote?: string
+  sealApprovedBy?: string
+  sealApprovedAt?: string
 }
 
 export interface AuditLog {
@@ -254,6 +260,7 @@ export interface RoleDefinition {
 
 export interface SessionState {
   currentUserId: string | null
+  mustChangePassword?: boolean
 }
 
 export interface CreateRequestInput {
@@ -303,6 +310,7 @@ export interface CreateUserInput {
   phone: string
   roleId: string
   companyId: string
+  password: string
 }
 
 export interface UpdateUserInput {

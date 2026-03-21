@@ -167,6 +167,12 @@ export const authApi = {
 
   me: () =>
     apiFetch<UserProfile>('/api/auth/me'),
+
+  changePassword: (currentPassword: string, newPassword: string) =>
+    apiFetch<OperationResultDto>('/api/auth/change-password', {
+      method: 'PATCH',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    }),
 }
 
 // Audit Log API
@@ -214,6 +220,11 @@ export const userApi = {
   toggleStatus: (id: string) =>
     apiFetch<OperationResultDto>(`/api/users/${id}/status`, {
       method: 'PATCH',
+    }),
+
+  delete: (id: string) =>
+    apiFetch<OperationResultDto>(`/api/users/${id}`, {
+      method: 'DELETE',
     }),
 }
 

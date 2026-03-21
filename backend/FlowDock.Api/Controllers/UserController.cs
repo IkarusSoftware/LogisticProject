@@ -53,4 +53,11 @@ public class UserController : ControllerBase
         var result = await _userService.ToggleStatusAsync(id);
         return result.Ok ? Ok(result) : BadRequest(result);
     }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var result = await _userService.DeleteAsync(id);
+        return result.Ok ? Ok(result) : BadRequest(result);
+    }
 }

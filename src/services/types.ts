@@ -7,6 +7,7 @@ export interface UserProfile {
   roleName: string
   companyId: string
   companyName: string
+  mustChangePassword?: boolean
 }
 
 export interface LoginResponse {

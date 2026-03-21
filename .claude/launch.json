@@ -12,6 +12,12 @@
       "runtimeExecutable": "cmd",
       "runtimeArgs": ["/c", "npm run preview"],
       "port": 4173
+    },
+    {
+      "name": "backend",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "dotnet run --project backend/FlowDock.Api/FlowDock.Api.csproj"],
+      "port": 5000
     }
   ]
 }

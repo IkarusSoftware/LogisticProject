@@ -13,6 +13,7 @@ public interface IAuthService
     Task<LoginResponse?> RefreshAsync(string refreshToken);
     Task LogoutAsync(Guid userId);
     Task<UserProfile?> GetProfileAsync(Guid userId);
+    Task<OperationResult> ChangePasswordAsync(Guid userId, string currentPassword, string newPassword);
 }
 
 public class AuthService : IAuthService
@@ -73,6 +74,25 @@ public class AuthService : IAuthService
         return await GenerateLoginResponseAsync(user);
     }
 
+    public async Task<OperationResult> ChangePasswordAsync(Guid userId, string currentPassword, string newPassword)
+    {
+        var user = await _db.Users.FindAsync(userId);
+        if (user == null)
+            return OperationResult.Fail("Kullanici bulunamadi.");
+
+        if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.PasswordHash))
+            return OperationResult.Fail("Mevcut sifre yanlis.");
+
+        if (newPassword.Length < 6)
+            return OperationResult.Fail("Yeni sifre en az 6 karakter olmalidir.");
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        user.MustChangePassword = false;
+        user.UpdatedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+        return OperationResult.Success("Sifreniz basariyla guncellendi.");
+    }
+
     public async Task LogoutAsync(Guid userId)
     {
         var user = await _db.Users.FindAsync(userId);
@@ -125,5 +145,6 @@ public class AuthService : IAuthService
         RoleName = user.Role.Name,
         CompanyId = user.CompanyId,
         CompanyName = user.Company.Name,
+        MustChangePassword = user.MustChangePassword,
     };
 }

@@ -112,8 +112,8 @@ export function LoginPage() {
       setTokens(response.accessToken, response.refreshToken)
       // Load all reference data from DB into Zustand
       await loadFromApi()
-      // Set session with the API user's GUID id
-      loginAs(response.user.id)
+      // Set session with the API user's GUID id (pass mustChangePassword from API)
+      loginAs(response.user.id, response.user.mustChangePassword)
       navigate(getRoleDefinition(response.user.roleKey as never)?.homePath ?? '/dashboard')
     } catch (err) {
       if (err instanceof ApiError) {
