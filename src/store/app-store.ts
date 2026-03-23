@@ -5,6 +5,7 @@ import { persist } from 'zustand/middleware'
 import { buildInitialData } from '../data/seed'
 import { TERMINAL_STATUSES } from '../domain/constants'
 import { getCurrentUser, getNotificationsForUser, getVisibleRequests } from '../domain/selectors'
+import { getRoleKeyByRoleId } from '../domain/workflow'
 import type {
   CompanyType,
   CreateRequestInput,
@@ -1624,7 +1625,7 @@ function findOrCreateRamp(data: DemoData, request: ShipmentRequest, rampId: stri
 }
 
 function actorRoleKey(actor: User): string {
-  return actor.roleKey ?? actor.roleId
+  return actor.roleKey ?? getRoleKeyByRoleId(actor.roleId) ?? actor.roleId
 }
 
 function isAdminLike(roleIdOrKey: string) {
