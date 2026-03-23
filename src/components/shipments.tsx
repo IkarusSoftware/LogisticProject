@@ -551,38 +551,53 @@ export function ShipmentDetailDrawer({
               <KeyValue label="Duzeltme notu" value={detail.vehicleAssignment?.rejectionReason ?? '-'} />
               <KeyValue label="Rampa" value={detail.ramp ? `${detail.ramp.code} • ${detail.ramp.name}` : '-'} />
               <KeyValue label="Rampaya alinma" value={formatDateTimeLabel(getRampTakenAt(detail))} />
+              <KeyValue
+                label="Kapi kontrolu yapan"
+                value={formatFullName(data.users.find(u => u.id === detail.gateOperation?.checkedBy))}
+              />
               <KeyValue label="Yukleme bitis" value={formatDateTimeLabel(getLoadingCompletedAt(detail))} />
+              <KeyValue
+                label="Yuklemeyi tamamlayan"
+                value={formatFullName(data.users.find(u => u.id === detail.loadingOperation?.finalizedBy))}
+              />
               <KeyValue label="Rampa cikis" value={formatDateTimeLabel(getExitAt(detail))} />
               <KeyValue label="Muhur No" value={detail.loadingOperation?.sealNumber ?? '-'} />
+              <KeyValue
+                label="Muhuru onaylayan"
+                value={formatFullName(data.users.find(u => u.id === detail.loadingOperation?.sealApprovedBy))}
+              />
             </div>
           </Card>
 
           <Card title="Islem zaman akisi">
             <div className="timeline">
-              {history.map((item) => (
-                <div key={item.id} className="timeline__item">
-                  <div className="timeline__dot" />
-                  <div>
-                    <strong>{getStatusMeta(item.newStatus).label}</strong>
-                    <p>{item.note || '-'}</p>
-                    <span>{formatDateTimeLabel(item.changedAt)}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          <Card title="Audit log">
-            <div className="audit-list">
-              {auditLogs.map((log) => {
-                const actor = data.users.find((user) => user.id === log.performedByUserId)
+              {history.map((item) => {
+                const actor = data.users.find((u) => u.id === item.changedBy)
                 return (
-                  <div key={log.id} className="audit-list__item">
-                    <strong>{log.actionType}</strong>
-                    <p>{log.description}</p>
-                    <span>
-                      {formatFullName(actor)} • {formatDateTimeLabel(log.performedAt)}
-                    </span>
+                  <div key={item.id} className="timeline__item">
+                    <div className="timeline__dot" />
+                    <div>
+                      <strong>{getStatusMeta(item.newStatus).label}</strong>
+                      {actor && (
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.25rem',
+                          marginLeft: '0.5rem',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          color: '#0d9488',
+                          background: '#f0fdfa',
+                          border: '1px solid #ccfbf1',
+                          borderRadius: 99,
+                          padding: '0.1rem 0.5rem',
+                        }}>
+                          {formatFullName(actor)}
+                        </span>
+                      )}
+                      <p>{item.note || '-'}</p>
+                      <span>{formatDateTimeLabel(item.changedAt)}</span>
+                    </div>
                   </div>
                 )
               })}
