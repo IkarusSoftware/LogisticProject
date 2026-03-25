@@ -312,6 +312,10 @@ export function CreateRequestPage() {
                   <th>Yukleme Tarihi</th>
                   <th>Saat</th>
                   <th>Tedarikci Firma</th>
+                  <th>Cekici</th>
+                  <th>Dorse</th>
+                  <th>Sofor</th>
+                  <th>Telefon</th>
                   <th>Rampaya Alinma</th>
                   <th>Rampa Cikis</th>
                   <th />
@@ -390,6 +394,10 @@ export function CreateRequestPage() {
                         )}
                       </td>
                       <td>{getCompanyName(data, request.assignedSupplierCompanyId)}</td>
+                      <td>{detail?.vehicleAssignment?.tractorPlate || '-'}</td>
+                      <td>{detail?.vehicleAssignment?.trailerPlate || '-'}</td>
+                      <td>{detail?.vehicleAssignment ? `${detail.vehicleAssignment.driverFirstName} ${detail.vehicleAssignment.driverLastName}` : '-'}</td>
+                      <td>{detail?.vehicleAssignment?.driverPhone || '-'}</td>
                       <td>{showCompletedOperationTimes ? formatDateTimeLabel(rampTakenAt) : '-'}</td>
                       <td>{showCompletedOperationTimes ? formatDateTimeLabel(exitAt) : '-'}</td>
                       <td className="table-cell-actions">
