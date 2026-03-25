@@ -300,7 +300,7 @@ export function UserManagementPage() {
 
   async function handleConfirmDelete() {
     if (!deleteConfirm) return
-    const { id, fullName } = deleteConfirm
+    const { id, fullName: _fullName } = deleteConfirm
     setDeleteConfirm(null)
 
     if (useApi) {

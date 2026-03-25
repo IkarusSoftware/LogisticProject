@@ -1,7 +1,7 @@
 import { type ReactNode, useMemo } from 'react'
 import { X } from 'lucide-react'
 
-import { getAuditLogs, getShipmentDetail, getStatusHistory } from '../domain/selectors'
+import { getShipmentDetail, getStatusHistory } from '../domain/selectors'
 import type { DemoData, ShipmentRequest, ShipmentStatus } from '../domain/models'
 import {
   formatDateLabel,
@@ -509,7 +509,7 @@ export function ShipmentDetailDrawer({
   }
 
   const history = getStatusHistory(data, shipmentRequestId)
-  const auditLogs = getAuditLogs(data, shipmentRequestId)
+
   const statusMeta = getStatusMeta(detail.request.currentStatus)
 
   return (

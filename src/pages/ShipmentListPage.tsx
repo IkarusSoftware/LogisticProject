@@ -685,9 +685,8 @@ function SupplierInlineShipmentTable({
   )
 }
 
-function canReviseSchedule(status: ShipmentStatus) {
-  return !['ARRIVED', 'ADMITTED', 'AT_RAMP', 'LOADING', 'LOADED', 'SEALED', 'EXITED', 'COMPLETED', 'REJECTED', 'CANCELLED', 'VEHICLE_CANCELLED'].includes(status)
-}
+// canReviseSchedule: reserved for future use (admin role only via CreateRequestPage)
+// function canReviseSchedule(status: ShipmentStatus) { ... }
 
 function OperationsRampTable({
   requests,
@@ -695,7 +694,7 @@ function OperationsRampTable({
   selectedId,
   editingRequestId,
   editingSealRequestId,
-  editingScheduleRequestId,
+  editingScheduleRequestId: _editingScheduleRequestId,
   selectedRampId,
   sealForm,
   scheduleForm,
