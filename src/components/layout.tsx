@@ -87,7 +87,7 @@ export function AppShell({ children }: PropsWithChildren) {
         : roleKey === 'supplier'
           ? ['/dashboard', '/talepler'].includes(item.path)
           : roleKey === 'control'
-            ? ['/dashboard', '/talepler'].includes(item.path)
+            ? ['/dashboard', '/talepler', '/vardiya-devir'].includes(item.path)
             : roleKey === 'gate'
               ? ['/dashboard', '/kapi-operasyonu'].includes(item.path)
           : true,

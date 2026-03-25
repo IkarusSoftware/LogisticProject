@@ -1,0 +1,4082 @@
+[
+  {
+    "kod": 1001,
+    "ad": "İST METROCITY AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1002,
+    "ad": "İST CADDEBOSTAN CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1009,
+    "ad": "İST BDÜZÜ KOCTAS AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1010,
+    "ad": "İST ÜMR MEYDAN AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1013,
+    "ad": "İST OSMANBEY CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1015,
+    "ad": "İST BPAŞA FORUM AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1016,
+    "ad": "İST ÇENGELKÖY CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1018,
+    "ad": "İST ÇİFTEHAVUZLAR CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1019,
+    "ad": "İST VIAPORT AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1020,
+    "ad": "İST KURTULUŞ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1021,
+    "ad": "İST YAYLA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1022,
+    "ad": "İST ÇAĞLAYAN CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1024,
+    "ad": "İST GÖZTEPE İST. CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1025,
+    "ad": "İST GÜLTEPE CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1027,
+    "ad": "İST GÜLTEPE CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1028,
+    "ad": "İST SANCAKTEPE CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1029,
+    "ad": "İST ÜSKÜDAR CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1030,
+    "ad": "İST ŞİŞLİ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1032,
+    "ad": "İST CENNET MAH. CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1034,
+    "ad": "İST KOZZY AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1035,
+    "ad": "İST KAVACIK CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1038,
+    "ad": "İST CİHANGİR CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1039,
+    "ad": "İST TORIUM AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1041,
+    "ad": "İST ERENKÖY CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1043,
+    "ad": "İST İNCİRLİ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1044,
+    "ad": "İST MRM FORUM AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1047,
+    "ad": "İST ACIBADEM CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1049,
+    "ad": "KCL GEBZE CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1050,
+    "ad": "İST ÇALIŞLAR CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1052,
+    "ad": "ANK TEPE PRIME AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1053,
+    "ad": "ANK 7.CADDE CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1054,
+    "ad": "SAK ÇARK CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1055,
+    "ad": "ANK NATA AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1057,
+    "ad": "ESK KÖPRÜBAŞI CD",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 1058,
+    "ad": "İST ŞİRİNEVLER CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1059,
+    "ad": "İST ALTINTEPE CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1062,
+    "ad": "İZM MİTHATPAŞA CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1064,
+    "ad": "İST FLYINN AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1066,
+    "ad": "ESK ESPARK AVM",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 1067,
+    "ad": "İST OLIVIUM AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1068,
+    "ad": "İST BUYAKA AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1069,
+    "ad": "ANK İZMİR-1 CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1070,
+    "ad": "ANT SHEMALL AVM",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1071,
+    "ad": "İST MARMARAPARK AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1072,
+    "ad": "SMS BULVAR AVM",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1073,
+    "ad": "İST YEŞİLKÖY ÇAR. CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1075,
+    "ad": "İST GAZİOSMANPAŞA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1077,
+    "ad": "ANK ANKAMALL AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1079,
+    "ad": "ADA GAZIPASA CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1080,
+    "ad": "İST CAPACITY AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1081,
+    "ad": "İST AVCILAR MAR. CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1084,
+    "ad": "KYS KAYSERİPARK AVM",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 1085,
+    "ad": "KNY KENTPLAZA AVM",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 1086,
+    "ad": "GZP GAZİMUHTAR CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1090,
+    "ad": "MRS TARSUS CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1093,
+    "ad": "İST BAHARİYE CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1096,
+    "ad": "GZP SANKOPARK AVM",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1098,
+    "ad": "İST ÜSKÜDAR SUL. CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1101,
+    "ad": "ANK TAURUS AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1102,
+    "ad": "DYR NİNOVAPARK AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 1103,
+    "ad": "HTY İSK. PRİME AVM",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1104,
+    "ad": "İST ARENA PARK AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1106,
+    "ad": "ADA KENAN EVREN CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1107,
+    "ad": "TKR TEKİRA AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1108,
+    "ad": "ANT ATATÜRK CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1110,
+    "ad": "İST IHLAMUR CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1111,
+    "ad": "İST BAĞLARBAŞI CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1112,
+    "ad": "İST KARTAL CEV CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1114,
+    "ad": "ADA M1 AVM",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1116,
+    "ad": "İST NEOMARİN AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1117,
+    "ad": "BOL İZZET BAYSAL CD",
+    "bolge": "Düzce"
+  },
+  {
+    "kod": 1119,
+    "ad": "DNZ FORUM AVM",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1120,
+    "ad": "İST CAROUSEL AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1121,
+    "ad": "ANK MEŞRUTİYET CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1122,
+    "ad": "ANK ETLİK FORUM AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1124,
+    "ad": "İZM BOSTANLI CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1125,
+    "ad": "ÇNK PAKT PLUS AVM",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1126,
+    "ad": "İST BDÜZÜ MİGROS AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1127,
+    "ad": "İST BRANDIUM AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1128,
+    "ad": "MĞL BDR MIDTOWN AVM",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1129,
+    "ad": "BLK MİLLİ KUV. CD",
+    "bolge": "Balıkesir"
+  },
+  {
+    "kod": 1130,
+    "ad": "ANK KENTPARK AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1133,
+    "ad": "İST ORTAKÖY CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1134,
+    "ad": "İST İSFANBUL AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1135,
+    "ad": "ANK GORDION AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1136,
+    "ad": "İZM ŞİRİNYER CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1138,
+    "ad": "TRB RUBENİS AVM",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 1144,
+    "ad": "ANT MARKANTALYA AVM",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1148,
+    "ad": "GZP PRIMEMALL AVM",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1149,
+    "ad": "NVR KAPADOKYA AVM",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 1150,
+    "ad": "ADA OPTIMUM AVM",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1151,
+    "ad": "ŞNF URFA PİAZZA AVM",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1152,
+    "ad": "GZP FORUM  AVM",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1153,
+    "ad": "İST MALL OF IST AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1154,
+    "ad": "İST CANPARK AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1155,
+    "ad": "KYS FORUM AVM",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 1156,
+    "ad": "İST MERDİVENKÖY CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1158,
+    "ad": "ANK OPTİMUM AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1159,
+    "ad": "İST BKÖY İST CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1163,
+    "ad": "ANK 365 AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1164,
+    "ad": "TRB FORUM AVM",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 1165,
+    "ad": "SMS ÇİFTLİK CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1166,
+    "ad": "BLK BND LİMAN AVM",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1167,
+    "ad": "AYD NAZİLLİ CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1168,
+    "ad": "BAT BATMAN PARK AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 1169,
+    "ad": "İST MALTEPE PARK AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1170,
+    "ad": "İST CEVAHİR AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1171,
+    "ad": "KKK PODİUM AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1172,
+    "ad": "İST CAFERAĞA CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1173,
+    "ad": "TKT NOVADA AVM",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1174,
+    "ad": "İST METROGARDEN AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1176,
+    "ad": "ANT ÖZDİLEK AVM",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1177,
+    "ad": "MĞL MARMARİS CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1179,
+    "ad": "DYR CYLNKARAVİL AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 1181,
+    "ad": "KCL İZMİT YÜRÜYÜŞ CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1182,
+    "ad": "MNS MAGNEZİA AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1184,
+    "ad": "AKS NORA CİTY AVM",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 1185,
+    "ad": "MĞL FETH.HİLLS. AVM - S",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1186,
+    "ad": "AYD KUŞADASI AVM",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1187,
+    "ad": "MNS AKHİSAR NEVA AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1189,
+    "ad": "MĞL FET.ERASTA AVM",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1190,
+    "ad": "KRK LÜLEBURGAZ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1194,
+    "ad": "AYD ADNAN MEN BLV CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1196,
+    "ad": "ANK HOŞDERE CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1197,
+    "ad": "MERSİN MARİNA",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1198,
+    "ad": "İZM ATA CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1200,
+    "ad": "İST ARMONİPARK AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1201,
+    "ad": "ÇNK DEMİRCİOĞLU CD",
+    "bolge": "Balıkesir"
+  },
+  {
+    "kod": 1203,
+    "ad": "İZM KARŞIYAKA CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1205,
+    "ad": "ANK CEBECİ CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1206,
+    "ad": "ANK KÜÇÜKESAT CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1208,
+    "ad": "İST AKBATI AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1213,
+    "ad": "İST ATLASPARK AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1215,
+    "ad": "DNZ GMK BLV CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1217,
+    "ad": "İZM PARK AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1218,
+    "ad": "ANT MİGROS AVM",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1219,
+    "ad": "İZM ÇEŞME CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1220,
+    "ad": "KCL 41 BURDA",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1222,
+    "ad": "ANK ATLANTİS AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1223,
+    "ad": "İST K.MUSTAFAPAŞA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1224,
+    "ad": "ANK KEÇİÖREN CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1225,
+    "ad": "İST KRT SOĞANLIK CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1226,
+    "ad": "İST NMERKEZ AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1227,
+    "ad": "BLK AYVALIK CD",
+    "bolge": "Balıkesir"
+  },
+  {
+    "kod": 1230,
+    "ad": "SAK AGORA AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1231,
+    "ad": "İZM PNT BORNOVA AVM\"",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1233,
+    "ad": "İST SARIYER CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1235,
+    "ad": "İZM DİKİLİ CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1236,
+    "ad": "İST GÖK.KEMERLİFE CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1238,
+    "ad": "DYR FORUM AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 1239,
+    "ad": "İST BEYKENT CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1241,
+    "ad": "ZNG EREYLİN AVM",
+    "bolge": "Düzce"
+  },
+  {
+    "kod": 1242,
+    "ad": "İST AYŞE ÇAVUŞ CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1244,
+    "ad": "BRS HEYKEL CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1246,
+    "ad": "İST EYÜP FK.TÜRK CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1248,
+    "ad": "KRK FEVZİ ÇAKMAK CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1249,
+    "ad": "AMY AMASYAPARK AVM",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1250,
+    "ad": "TKR HÜKÜMET CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1251,
+    "ad": "TKT GOP BULVARI CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1253,
+    "ad": "DZC İSTANBUL CD",
+    "bolge": "Düzce"
+  },
+  {
+    "kod": 1254,
+    "ad": "ORD SIRRIPAŞA CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1255,
+    "ad": "ORD ÜNYE CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1256,
+    "ad": "KCL GÖLCÜK CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1257,
+    "ad": "İST METROKENT CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1258,
+    "ad": "ÇNK 17 BURDA AVM",
+    "bolge": "Balıkesir"
+  },
+  {
+    "kod": 1260,
+    "ad": "BOL 14 BURDA AVM",
+    "bolge": "Düzce"
+  },
+  {
+    "kod": 1262,
+    "ad": "İST BAHÇEŞEHİR CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1263,
+    "ad": "YLV GAZİPAŞA CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1264,
+    "ad": "KTH SERA AVM",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 1265,
+    "ad": "MĞL FETHİYE CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1266,
+    "ad": "SMS BAFRA NORAPARK AVM",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1270,
+    "ad": "MĞL BODRUM CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1271,
+    "ad": "BRS KENTMEYDANI AVM",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1272,
+    "ad": "ZNG ERĞ.ÖZDEMİR AVM",
+    "bolge": "Düzce"
+  },
+  {
+    "kod": 1273,
+    "ad": "BLK EDR NOVADA AVM",
+    "bolge": "Balıkesir"
+  },
+  {
+    "kod": 1274,
+    "ad": "ANK CEPA AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1275,
+    "ad": "KNY NOVADA AVM",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 1276,
+    "ad": "KCL SYMBOL AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1277,
+    "ad": "ANK KIZILAY CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1278,
+    "ad": "ISP MEYDAN AVM",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1280,
+    "ad": "İST BÜYÜKADA CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1282,
+    "ad": "TKR ÇORLU OMURTAK CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1283,
+    "ad": "ANK PODİUM AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1284,
+    "ad": "ANT ALANYA CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1285,
+    "ad": "MNS AKHİSAR CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1286,
+    "ad": "İST ESENLER MEYDAN CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1287,
+    "ad": "KRB MERKEZ CD",
+    "bolge": "Düzce"
+  },
+  {
+    "kod": 1288,
+    "ad": "İST DEMİR COUNTRY CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1289,
+    "ad": "ANK SİNCAN CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1292,
+    "ad": "GRS FATİH CD",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 1293,
+    "ad": "İZM BORNOVA MK CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1294,
+    "ad": "ANK PANORA AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1295,
+    "ad": "MĞL RECAİ GÜRELİ CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1297,
+    "ad": "İZM BERGAMA CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1298,
+    "ad": "İZM ŞAİR EŞREF CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1299,
+    "ad": "İST CEN. HÜRRİYET CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1300,
+    "ad": "ANK ŞENTEPE SEVAL CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1301,
+    "ad": "ORD FATSA CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1303,
+    "ad": "UŞK İSMETPAŞA CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1304,
+    "ad": "SAK CADDE 54 AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1306,
+    "ad": "İST KARTAL ATALAR CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1307,
+    "ad": "KNY AKŞEHİR CD",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 1308,
+    "ad": "ERZ SERRACITY AVM",
+    "bolge": "Erzurum"
+  },
+  {
+    "kod": 1309,
+    "ad": "İST SULTANGAZİ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1311,
+    "ad": "ANT LARA CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1312,
+    "ad": "MRS PALM CİTY AVM",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1317,
+    "ad": "SMS BAFRA CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1318,
+    "ad": "ANT CASAMAX CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1319,
+    "ad": "TRB OF CD",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 1320,
+    "ad": "KNY BEYŞEHİR CD",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 1321,
+    "ad": "İST KALE CENTER AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1322,
+    "ad": "İST PENDİK G.PAŞA CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1323,
+    "ad": "SMS PİAZZA AVM",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1324,
+    "ad": "AFY PARKAFYON AVM",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 1326,
+    "ad": "İST EMAAR SQUARE AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1327,
+    "ad": "TKR ÇERKEZKÖY CENTER AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1328,
+    "ad": "İST BÜYÜKÇEKMECE SAHİL CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1329,
+    "ad": "MNS 8 EYLÜL CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1330,
+    "ad": "İST KAYNARCA CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1331,
+    "ad": "VAN AVM",
+    "bolge": "Parsiyel"
+  },
+  {
+    "kod": 1332,
+    "ad": "ANK ONE TOWER AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1334,
+    "ad": "İST MODA CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1335,
+    "ad": "İST VEN.MEGA OUT.AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1336,
+    "ad": "İZM BALÇOVA KİPA AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1337,
+    "ad": "ADA BARAJYOLU CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1339,
+    "ad": "İZM MAVİ BAHÇE AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1342,
+    "ad": "ERN ATATÜRK CD",
+    "bolge": "Erzurum"
+  },
+  {
+    "kod": 1343,
+    "ad": "İST BAĞCILAR CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1345,
+    "ad": "İST B.ÇEK. İNÖNÜ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1348,
+    "ad": "VAN İKİ NİSAN CD",
+    "bolge": "Parsiyel"
+  },
+  {
+    "kod": 1351,
+    "ad": "DYR DİCLEKENT BULVARI CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 1353,
+    "ad": "İST BKÖY MEYDAN2 CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1354,
+    "ad": "DZC KREMPARK AVM",
+    "bolge": "Düzce"
+  },
+  {
+    "kod": 1355,
+    "ad": "KNY EREĞLİ CD",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 1356,
+    "ad": "KKK YAHŞİYAN CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1357,
+    "ad": "İZM NARLIDERE CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1359,
+    "ad": "ANK DİKMEN-2 CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1360,
+    "ad": "YZG MERKEZ CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1361,
+    "ad": "MRS İSTİKLAL CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1362,
+    "ad": "ESK DOKTORLAR CD",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 1363,
+    "ad": "İST GOP MEYDAN CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1365,
+    "ad": "İST TUZLA MARİNA AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1366,
+    "ad": "KNY M1 AVM",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 1367,
+    "ad": "AYD DİDİM CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1368,
+    "ad": "İZM MENEMEN CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1369,
+    "ad": "MĞL MİLAS CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1370,
+    "ad": "MNS TURGUTLU CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1372,
+    "ad": "ANK ATATÜRK BULVARI CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1374,
+    "ad": "İZM URLA CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1376,
+    "ad": "BLK AKÇAY CD",
+    "bolge": "Balıkesir"
+  },
+  {
+    "kod": 1378,
+    "ad": "BLK ALTINOLUK CD",
+    "bolge": "Balıkesir"
+  },
+  {
+    "kod": 1379,
+    "ad": "SVS ATATÜRK CD",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 1381,
+    "ad": "ADA BARAJYOLU BEYAZEVLER CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1385,
+    "ad": "ANK TANDOĞAN CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1386,
+    "ad": "ANK METROMALL AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1387,
+    "ad": "İST KIZILELMA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1388,
+    "ad": "İST BEYOĞLU CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1389,
+    "ad": "İST ZEKERİYAKÖY CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1391,
+    "ad": "EDR MARGİ AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1392,
+    "ad": "İST MERTER CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1393,
+    "ad": "DYR WİNSTOWN AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 1395,
+    "ad": "İST ŞİLE CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1396,
+    "ad": "BRS GÖRÜKLE TRİO AVM",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1397,
+    "ad": "ZNG ESAS67 BURDA AVM",
+    "bolge": "Düzce"
+  },
+  {
+    "kod": 1399,
+    "ad": "KKK ZAFER CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1402,
+    "ad": "ÇNK İSKELE CD",
+    "bolge": "Balıkesir"
+  },
+  {
+    "kod": 1403,
+    "ad": "KST PLEVNE CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1405,
+    "ad": "MĞL TURGUTREİS CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1406,
+    "ad": "İZM ÜÇYOL CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1407,
+    "ad": "BRS ANATOLİUM AVM",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1408,
+    "ad": "SVS İVAPARK AVM",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 1410,
+    "ad": "KNY ZAFER CD",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 1411,
+    "ad": "ANK ETİMESGUT CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1414,
+    "ad": "İST AKYAKA AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1416,
+    "ad": "ADA ATATÜRK CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1417,
+    "ad": "BAT PETROL CİTY AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 1419,
+    "ad": "ÇRM GAZİ CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1420,
+    "ad": "GŞH ATATÜRK CD",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 1424,
+    "ad": "İZM TORBALI CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1426,
+    "ad": "BRD GAZİ CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1427,
+    "ad": "ANT KAŞ CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1431,
+    "ad": "İST B.PAŞA AXIS AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1432,
+    "ad": "İST AQUA FLORYA AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1438,
+    "ad": "AĞR DOĞUBEYAZIT CD",
+    "bolge": "Erzurum"
+  },
+  {
+    "kod": 1441,
+    "ad": "İST ÇAMLIKKAHVE CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1442,
+    "ad": "İZM GİRNE BULVARI CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1453,
+    "ad": "İST GÜLBAĞ CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1456,
+    "ad": "ANK ŞEHİR HASTANESİ AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1457,
+    "ad": "TKR ÇRL.TREND AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1458,
+    "ad": "KRM KARAMAN CD",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 1459,
+    "ad": "İZM BUCA ŞİRİNYR CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1460,
+    "ad": "İST PENDİK 19 MAY CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1461,
+    "ad": "KNY KULE SİTE AVM",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 1462,
+    "ad": "ANT MNV NOVAMALL AVM",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1464,
+    "ad": "BRS KORUPARK AVM",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1465,
+    "ad": "MRD MOVA PARK AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 1467,
+    "ad": "BLK EDREMİT CD",
+    "bolge": "Balıkesir"
+  },
+  {
+    "kod": 1469,
+    "ad": "İST HALASKARGAZİ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1470,
+    "ad": "DNZ ÇİVRİL CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1473,
+    "ad": "KRK BABAESKİ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1474,
+    "ad": "HTY İSK.FORBES AVM",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1478,
+    "ad": "İST MKÖY BÜYÜKDERE CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1480,
+    "ad": "ANT ERASTA AVM",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1482,
+    "ad": "İST PENDİK CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1484,
+    "ad": "ŞNF KARAKÖPRÜ CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1485,
+    "ad": "BLC BOZÜYÜK CD",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 1487,
+    "ad": "BRT ŞADIRVAN CD",
+    "bolge": "Düzce"
+  },
+  {
+    "kod": 1488,
+    "ad": "İST FİRST AVENUE AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1489,
+    "ad": "EDR SARAÇLAR CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1491,
+    "ad": "KRK MİNİMALL AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1492,
+    "ad": "ORD KÖPRÜBAŞI CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1494,
+    "ad": "İZM TİRE CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1496,
+    "ad": "İST TERSANE AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1497,
+    "ad": "KRS FAİKBEY CD",
+    "bolge": "Erzurum"
+  },
+  {
+    "kod": 1498,
+    "ad": "IGD ZÜBEYDE HN BL CD",
+    "bolge": "Erzurum"
+  },
+  {
+    "kod": 1499,
+    "ad": "BAT BATMAN CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 1501,
+    "ad": "MUŞ CEYLAN AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 1503,
+    "ad": "ŞNF ATATÜRK BULVARI CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1505,
+    "ad": "ÇRM AHL PARK AVM",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1506,
+    "ad": "MRD KIZILTEPE CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 1511,
+    "ad": "İZM ALAÇATI CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1512,
+    "ad": "ANT KUMLUCA CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1513,
+    "ad": "İZM FOÇA CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1514,
+    "ad": "İZM GAZİEMİR ÖND CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1515,
+    "ad": "BLK BURHANİYE CD",
+    "bolge": "Balıkesir"
+  },
+  {
+    "kod": 1517,
+    "ad": "MRS SİLİFKE CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1518,
+    "ad": "ADA TURGUT ÖZAL CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1520,
+    "ad": "ANK ACİTY AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1521,
+    "ad": "İZM POLİGON CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1523,
+    "ad": "İZM ÇİĞLİ KİPA AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1524,
+    "ad": "MRD MARDİAN MALL AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 1526,
+    "ad": "İST NAUTILUS AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1527,
+    "ad": "BRS İNEGÖL AVM",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 1528,
+    "ad": "İST A PLUS AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1530,
+    "ad": "AĞR CUMHURİYET CD",
+    "bolge": "Erzurum"
+  },
+  {
+    "kod": 1532,
+    "ad": "İZM HATAY CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1534,
+    "ad": "İZM SEFERİHİSAR CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1535,
+    "ad": "İZM PASAPORT CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1536,
+    "ad": "TKR KAPAKLI CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1537,
+    "ad": "İZM BORNOVA MEYD. CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1538,
+    "ad": "ANK KARANFİL CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1539,
+    "ad": "İZM SELWAY AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1540,
+    "ad": "İST PALLADIUM AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1541,
+    "ad": "ART HOPA CD",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 1543,
+    "ad": "İZM KEMALPAŞA CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1545,
+    "ad": "BLK BANDIRMA CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1546,
+    "ad": "İST BPAŞA TAŞKÖP. CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1547,
+    "ad": "KYS SİVAS BLV CD",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 1548,
+    "ad": "ADA ZİYAPAŞA CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1554,
+    "ad": "İZM MENDERES CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1555,
+    "ad": "EDR UZUNKÖPRÜ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1556,
+    "ad": "BRS AS OUTLET AVM",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1558,
+    "ad": "TRB KUNDURACILAR CD",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 1559,
+    "ad": "BTL TATVAN CD",
+    "bolge": "Parsiyel"
+  },
+  {
+    "kod": 1560,
+    "ad": "ANK ANTARES AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1561,
+    "ad": "İZM BUCA MEYDAN CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1562,
+    "ad": "İST ÇEMBERLİTAŞ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1563,
+    "ad": "ANK GAZİNO CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1564,
+    "ad": "KST BARUTÇUOĞLU AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1566,
+    "ad": "MĞL BODRUM OASİS AVM",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1567,
+    "ad": "İZM SELÇUK CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1568,
+    "ad": "MRS TARSU AVM",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1569,
+    "ad": "İST GÜNGÖREN İNÖNÜ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1570,
+    "ad": "İST ACIBADEM PZR CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1571,
+    "ad": "İST CAPİTOL AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1572,
+    "ad": "İST PERLAVİSTA AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1573,
+    "ad": "İST VADİSTANBUL AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1575,
+    "ad": "BRS ZAFER PLAZA AVM YENI",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1578,
+    "ad": "İZM AGORA-2 AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1580,
+    "ad": "ÇNKR YUNUS AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1581,
+    "ad": "NĞD SAMİYAĞIZ CAD",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 1583,
+    "ad": "İZM ÇEŞME ILICA CD-S",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1584,
+    "ad": "İST K.YALI ÇINAR CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1585,
+    "ad": "ANT MALL OF ANTALYA",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1586,
+    "ad": "MĞL DATÇA CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1588,
+    "ad": "İST SİLİVRİ AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1589,
+    "ad": "İST K.BAKKALKÖY CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1590,
+    "ad": "ÇNK KÜÇÜKKUYU CD",
+    "bolge": "Balıkesir"
+  },
+  {
+    "kod": 1591,
+    "ad": "ANK PARK AVENUE AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1592,
+    "ad": "İST MİMAROBA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1593,
+    "ad": "GZP MÜTERCİMASIM CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1595,
+    "ad": "MĞL YALIKAVAK AVM",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1596,
+    "ad": "ANT TERRACİTY AVM",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1597,
+    "ad": "AMY MERZİFON CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1598,
+    "ad": "KCL İZMİTALEMDAR CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1600,
+    "ad": "İST ANATOLIUM IKEA AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1601,
+    "ad": "İST BAĞCILAR YILDIZTEPE CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1602,
+    "ad": "ORD NOVADA AVM",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1604,
+    "ad": "GZP AKKENT CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1605,
+    "ad": "ANK DİKMEN CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1606,
+    "ad": "KCL KARAMÜRSEL CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1607,
+    "ad": "BLK SARIMSAKLI CD",
+    "bolge": "Balıkesir"
+  },
+  {
+    "kod": 1608,
+    "ad": "NVR NİSSARA AVM",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 1609,
+    "ad": "İST ÜMR. ALEMDAĞ CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1610,
+    "ad": "İST ZBURNU İSTAS. CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1611,
+    "ad": "İST ÜMR. ALEMDAĞ-2 CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1612,
+    "ad": "KTH ATATÜRK CD",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 1613,
+    "ad": "MRS VİRANŞEHİR CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1614,
+    "ad": "MNS MEYDAN AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1615,
+    "ad": "İZM WESTPARK AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1616,
+    "ad": "EDR ERASTA AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1617,
+    "ad": "ANT KEMER CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1618,
+    "ad": "ANK SİNCAN ONUR CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1619,
+    "ad": "İST SEFAKÖY KİRAZLI CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1620,
+    "ad": "MĞL RÜYA PARK AVM",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1621,
+    "ad": "BRS BİAPORT CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1622,
+    "ad": "GZP İBRAHİMLİ CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1623,
+    "ad": "VAN KZMKARABEKİR CD",
+    "bolge": "Parsiyel"
+  },
+  {
+    "kod": 1624,
+    "ad": "İST KEMERBURGAZ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1625,
+    "ad": "ANT BELEK RIXOS AVM",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1626,
+    "ad": "ANK ARMADA AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1627,
+    "ad": "ANT MANAVGAT CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1628,
+    "ad": "TKR ŞARKÖY CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1629,
+    "ad": "SAK SERDİVAN AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1630,
+    "ad": "ADA CEYHAN CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1631,
+    "ad": "ADA GÜZELYALI CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1632,
+    "ad": "OSM MERKEZ CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1633,
+    "ad": "BRS DOWNTOWN AVM",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1634,
+    "ad": "ADY MERKEZ CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1635,
+    "ad": "HATAY ANTAKYA PREFABRİK MAĞAZA",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1637,
+    "ad": "MRS POZCU CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1638,
+    "ad": "BOL HIGHWAY AVM",
+    "bolge": "Düzce"
+  },
+  {
+    "kod": 1640,
+    "ad": "İST FERAHEVLER CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1641,
+    "ad": "TKR ÇERKEZKÖY CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1643,
+    "ad": "ANK VELUX AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1646,
+    "ad": "AYD OPS MALL AVM",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1647,
+    "ad": "MRS TAŞUCU CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1648,
+    "ad": "ANT ALANYA ATATÜRK BLV CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1649,
+    "ad": "EDR KEŞAN CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1650,
+    "ad": "ANT ALANYA ŞEVKET TOKUŞ CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 1651,
+    "ad": "UŞK ATAPARK MEYDAN BLV CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1652,
+    "ad": "İZM ÇİĞLİ ANADOLU CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1654,
+    "ad": "İZM ŞEHİR HASTANESİ AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1655,
+    "ad": "İST KAĞITHANE MERKEZ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1656,
+    "ad": "İST SİLİVRİ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1657,
+    "ad": "BRS SURYAPI AVM",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1658,
+    "ad": "İST PELİCAN MALL AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1659,
+    "ad": "İST ÇEKMEKÖY CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1660,
+    "ad": "İST TEMA WORLD AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1661,
+    "ad": " İZM ALİAĞA CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1662,
+    "ad": "AKS MERKEZ CD",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 1663,
+    "ad": "TNC MERKEZ CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 1664,
+    "ad": "MĞL BODRUM YALIKAVAK CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1665,
+    "ad": "KRŞ TERME CD",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 1666,
+    "ad": "İST FATİH MERKEZ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1667,
+    "ad": "İST BEYKOZ CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1668,
+    "ad": "İST MLTP ATATÜRK CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1669,
+    "ad": "BLK ERDEK PAZAR CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1670,
+    "ad": "MRS MEZİTLİ CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 1671,
+    "ad": "İZM SIĞACIK CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1672,
+    "ad": "İST AKASYA AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1675,
+    "ad": "İST AIRPORT AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1676,
+    "ad": "ERZ MNG AVM",
+    "bolge": "Erzurum"
+  },
+  {
+    "kod": 1677,
+    "ad": "İZM MENEMEN NVD AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1678,
+    "ad": "İST STARCİTY AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1679,
+    "ad": "ŞNF URFA CİTY AVM",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1681,
+    "ad": "İST ISPARTAKULE CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1682,
+    "ad": "ADY PARK AVM",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1684,
+    "ad": "KRK 39 BURDA AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1685,
+    "ad": "İST HİLLTOWN AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1686,
+    "ad": "KLS MERKEZ CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1687,
+    "ad": "ANK ETLİKGİRESUN CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1688,
+    "ad": "ANK BAKANLIKLAR CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 1689,
+    "ad": "İZM ÖDEMİŞ CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1690,
+    "ad": "İST MARİNA AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1692,
+    "ad": "İST OLİMPA AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1693,
+    "ad": "İST KALEKENT CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1694,
+    "ad": "BLK GÖNEN CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 1696,
+    "ad": "İST CİTY CENTER AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1698,
+    "ad": "AMY MERKEZ CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 1699,
+    "ad": "DNZ TERASPARK AVM",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 1708,
+    "ad": "BLK AVŞA CD - S",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 1713,
+    "ad": "BNG KALIUM AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 1714,
+    "ad": "TKR ORİON AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1715,
+    "ad": "İZM KONAK F.PAŞA CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1716,
+    "ad": "İST BHÇ.MHTBEY CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1719,
+    "ad": "HTY İSK.ÇARŞI CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 1720,
+    "ad": "İST METROPORT AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1721,
+    "ad": "ARD MERKEZ CD",
+    "bolge": "Erzurum"
+  },
+  {
+    "kod": 1723,
+    "ad": "İST BAĞCILAR ÇRŞ.CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 1724,
+    "ad": "İZM ŞEMİKLER CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1725,
+    "ad": "İZM DEMİRKÖPRÜ CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 1726,
+    "ad": "İST Ş.EVLER E5 CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2001,
+    "ad": "GZP KARATAŞ CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2002,
+    "ad": "ŞNF SIVEREK CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2003,
+    "ad": "IST YEŞİLYURT CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2005,
+    "ad": "İST ÇKÖY ŞAHİNBEY CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2006,
+    "ad": "HTY REYHANLI CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2007,
+    "ad": "HTY DEFNE CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2008,
+    "ad": "ERN MEYDAN24 AVM",
+    "bolge": "Erzurum"
+  },
+  {
+    "kod": 2009,
+    "ad": "MRS FORUM AVM",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2010,
+    "ad": "KNY ENNTEPE AVM",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 2011,
+    "ad": "MRS ÇUKUROVA HAVALİMANI AVM",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2012,
+    "ad": "İST ZEYTİNBURNU MEYDAN CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2014,
+    "ad": "HTY PAMUK PARK AVM",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2016,
+    "ad": "İST TAŞDELEN CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2017,
+    "ad": "MLT FAHRİ KAYAHAN BULVARI CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2018,
+    "ad": "MRS KUVAI MİLLİYE CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2019,
+    "ad": "SMS ÇARŞAMBA CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 2020,
+    "ad": "ANK GALERİA AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2021,
+    "ad": "KCL GEBZE CENTER AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2022,
+    "ad": "İST CİTY'S AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2024,
+    "ad": "IST PENDİK CD OUTLET",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2026,
+    "ad": "BNG PİESTA PARK AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2027,
+    "ad": "İST PİAZZA AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2028,
+    "ad": "ANK ATAKULE AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2029,
+    "ad": "ŞRN MERKEZ PARK CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2030,
+    "ad": "ESK ÜNİVERSİTE CD",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 2031,
+    "ad": "KYS DÜVENÖNÜ CD",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 2032,
+    "ad": "İST CİTYS NİŞANTAŞI AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2033,
+    "ad": "İST TAKSİM GALATA KULESİ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2034,
+    "ad": "SMS YEŞİLYURT AVM",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 2035,
+    "ad": "NGD TEMA PARK AVM",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 2036,
+    "ad": "GRS GAZİ CD",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 2037,
+    "ad": "BRS MUSTAFAKEMALPAŞA CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2038,
+    "ad": "ISP MERKEZ CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 2039,
+    "ad": "ŞRN CİZRE CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2040,
+    "ad": "İST BAHÇELİEVLER HAS DELTA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2041,
+    "ad": "MLT CİTY OUTLET AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2042,
+    "ad": "ELZ ADNAN KAHVECİ BULVARI CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2043,
+    "ad": "İST TAKSİM HAN CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2044,
+    "ad": "SRT SİİRT PARK AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2045,
+    "ad": "HTY ANTAKYA KAMPUS ",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2046,
+    "ad": "HTY DÖRTYOL CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2047,
+    "ad": "ADA KOZAN CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2048,
+    "ad": "İST BEYAZIT ORDU CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2049,
+    "ad": "ANT SERİK CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 2051,
+    "ad": "İST BEŞİKTAŞ BARBOROS BULVARI",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2053,
+    "ad": "KYS TALAS CD",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 2054,
+    "ad": "MUŞ ATATÜRK CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2055,
+    "ad": "RİNGS OUTLET AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2056,
+    "ad": "İST MALL OF İST CADDE AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2057,
+    "ad": "İST LALELİ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2061,
+    "ad": "ÇNK GELİBOLU CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2062,
+    "ad": "ANK MAMAK BOĞAZİÇİ CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2063,
+    "ad": "ANT GÜZELOBA CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 2064,
+    "ad": "AYD KUŞADASI MRN AVM",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 2065,
+    "ad": "İST BHÇ FERİT SELİM CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2068,
+    "ad": "ANK CUBUK CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2069,
+    "ad": "DYR YAŞAR KEMAL CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2071,
+    "ad": "ADA SARIÇAM CD",
+    "bolge": "AÇILIŞ"
+  },
+  {
+    "kod": 2073,
+    "ad": "İST LİMONLU BAHÇE AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2076,
+    "ad": "ADA ŞEHIR HAST.AVM",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2080,
+    "ad": "ESK VEGA OUTLET AVM",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 2081,
+    "ad": "İST AKMERKEZ AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2082,
+    "ad": "AYD FORUM AVM",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 2084,
+    "ad": "YZG SORGUN CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2085,
+    "ad": "İST S.ÇİFTLİĞİ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2087,
+    "ad": "İST YAKUPLU CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2091,
+    "ad": "ANK ELVANKENT CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2092,
+    "ad": "TKT ERBAA CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 2094,
+    "ad": "KCL DARICA CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2095,
+    "ad": "İST NATOYOLU CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2096,
+    "ad": "İST UĞURMUMCU CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2097,
+    "ad": "BLK SUSURLUK FST.AVM",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2099,
+    "ad": "İST MARİNTÜRK AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2100,
+    "ad": "MĞL FETH. SAHİL CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 2101,
+    "ad": "DYR ERGANİ CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2102,
+    "ad": "İST ÇATALCA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2103,
+    "ad": "ADA TÜRKMENBAŞI CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2104,
+    "ad": "İZM ÇANDARLI CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2106,
+    "ad": "ANK TURAN GÜNEŞ CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2110,
+    "ad": "YZG NOVADA AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2111,
+    "ad": "ANK TUNALI HİLMİ -2 CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2112,
+    "ad": "İST MASLAK 1453 CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2113,
+    "ad": "KMR PİAZZA AVM",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2114,
+    "ad": "İST BHÇ. SOĞANLI CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2115,
+    "ad": "OSM PARK 328 AVM",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2116,
+    "ad": "İST KIRAÇ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2118,
+    "ad": "MNS SALİHLİ CD  ",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2119,
+    "ad": "İST SNC.DEMOKRASİ CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2121,
+    "ad": "ANT KALKAN CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 2122,
+    "ad": "İST ESN. NEVİSTA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2123,
+    "ad": "MĞL POMELON  AVM   ",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 2124,
+    "ad": "KCL İZM FETH. CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2125,
+    "ad": "ANK FTZ AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2126,
+    "ad": "VAN ERCİŞ CD  ",
+    "bolge": "Erzurum"
+  },
+  {
+    "kod": 2129,
+    "ad": "BRD BUCAK CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 2131,
+    "ad": "İST AVLU34 AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2132,
+    "ad": "GZP NİZİP CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2133,
+    "ad": "İST BŞK ORTABAHÇE CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2134,
+    "ad": "BRS DİKKALDIRIM CD  ",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2135,
+    "ad": "OSM KADİRLİ CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2136,
+    "ad": "TKR MALKARA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2137,
+    "ad": "KCL YARIMCA CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2138,
+    "ad": "BLC MERKEZ CD",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 2139,
+    "ad": "MRD MERKEZ CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2140,
+    "ad": "BLK 10 BURDA AVM",
+    "bolge": "Balıkesir"
+  },
+  {
+    "kod": 2141,
+    "ad": "İZM FORM BORNOVA AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2142,
+    "ad": "MRS ERDEMLİ CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2143,
+    "ad": "ŞNF NOVADA PARK AVM",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2144,
+    "ad": "ANK ESERTEPE CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2145,
+    "ad": "MNS SOMA CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2147,
+    "ad": "GZP ÜNİ BULVARI CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2148,
+    "ad": "BRS ORHANGAZİ CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2151,
+    "ad": "ANK ANATOLİUM AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2152,
+    "ad": "ANK KAŞMİR AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2161,
+    "ad": "KNY KIVILCIM AVM",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 2184,
+    "ad": "KRM KARAMANPARK AVM",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 2193,
+    "ad": "KCL DERİNCE CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2203,
+    "ad": "ANK KARAPÜRÇEK CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2204,
+    "ad": "SMS CİTYMALL AVM",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 2206,
+    "ad": "İZM ORDU CAD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2207,
+    "ad": "UŞK MERKEZ CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2208,
+    "ad": "İST ÖZDLEKCNTR AVM 2",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2209,
+    "ad": "İZM BUCA BELEDİYE CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2210,
+    "ad": "AYD KUŞ İNÖNÜ BL CD2",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 2211,
+    "ad": "SVS İNÖNÜ BULVARI CD",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 2212,
+    "ad": "SRT MERKEZ CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2213,
+    "ad": "ISP IYAŞ PARK AVM",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 2214,
+    "ad": "YLV STAR AVM",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2215,
+    "ad": "ADA ÇAKMAK CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2216,
+    "ad": "MLT MALATYA PARK AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2218,
+    "ad": "KCL GEBZE BAĞDAT CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2219,
+    "ad": "ANK MAMAK TIP FAK.CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2220,
+    "ad": "ANK IVEDIK CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2221,
+    "ad": "İST MKÖY BULVAR CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2223,
+    "ad": "İST METROPOL AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2225,
+    "ad": "ANK PURSAKLAR CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2227,
+    "ad": "BYB MERKEZ CD",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 2228,
+    "ad": "ŞRN CİZRE AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2229,
+    "ad": "İST SULTANBEYLİ CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2230,
+    "ad": "İZM OPTİMUM AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2231,
+    "ad": "BRS İNEGÖL CD",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 2232,
+    "ad": "İST KANYON AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2233,
+    "ad": "KTH TAVŞANLI CD",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 2234,
+    "ad": "ANK KIZILCAHAMAM CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2235,
+    "ad": "ANK ZİYA GÖKALP CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2236,
+    "ad": "İST İSTİNYE CRF AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2238,
+    "ad": "BRS GÖRÜKLE CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2240,
+    "ad": "ANK YAŞAMKENT CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2242,
+    "ad": "SMS MECİDİYE CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 2243,
+    "ad": "İST DAVUTPAŞA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2244,
+    "ad": "MRS SAYAPARK AVM",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2245,
+    "ad": "ANK MAMAK AKDERE CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2246,
+    "ad": "AYD DİDİM ATA BLV CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 2247,
+    "ad": "İZM URLA BAMBOO AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2248,
+    "ad": "MRS ÜNİVERSİTE CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2249,
+    "ad": "İST SANAYİ MH.CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2250,
+    "ad": "İST NARMANLIHAN CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2251,
+    "ad": "TRB YOMRA CD",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 2252,
+    "ad": "İST GOP KÜÇÜKKÖY C",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2255,
+    "ad": "İST DEMİRKAPI CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2256,
+    "ad": "BRS FSM BULVARI CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2257,
+    "ad": "ANK RAGIP TÜZÜN CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2258,
+    "ad": "BRS ŞEHİR HAST.AVM",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2259,
+    "ad": "İZM GÜZELBAHÇE CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2260,
+    "ad": "HTY SAMANDAĞ CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2261,
+    "ad": "GRS İNÖNÜ CD",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 2262,
+    "ad": "MĞL BDR AVENUE AVM",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 2264,
+    "ad": "BRS DERYA CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2265,
+    "ad": "ANK ÇEVRELİ CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2266,
+    "ad": "ANK MAMAK ÇARŞI CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2268,
+    "ad": "AFY DUMLUPINAR CD",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 2269,
+    "ad": "ADA ŞEHİTLER BLV CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2272,
+    "ad": "İZM KIBRIS ŞHT MYD. CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2274,
+    "ad": "ADA 01 BURDA AVM",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2275,
+    "ad": "İST ÇELİKTEPE CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2276,
+    "ad": "TRB MEYDAN CD",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 2277,
+    "ad": "ANK BALGAT CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2278,
+    "ad": "İST 4.LEVENT METRO CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2279,
+    "ad": "MĞL MARMARİS SHL CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 2280,
+    "ad": "KNY SEYDİŞEHİR CD",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 2281,
+    "ad": "İZM HİLLTOWN AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2282,
+    "ad": "KMR ELBİSTAN CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2283,
+    "ad": "YLV İSTANBUL CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2284,
+    "ad": "İST SİLİVRİ KİPA AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2285,
+    "ad": "İST HALİTAĞA CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2286,
+    "ad": "İST MOZAİK ÇARŞI AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2287,
+    "ad": "SAK ATATÜRK BULVARI CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2288,
+    "ad": "BRS GEMLİK CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2289,
+    "ad": "BRS PODYUMPARK AVM",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2290,
+    "ad": "İST TRUMP TOWER AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2291,
+    "ad": "ÇNK ÇAN CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2292,
+    "ad": "İST KASIMPAŞA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2294,
+    "ad": "İZM BAYRAKLI CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2295,
+    "ad": "İST GÜNEŞLİ ATATÜRK CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2296,
+    "ad": "İST WATERGARDEN AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2297,
+    "ad": "BRS İZNİK CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2298,
+    "ad": "İST KARTAL ÇARŞI CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2300,
+    "ad": "KNY PARK SİTE AVM",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 2303,
+    "ad": "ERZ CUMHURİYET CD",
+    "bolge": "Erzurum"
+  },
+  {
+    "kod": 2304,
+    "ad": "İST TAKSİM MEYDAN CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2305,
+    "ad": "ANT ŞARAMPOL CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 2306,
+    "ad": "MRD MİDYAT CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2308,
+    "ad": "SAK KARASU CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2310,
+    "ad": "ANK POLATLI CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2311,
+    "ad": "İST VEGA AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2312,
+    "ad": "BRS ATA BULVARI CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2313,
+    "ad": "TRB AKÇAABAT CD",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 2314,
+    "ad": "İST KAYAŞEHİR AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2315,
+    "ad": "İST MAVERA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2316,
+    "ad": "İST ŞEHİR HAST.AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2317,
+    "ad": "DYR SUR CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2318,
+    "ad": "BRS GÜRSU CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2319,
+    "ad": "BRS SELÇUKBEY CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2321,
+    "ad": "DYR GEVRAN CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2322,
+    "ad": "DNZ BAYRAMYERİ CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 2323,
+    "ad": "DYR STADYOLU CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2324,
+    "ad": "KCL ÇAYIROVA CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2326,
+    "ad": "İST BEBEK CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2328,
+    "ad": "İST PASHADOR AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2329,
+    "ad": "İZM KÜÇÜKPARK CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2332,
+    "ad": "MRS ANAMUR CD",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 2333,
+    "ad": "İST KURTKÖY LENS AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2336,
+    "ad": "İZM KEMERALTI CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2337,
+    "ad": "BRS KARACABEY CD",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2338,
+    "ad": "İST MALTEPE MESA CD",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2339,
+    "ad": "İST SİRKECİ CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2340,
+    "ad": "RZE CUMHURİYET CD",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 2341,
+    "ad": "İST 212 AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2342,
+    "ad": "İST NİŞANTAŞI CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2344,
+    "ad": "İZM İSTİNYEPARK AVM",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2346,
+    "ad": "BLK KIRLANGIÇ AVM",
+    "bolge": "Balıkesir"
+  },
+  {
+    "kod": 2347,
+    "ad": "AYD SÖKE NOVADA AVM",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 2348,
+    "ad": "ANK UFUKTEPE CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2349,
+    "ad": "ANK BEŞEVLER CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2350,
+    "ad": "MNS ALAŞEHİR CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2351,
+    "ad": "İST OPTİMUM AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2353,
+    "ad": "ANK GÖLBAŞI CD",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2354,
+    "ad": "HKR YÜKSEKOVA CD",
+    "bolge": "Parsiyel"
+  },
+  {
+    "kod": 2355,
+    "ad": "KMR ONİKİŞUBAT CD",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2356,
+    "ad": "ELZ ELYSİUM AVM",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2358,
+    "ad": "ESK CASSABA MODERN AVM",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 2359,
+    "ad": "KST KASTAMALL AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2362,
+    "ad": "İST YILDIZTABYA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2363,
+    "ad": "MRD SAFİRMALL CD",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2364,
+    "ad": "İST FATİH ÇAPA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2365,
+    "ad": "KNY ALAADDİN BULVARI CD",
+    "bolge": "Konya"
+  },
+  {
+    "kod": 2366,
+    "ad": "RZE ŞİMAL AVM",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 2367,
+    "ad": "İST HİSTORİA AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2368,
+    "ad": "İZM BUCA ÜNİVERSİTE CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2369,
+    "ad": "ADA KURTTEPE CD",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2370,
+    "ad": "SNP SAKARYA CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 2371,
+    "ad": "ARCADIUM AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2372,
+    "ad": "TRB UZUN SOKAK CD",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 2373,
+    "ad": "HKR MERKEZ CD",
+    "bolge": "Parsiyel"
+  },
+  {
+    "kod": 2374,
+    "ad": "İST HALKALI MEYDAN CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2375,
+    "ad": "İST ŞEHİR HAST-2 AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2376,
+    "ad": "ZNG MERKEZ CD",
+    "bolge": "Düzce"
+  },
+  {
+    "kod": 2377,
+    "ad": "KCL ARASTA PARK AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2378,
+    "ad": "İST ATIŞALANI CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2379,
+    "ad": "İST ESENYURT CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2380,
+    "ad": "MĞL ORTACA CD",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 2381,
+    "ad": "ANK KIZILAY AVM",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2382,
+    "ad": "YLV VEGA AVM",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2383,
+    "ad": "İST YILDIZ POSTA CD",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2500,
+    "ad": "TKT NİKSAR CD",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 2501,
+    "ad": "RZE ARDEŞEN AVM",
+    "bolge": "Trabzon"
+  },
+  {
+    "kod": 2502,
+    "ad": "TKR YSK CENTER AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2503,
+    "ad": "ADY ARYON AVM",
+    "bolge": "Gaziantep"
+  },
+  {
+    "kod": 2504,
+    "ad": "İST TUZLA PARK VEMA AVM",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2505,
+    "ad": "İST İTU ÜNİ AVM",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2506,
+    "ad": "KYS İPEKSARAY AVM",
+    "bolge": "Kayseri"
+  },
+  {
+    "kod": 2800,
+    "ad": "İST BAHR CD BEAUTY C",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2803,
+    "ad": "İZM KIBRIS ŞHT MYD.CD BEAUTY C",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2804,
+    "ad": "ANK TNL HLM CORNER",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2807,
+    "ad": "MRS MARNA AVM BEAUTY",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2808,
+    "ad": "İST EMAAR AVM BEAUTY C",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2809,
+    "ad": "İST CAPACITY BEAUTY C",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2812,
+    "ad": "ADANA GÜZELYALI CD BEAUTY",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2813,
+    "ad": "İST MARMR PRK BEAUTY C",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2814,
+    "ad": "BRS KENT MY.BEAUTY C",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2815,
+    "ad": "ANK ANTARES BEAUTY C",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2819,
+    "ad": "İST ARENA PARK AVM BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2821,
+    "ad": "İST BŞK ORTABAHÇE CD BEAUTY C",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2822,
+    "ad": "İST ÖZDLEKCNTR AVM 2 BEAUTY C",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2825,
+    "ad": "İST BAĞCILAR ÇRŞ.CD BEAUTY C",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2832,
+    "ad": "İST TAKSİM MEYDAN CD BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2833,
+    "ad": "İST MİMAROBA CD BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2834,
+    "ad": "İST YEŞİLKÖY ÇAR. CD BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2835,
+    "ad": "İST PİAZZA AVM BEAUT",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2836,
+    "ad": "ANT MARKANTALYA AVM BEAUTY",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 2837,
+    "ad": "MRS SAYAPARK AVM BEAUTY",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2838,
+    "ad": "İZM SEFERİHİSAR CD BEAUTY",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2839,
+    "ad": "İST NİŞANTAŞI CD BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2841,
+    "ad": "İST OLİVİUM AVM BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2842,
+    "ad": "IST OPTİMUM AVM BEAUTY C",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2844,
+    "ad": "ANKAMALL BEAUTY CORNER",
+    "bolge": "Ankara"
+  },
+  {
+    "kod": 2845,
+    "ad": "İZM KARŞIYAKA CD BEAUTY",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2847,
+    "ad": "İZM OPTİMUM AVM BEAUTY",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2848,
+    "ad": "İST M.KÖY BULVAR CD BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2849,
+    "ad": "ESK ESPARK AVM BEAUTY",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 2850,
+    "ad": "İST HALKALI MEYDAN BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2852,
+    "ad": "İST SİRKECİ CD BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2853,
+    "ad": "İZM BUCA BELEDİYE CD BEAUTY",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2854,
+    "ad": "İZMİR BUCA ÜNİVERSİTE BEAUTY",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2856,
+    "ad": "İST CENNET HÜRRİYET CD BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2857,
+    "ad": "ESK DOKTORLAR CD BEAUTY",
+    "bolge": "Eskişehir"
+  },
+  {
+    "kod": 2858,
+    "ad": "İST ÜMRANİYE MEYDAN AVM BEAUTY",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2859,
+    "ad": "ADANA ATATURK CD BEAUTY",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2861,
+    "ad": "SMS PİAZZA AVM BEAUTY",
+    "bolge": "Samsun"
+  },
+  {
+    "kod": 2862,
+    "ad": "İST ESENLER MEYDAN CD BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2863,
+    "ad": "ANT MALL OF ANTALYA BEAUTY",
+    "bolge": "Antalya"
+  },
+  {
+    "kod": 2864,
+    "ad": "DYR GEVRAN CD BEAUTY",
+    "bolge": "Diyarbakır"
+  },
+  {
+    "kod": 2865,
+    "ad": "İST BKÖY MEYDAN2 CD BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2866,
+    "ad": "BRS ZAFER PLAZA AVM BEAUTY",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2867,
+    "ad": "İST PENDİK CD BEAUTY",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2869,
+    "ad": "İST ÜMR ALEMDAĞ CD BEAUTY",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 2870,
+    "ad": "IZM BORNOVA MK CD BEAUTY",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2871,
+    "ad": "AYD DİDİM ATA BULV CD BEAUTY",
+    "bolge": "Muğla"
+  },
+  {
+    "kod": 2872,
+    "ad": "BRS PODYUMPARK AVM BEAUTY",
+    "bolge": "Bursa"
+  },
+  {
+    "kod": 2873,
+    "ad": "İST SEFAKÖY KİRAZLI CD BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2874,
+    "ad": "İZM DİKİLİ CD BEAUTY",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2875,
+    "ad": "EDR MARGİ AVM BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2878,
+    "ad": "MRS POZCU CD BEAUTY",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2879,
+    "ad": "ADA TURKMENBASI CD BEAUTY",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2880,
+    "ad": "MRS TAŞUCU CD BEAUTY",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2881,
+    "ad": "İST FATİH MERKEZ CD BEAUTY",
+    "bolge": "İstanbul - AVR"
+  },
+  {
+    "kod": 2882,
+    "ad": "ADA ÇAKMAK CD BEAUTY",
+    "bolge": "Adana"
+  },
+  {
+    "kod": 2883,
+    "ad": "IST CITYS NİŞANTAŞI AVM BEAUTY",
+    "bolge": "İSTANBUL - AVR"
+  },
+  {
+    "kod": 2884,
+    "ad": "IZM ISTINYE PARK AVM BEAUTY",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 2885,
+    "ad": "İZM ÇİĞLİ BEAUTY CD",
+    "bolge": "İzmir"
+  },
+  {
+    "kod": 6001,
+    "ad": "KURUMSAL MAGAZA",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 7001,
+    "ad": "E-TICARET MAGAZASI",
+    "bolge": "İSTANBUL - AND"
+  },
+  {
+    "kod": 7500,
+    "ad": "MERKEZ OFİS",
+    "bolge": "İSTANBUL - AND"
+  }
+]

@@ -25,6 +25,7 @@ import { SettingsPage } from '../pages/SettingsPage'
 import { ShipmentListPage } from '../pages/ShipmentListPage'
 import { SupplierAssignmentsPage } from '../pages/SupplierAssignmentsPage'
 import { UserManagementPage } from '../pages/UserManagementPage'
+import { VardiyaDevirPage } from '../pages/VardiyaDevirPage'
 import { VehicleControlPage } from '../pages/VehicleControlPage'
 import { useAppStore } from '../store/app-store'
 
@@ -109,6 +110,14 @@ export function App() {
           element={
             <ProtectedPage allowedRoles={['loading']}>
               <LoadingCompletionPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path="/vardiya-devir"
+          element={
+            <ProtectedPage allowedRoles={['control', 'admin', 'superadmin']}>
+              <VardiyaDevirPage />
             </ProtectedPage>
           }
         />

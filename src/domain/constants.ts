@@ -204,6 +204,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
   { label: 'Rampa Planlama', path: '/rampa-planlama', icon: 'warehouse', roleKeys: ['ramp', 'admin', 'superadmin'] },
   { label: 'Dis Guvenlik', path: '/kapi-operasyonu', icon: 'scan-line', roleKeys: ['gate', 'admin', 'superadmin'] },
   { label: 'Yukleme Tamamlama', path: '/yukleme-tamamlama', icon: 'package-check', roleKeys: ['loading', 'admin', 'superadmin'] },
+  { label: 'Vardiya Devir', path: '/vardiya-devir', icon: 'repeat', roleKeys: ['control', 'admin', 'superadmin'] },
   { label: 'Gecmis', path: '/gecmis', icon: 'history', roleKeys: ROLE_DEFINITIONS.map((role) => role.key) },
   { label: 'Raporlar', path: '/raporlar', icon: 'chart-no-axes-column', roleKeys: ['admin', 'superadmin'] },
   { label: 'Yukleme Bolgeleri', path: '/yukleme-bolgeleri', icon: 'map-pin', roleKeys: ['superadmin'] },
