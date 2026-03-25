@@ -65,7 +65,7 @@ export function CreateRequestPage() {
     )
   }, [locationOptions, supplierOptions])
   const [editingRequestId, setEditingRequestId] = useState<string | null>(null)
-  const [revisionForm, setRevisionForm] = useState<RequestRevisionInput>({ vehicleType: 'TIR', loadTime: '09:00' })
+  const [revisionForm, setRevisionForm] = useState<RequestRevisionInput>({ vehicleType: 'TIR', requestDate: '', loadDate: '', loadTime: '09:00' })
   const [message, setMessage] = useState<{ kind: 'success' | 'error'; text: string } | null>(null)
 
   function handleRowChange<K extends keyof DraftRequest>(draftId: string, field: K, value: DraftRequest[K]) {
@@ -130,7 +130,8 @@ export function CreateRequestPage() {
 
   function handleStartRevision(shipmentRequestId: string, currentVehicleType: RequestRevisionInput['vehicleType'], currentLoadTime: string) {
     setEditingRequestId(shipmentRequestId)
-    setRevisionForm({ vehicleType: currentVehicleType, loadTime: currentLoadTime })
+    const request = activeRequests.find((r) => r.id === shipmentRequestId)
+    setRevisionForm({ vehicleType: currentVehicleType, requestDate: request?.requestDate ?? '', loadDate: request?.loadDate ?? '', loadTime: currentLoadTime })
     setMessage(null)
   }
 
@@ -139,6 +140,8 @@ export function CreateRequestPage() {
       try {
         const result = await shipmentApi.revise(shipmentRequestId, {
           vehicleType: revisionForm.vehicleType,
+          requestDate: revisionForm.requestDate,
+          loadDate: revisionForm.loadDate,
           loadTime: revisionForm.loadTime,
         })
         setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
@@ -350,8 +353,30 @@ export function CreateRequestPage() {
                           formatVehicleTypeLabel(request.vehicleType)
                         )}
                       </td>
-                      <td>{formatDateLabel(request.requestDate)}</td>
-                      <td>{formatDateLabel(request.loadDate)}</td>
+                      <td>
+                        {isEditing ? (
+                          <input
+                            className="table-input"
+                            type="date"
+                            value={revisionForm.requestDate}
+                            onChange={(event) => setRevisionForm((current) => ({ ...current, requestDate: event.target.value }))}
+                          />
+                        ) : (
+                          formatDateLabel(request.requestDate)
+                        )}
+                      </td>
+                      <td>
+                        {isEditing ? (
+                          <input
+                            className="table-input"
+                            type="date"
+                            value={revisionForm.loadDate}
+                            onChange={(event) => setRevisionForm((current) => ({ ...current, loadDate: event.target.value }))}
+                          />
+                        ) : (
+                          formatDateLabel(request.loadDate)
+                        )}
+                      </td>
                       <td>
                         {isEditing ? (
                           <input

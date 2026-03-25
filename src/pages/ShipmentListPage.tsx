@@ -10,7 +10,7 @@ import {
 } from '../components/shipments'
 import { Badge, Button, Card, InlineMessage, PageHeader, Textarea } from '../components/ui'
 import { getCurrentRoleKey, getCurrentUser, getShipmentDetail, getVisibleRequests } from '../domain/selectors'
-import type { DemoData, ShipmentRequest, ShipmentStatus, VehicleAssignmentInput } from '../domain/models'
+import type { DemoData, ShipmentRequest, ShipmentStatus, VehicleAssignmentInput, VehicleType } from '../domain/models'
 import {
   canCancelRequest,
   formatDateLabel,
@@ -32,6 +32,12 @@ type SupplierSupplyForm = {
   driverPhone: string
 }
 
+type ScheduleRevisionForm = {
+  requestDate: string
+  loadDate: string
+  loadTime: string
+}
+
 type SealForm = {
   sealNumber: string
   note: string
@@ -42,6 +48,12 @@ const EMPTY_SUPPLY_FORM: SupplierSupplyForm = {
   trailerPlate: '',
   driverFullName: '',
   driverPhone: '',
+}
+
+const EMPTY_SCHEDULE_FORM: ScheduleRevisionForm = {
+  requestDate: '',
+  loadDate: '',
+  loadTime: '',
 }
 
 const EMPTY_SEAL_FORM: SealForm = {
@@ -63,6 +75,7 @@ export function ShipmentListPage() {
   const session = useAppStore((state) => state.session)
   const cancelRequest = useAppStore((state) => state.cancelRequest)
   const cancelVehicleRequest = useAppStore((state) => state.cancelVehicleRequest)
+  const reviseActiveRequest = useAppStore((state) => state.reviseActiveRequest)
   const submitVehicleAssignment = useAppStore((state) => state.submitVehicleAssignment)
   const acceptSecurityCorrection = useAppStore((state) => state.acceptSecurityCorrection)
   const assignRamp = useAppStore((state) => state.assignRamp)
@@ -84,6 +97,8 @@ export function ShipmentListPage() {
   const [cancelNote, setCancelNote] = useState('')
   const [supplyForm, setSupplyForm] = useState<SupplierSupplyForm>(EMPTY_SUPPLY_FORM)
   const [sealForm, setSealForm] = useState<SealForm>(EMPTY_SEAL_FORM)
+  const [editingScheduleRequestId, setEditingScheduleRequestId] = useState<string | null>(null)
+  const [scheduleForm, setScheduleForm] = useState<ScheduleRevisionForm>(EMPTY_SCHEDULE_FORM)
   const [message, setMessage] = useState<{ kind: 'success' | 'error'; text: string } | null>(null)
 
   const filteredRequests = applyShipmentFilters(visibleRequests, data, filters, statusMode)
@@ -263,6 +278,44 @@ export function ShipmentListPage() {
     setSealForm(EMPTY_SEAL_FORM)
   }
 
+  function handleStartScheduleEdit(shipmentRequestId: string) {
+    const request = filteredRequests.find((r) => r.id === shipmentRequestId)
+    if (!request) return
+    setSelectedId(shipmentRequestId)
+    setEditingRampRequestId(null)
+    setEditingSealRequestId(null)
+    setEditingSupplyRequestId(null)
+    setEditingScheduleRequestId(shipmentRequestId)
+    setScheduleForm({ requestDate: request.requestDate, loadDate: request.loadDate, loadTime: request.loadTime })
+    setMessage(null)
+  }
+
+  function handleCancelScheduleEdit() {
+    setEditingScheduleRequestId(null)
+    setScheduleForm(EMPTY_SCHEDULE_FORM)
+  }
+
+  function handleScheduleFieldChange<K extends keyof ScheduleRevisionForm>(field: K, value: ScheduleRevisionForm[K]) {
+    setScheduleForm((current) => ({ ...current, [field]: value }))
+  }
+
+  function handleScheduleSubmit(shipmentRequestId: string) {
+    const request = filteredRequests.find((r) => r.id === shipmentRequestId)
+    if (!request) return
+
+    const result = reviseActiveRequest(shipmentRequestId, {
+      vehicleType: request.vehicleType as VehicleType,
+      requestDate: scheduleForm.requestDate,
+      loadDate: scheduleForm.loadDate,
+      loadTime: scheduleForm.loadTime,
+    })
+    setMessage({ kind: result.ok ? 'success' : 'error', text: result.message })
+    if (result.ok) {
+      setEditingScheduleRequestId(null)
+      setScheduleForm(EMPTY_SCHEDULE_FORM)
+    }
+  }
+
   function handleSealFieldChange<K extends keyof SealForm>(field: K, value: SealForm[K]) {
     setSealForm((current) => ({ ...current, [field]: value }))
   }
@@ -388,8 +441,10 @@ export function ShipmentListPage() {
             selectedId={selectedId}
             editingRequestId={editingRampRequestId}
             editingSealRequestId={editingSealRequestId}
+            editingScheduleRequestId={editingScheduleRequestId}
             selectedRampId={selectedRampId}
             sealForm={sealForm}
+            scheduleForm={scheduleForm}
             onSelect={setSelectedId}
             onStartEdit={handleStartRampEdit}
             onCancelEdit={handleCancelRampEdit}
@@ -399,6 +454,10 @@ export function ShipmentListPage() {
             onCancelSealEdit={handleCancelSealEdit}
             onSealFieldChange={handleSealFieldChange}
             onSealSubmit={handleSealSubmit}
+            onStartScheduleEdit={handleStartScheduleEdit}
+            onCancelScheduleEdit={handleCancelScheduleEdit}
+            onScheduleFieldChange={handleScheduleFieldChange}
+            onScheduleSubmit={handleScheduleSubmit}
           />
         ) : (
           <ShipmentTable
@@ -626,14 +685,20 @@ function SupplierInlineShipmentTable({
   )
 }
 
+function canReviseSchedule(status: ShipmentStatus) {
+  return !['ARRIVED', 'ADMITTED', 'AT_RAMP', 'LOADING', 'LOADED', 'SEALED', 'EXITED', 'COMPLETED', 'REJECTED', 'CANCELLED', 'VEHICLE_CANCELLED'].includes(status)
+}
+
 function OperationsRampTable({
   requests,
   data,
   selectedId,
   editingRequestId,
   editingSealRequestId,
+  editingScheduleRequestId,
   selectedRampId,
   sealForm,
+  scheduleForm,
   onSelect,
   onStartEdit,
   onCancelEdit,
@@ -643,14 +708,20 @@ function OperationsRampTable({
   onCancelSealEdit,
   onSealFieldChange,
   onSealSubmit,
+  onStartScheduleEdit,
+  onCancelScheduleEdit,
+  onScheduleFieldChange,
+  onScheduleSubmit,
 }: {
   requests: ShipmentRequest[]
   data: DemoData
   selectedId: string | null
   editingRequestId: string | null
   editingSealRequestId: string | null
+  editingScheduleRequestId: string | null
   selectedRampId: string
   sealForm: SealForm
+  scheduleForm: ScheduleRevisionForm
   onSelect: (shipmentRequestId: string) => void
   onStartEdit: (shipmentRequestId: string) => void
   onCancelEdit: () => void
@@ -660,6 +731,10 @@ function OperationsRampTable({
   onCancelSealEdit: () => void
   onSealFieldChange: <K extends keyof SealForm>(field: K, value: SealForm[K]) => void
   onSealSubmit: (shipmentRequestId: string) => void
+  onStartScheduleEdit: (shipmentRequestId: string) => void
+  onCancelScheduleEdit: () => void
+  onScheduleFieldChange: <K extends keyof ScheduleRevisionForm>(field: K, value: ScheduleRevisionForm[K]) => void
+  onScheduleSubmit: (shipmentRequestId: string) => void
 }) {
   if (requests.length === 0) {
     return <p className="muted-text">Secili filtrelere uyan sevkiyat bulunmuyor.</p>
@@ -701,8 +776,10 @@ function OperationsRampTable({
                 : getStatusMeta(request.currentStatus)
             const isEditing = editingRequestId === request.id
             const isEditingSeal = editingSealRequestId === request.id
+            const isEditingSchedule = false
             const canAssign = canAssignRamp(request.currentStatus)
             const canFinalize = canFinalizeLoading(request.currentStatus)
+            const canRevise = false
             const rampLabel = detail?.ramp?.name ?? detail?.ramp?.code ?? ''
 
             return (
@@ -722,9 +799,51 @@ function OperationsRampTable({
                 </td>
                 <td>{request.requestNo}</td>
                 <td>{detail?.location?.name ?? '-'}</td>
-                <td>{formatDateLabel(request.requestDate)}</td>
-                <td>{formatDateLabel(request.loadDate)}</td>
-                <td>{request.loadTime}</td>
+                <td>
+                  {isEditingSchedule ? (
+                    <input
+                      className="table-input"
+                      type="date"
+                      value={scheduleForm.requestDate}
+                      onChange={(event) => onScheduleFieldChange('requestDate', event.target.value)}
+                      onClick={(event) => event.stopPropagation()}
+                    />
+                  ) : canRevise ? (
+                    <EditableCellButton value={formatDateLabel(request.requestDate)} placeholder="-" canEdit onClick={() => onStartScheduleEdit(request.id)} />
+                  ) : (
+                    formatDateLabel(request.requestDate)
+                  )}
+                </td>
+                <td>
+                  {isEditingSchedule ? (
+                    <input
+                      className="table-input"
+                      type="date"
+                      value={scheduleForm.loadDate}
+                      onChange={(event) => onScheduleFieldChange('loadDate', event.target.value)}
+                      onClick={(event) => event.stopPropagation()}
+                    />
+                  ) : canRevise ? (
+                    <EditableCellButton value={formatDateLabel(request.loadDate)} placeholder="-" canEdit onClick={() => onStartScheduleEdit(request.id)} />
+                  ) : (
+                    formatDateLabel(request.loadDate)
+                  )}
+                </td>
+                <td>
+                  {isEditingSchedule ? (
+                    <input
+                      className="table-input"
+                      type="time"
+                      value={scheduleForm.loadTime}
+                      onChange={(event) => onScheduleFieldChange('loadTime', event.target.value)}
+                      onClick={(event) => event.stopPropagation()}
+                    />
+                  ) : canRevise ? (
+                    <EditableCellButton value={request.loadTime} placeholder="-" canEdit onClick={() => onStartScheduleEdit(request.id)} />
+                  ) : (
+                    request.loadTime
+                  )}
+                </td>
                 <td>{detail?.supplierCompany?.name ?? '-'}</td>
                 <td>{assignment?.tractorPlate ?? '-'}</td>
                 <td>{assignment?.trailerPlate ?? '-'}</td>
@@ -750,7 +869,16 @@ function OperationsRampTable({
                 <td>{formatDateTimeLabel(getLoadingCompletedAt(detail))}</td>
                 <td>{formatDateTimeLabel(getExitAt(detail))}</td>
                 <td className="table-cell-actions">
-                  {isEditing ? (
+                  {isEditingSchedule ? (
+                    <div className="table-action-group">
+                      <Button variant="secondary" size="sm" onClick={onCancelScheduleEdit}>
+                        Vazgec
+                      </Button>
+                      <Button variant="success" size="sm" onClick={() => onScheduleSubmit(request.id)}>
+                        Kaydet
+                      </Button>
+                    </div>
+                  ) : isEditing ? (
                     <div className="table-action-group">
                       <Button variant="secondary" size="sm" onClick={onCancelEdit}>
                         Vazgec

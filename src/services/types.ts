@@ -353,6 +353,8 @@ export interface CreateShipmentBatchApiRequest {
 
 export interface ReviseShipmentApiInput {
   vehicleType: string
+  requestDate: string
+  loadDate: string
   loadTime: string
 }
 

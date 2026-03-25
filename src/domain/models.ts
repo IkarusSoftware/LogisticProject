@@ -277,6 +277,8 @@ export interface CreateRequestInput {
 
 export interface RequestRevisionInput {
   vehicleType: VehicleType
+  requestDate: string
+  loadDate: string
   loadTime: string
 }
 

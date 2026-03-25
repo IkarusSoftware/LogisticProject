@@ -406,6 +406,16 @@ export const useAppStore = create<AppStore>()(
             throw new Error('Yukleme saati zorunludur.')
           }
 
+          const normalizedLoadDate = input.loadDate.trim()
+          if (!normalizedLoadDate) {
+            throw new Error('Yukleme tarihi zorunludur.')
+          }
+
+          const normalizedRequestDate = input.requestDate.trim()
+          if (!normalizedRequestDate) {
+            throw new Error('Talep tarihi zorunludur.')
+          }
+
           const rampAssignment = data.rampAssignments.find((item) => item.shipmentRequestId === shipmentRequestId)
           if (rampAssignment) {
             const conflicting = data.rampAssignments.find((assignment) => {
@@ -417,18 +427,20 @@ export const useAppStore = create<AppStore>()(
               return (
                 existingRequest &&
                 !TERMINAL_STATUSES.includes(existingRequest.currentStatus) &&
-                existingRequest.loadDate === request.loadDate &&
+                existingRequest.loadDate === normalizedLoadDate &&
                 existingRequest.loadTime === normalizedLoadTime
               )
             })
 
             if (conflicting) {
-              throw new Error('Yeni yukleme saati mevcut rampa planlamasi ile cakisiyor.')
+              throw new Error('Yeni yukleme tarih/saati mevcut rampa planlamasi ile cakisiyor.')
             }
           }
 
-          const oldValue = `Tur: ${request.vehicleType}, Saat: ${request.loadTime}`
+          const oldValue = `Tur: ${request.vehicleType}, Talep: ${request.requestDate}, Yukleme: ${request.loadDate}, Saat: ${request.loadTime}`
           request.vehicleType = input.vehicleType
+          request.requestDate = normalizedRequestDate
+          request.loadDate = normalizedLoadDate
           request.loadTime = normalizedLoadTime
           request.updatedAt = new Date().toISOString()
 
@@ -437,15 +449,15 @@ export const useAppStore = create<AppStore>()(
             entityId: request.id,
             actionType: 'request_revised',
             oldValue,
-            newValue: `Tur: ${request.vehicleType}, Saat: ${request.loadTime}`,
-            description: 'Arac turu ve yukleme saati revize edildi.',
+            newValue: `Tur: ${request.vehicleType}, Talep: ${request.requestDate}, Yukleme: ${request.loadDate}, Saat: ${request.loadTime}`,
+            description: 'Talep tarihi, yukleme tarihi ve saati revize edildi.',
             performedByUserId: actor.id,
             performedAt: request.updatedAt,
           })
 
           pushNotification(data, {
             title: 'Talep revize edildi',
-            message: `${request.requestNo} icin arac turu veya yukleme saati guncellendi.`,
+            message: `${request.requestNo} icin yukleme tarihi veya saati guncellendi.`,
             level: 'warning',
             shipmentRequestId,
             targetRoleKeys: ['supplier', 'admin'],
