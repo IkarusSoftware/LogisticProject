@@ -55,14 +55,103 @@ function compareRows(a: RampaRow, b: RampaRow, key: SortKey, dir: SortDir): numb
   return dir === 'desc' ? -cmp : cmp
 }
 
-function parseRampaExcel(buffer: ArrayBuffer): RampaRow[] {
-  const wb = read(buffer, { type: 'array' })
+interface ParseResult {
+  rows: RampaRow[]
+  warnings: string[]
+  error: string | null
+}
+
+const EXPECTED_HEADERS: { key: string; aliases: string[] }[] = [
+  { key: '#', aliases: ['#', 'no', 'sira', 'sıra'] },
+  { key: 'M.KODU', aliases: ['m.kodu', 'mkodu', 'magaza kodu', 'mağaza kodu', 'magazakodu', 'kod'] },
+  { key: 'MAGAZA ADI', aliases: ['magaza adi', 'mağaza adı', 'magazaadi', 'magaza', 'mağaza'] },
+  { key: 'SIPARIS NO', aliases: ['siparis no', 'sipariş no', 'siparisno', 'siparis', 'sipariş'] },
+  { key: 'LOKASYON', aliases: ['lokasyon', 'location'] },
+  { key: 'MLP', aliases: ['mlp'] },
+  { key: 'KASA', aliases: ['kasa', 'kasa sayisi', 'kasa sayısı', 'kasasayisi'] },
+  { key: 'SON ISLEM', aliases: ['son islem', 'son işlem', 'sonislem', 'tarih', 'son islem tarihi'] },
+  { key: 'BOLGE', aliases: ['bolge', 'bölge', 'region'] },
+  { key: 'DENETIM', aliases: ['denetim', 'denetleyen', 'kontrol'] },
+]
+
+function normalizeStr(s: string): string {
+  return s.toString().toLowerCase()
+    .replace(/ı/g, 'i').replace(/ğ/g, 'g').replace(/ü/g, 'u')
+    .replace(/ş/g, 's').replace(/ö/g, 'o').replace(/ç/g, 'c')
+    .replace(/[^a-z0-9]/g, '').trim()
+}
+
+function matchHeader(cellValue: string, expected: { key: string; aliases: string[] }): boolean {
+  const norm = normalizeStr(cellValue)
+  return expected.aliases.some(a => normalizeStr(a) === norm)
+}
+
+function parseRampaExcel(buffer: ArrayBuffer): ParseResult {
+  const warnings: string[] = []
+
+  let wb
+  try {
+    wb = read(buffer, { type: 'array' })
+  } catch {
+    return { rows: [], warnings: [], error: 'Dosya okunamadi. Lutfen gecerli bir Excel (.xlsx) dosyasi yukleyin.' }
+  }
+
+  if (wb.SheetNames.length === 0) {
+    return { rows: [], warnings: [], error: 'Excel dosyasinda hicbir sayfa bulunamadi.' }
+  }
+
   const ws = wb.Sheets[wb.SheetNames[0]]
   const raw = utils.sheet_to_json<string[]>(ws, { header: 1 })
+
+  if (raw.length === 0) {
+    return { rows: [], warnings: [], error: 'Excel sayfasi bos. Veri iceren bir dosya yukleyin.' }
+  }
+
+  const headerRow = raw[0]
+  if (!headerRow || headerRow.length < 3) {
+    return { rows: [], warnings: [], error: 'Baslik satiri bulunamadi veya yeterli sutun yok. En az 10 sutun bekleniyordu.' }
+  }
+
+  // Validate each expected header column
+  const missingCols: string[] = []
+  const mismatchDetails: string[] = []
+
+  EXPECTED_HEADERS.forEach((exp, idx) => {
+    const cellValue = (headerRow[idx] ?? '').toString().trim()
+    if (!cellValue) {
+      missingCols.push(`${idx + 1}. sutun: "${exp.key}" bekleniyordu, ancak bos`)
+    } else if (!matchHeader(cellValue, exp)) {
+      mismatchDetails.push(`${idx + 1}. sutun: "${exp.key}" bekleniyordu, "${cellValue}" bulundu`)
+    }
+  })
+
+  if (headerRow.length < 10) {
+    warnings.push(`Beklenen sutun sayisi: 10, bulunan: ${headerRow.length}. Eksik sutunlar bos olarak doldurulacak.`)
+  }
+
+  if (missingCols.length > 0 || mismatchDetails.length > 0) {
+    const allIssues = [...missingCols, ...mismatchDetails]
+    // If more than half the columns don't match, treat as wrong file
+    if (allIssues.length >= 5) {
+      return {
+        rows: [],
+        warnings: [],
+        error: `Bu dosya rampa verisi formatina uymuyor.\n\nBeklenen sutun sirasi: #, M.KODU, MAGAZA ADI, SIPARIS NO, LOKASYON, MLP, KASA, SON ISLEM, BOLGE, DENETIM\n\nBulunan basliklar: ${headerRow.slice(0, 12).map(h => `"${h}"`).join(', ')}\n\nUyumsuz sutunlar:\n${allIssues.map(i => '• ' + i).join('\n')}`,
+      }
+    }
+    // Partial mismatch → show warnings but try to parse
+    allIssues.forEach(i => warnings.push(i))
+  }
+
+  if (raw.length < 2) {
+    return { rows: [], warnings, error: 'Baslik satirindan sonra veri satiri bulunamadi.' }
+  }
+
   const rows: RampaRow[] = []
+  let emptyRowCount = 0
   for (let i = 1; i < raw.length; i++) {
     const r = raw[i]
-    if (!r || !r[1]) continue
+    if (!r || !r[1]) { emptyRowCount++; continue }
     rows.push({
       sira: (r[0] ?? '').toString(),
       magazaKodu: (r[1] ?? '').toString().replace(/^0+/, ''),
@@ -76,7 +165,16 @@ function parseRampaExcel(buffer: ArrayBuffer): RampaRow[] {
       denetleyen: (r[9] ?? '').toString().trim(),
     })
   }
-  return rows
+
+  if (rows.length === 0) {
+    return { rows: [], warnings, error: 'Dosyada gecerli veri satiri bulunamadi. Tum satirlar bos veya hatali.' }
+  }
+
+  if (emptyRowCount > 0) {
+    warnings.push(`${emptyRowCount} adet bos veya eksik satir atlanildi.`)
+  }
+
+  return { rows, warnings, error: null }
 }
 
 function extractDate(dateTimeStr: string): string {
@@ -129,6 +227,8 @@ function SortTh({ label, colKey, current, dir, onSort, style }: {
 
 export function RampaKontrolPage() {
   const [rawRows, setRawRows] = useState<RampaRow[]>([])
+  const [parseError, setParseError] = useState<string | null>(null)
+  const [parseWarnings, setParseWarnings] = useState<string[]>([])
   const [dragging, setDragging] = useState(false)
   const [search, setSearch] = useState('')
   const [dateFilter, setDateFilter] = useState('')
@@ -158,9 +258,26 @@ export function RampaKontrolPage() {
   const rows = useMemo(() => deduplicateEcommerce(rawRows), [rawRows])
 
   const handleFile = useCallback(async (file: File) => {
+    // Check file extension first
+    if (!file.name.toLowerCase().endsWith('.xlsx') && !file.name.toLowerCase().endsWith('.xls')) {
+      setParseError(`Gecersiz dosya formati: "${file.name}"\n\nSadece Excel dosyalari (.xlsx) desteklenmektedir.`)
+      setParseWarnings([])
+      setRawRows([])
+      return
+    }
+
     const buffer = await file.arrayBuffer()
-    const parsed = parseRampaExcel(buffer)
-    setRawRows(parsed)
+    const result = parseRampaExcel(buffer)
+
+    setParseError(result.error)
+    setParseWarnings(result.warnings)
+
+    if (result.error) {
+      setRawRows([])
+      return
+    }
+
+    setRawRows(result.rows)
     setDateFilter('')
     setDenetimFilter('all')
     setLokasyonFilter('')
@@ -280,39 +397,104 @@ export function RampaKontrolPage() {
       />
 
       {rows.length === 0 ? (
-        <Card>
-          <div
-            onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={onDrop}
-            onClick={() => fileRef.current?.click()}
-            style={{
-              border: `2px dashed ${dragging ? '#3b82f6' : '#cbd5e1'}`,
-              borderRadius: '12px',
-              padding: '3rem 2rem',
-              textAlign: 'center',
-              cursor: 'pointer',
-              background: dragging ? '#eff6ff' : '#f8fafc',
-              transition: 'all 0.2s',
-            }}
-          >
-            <p style={{ fontSize: '14px', fontWeight: 600, color: '#334155', marginBottom: '0.5rem' }}>
-              Rampa Excel dosyasini surukleyip birakin
-            </p>
-            <p style={{ fontSize: '12px', color: '#94a3b8' }}>
-              veya tiklayarak dosya secin (.xlsx)
-            </p>
-            <input
-              ref={fileRef}
-              type="file"
-              accept=".xlsx,.xls"
-              onChange={onFileInput}
-              style={{ display: 'none' }}
-            />
-          </div>
-        </Card>
+        <>
+          <Card>
+            <div
+              onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={onDrop}
+              onClick={() => fileRef.current?.click()}
+              style={{
+                border: `2px dashed ${dragging ? '#3b82f6' : parseError ? '#ef4444' : '#cbd5e1'}`,
+                borderRadius: '12px',
+                padding: '3rem 2rem',
+                textAlign: 'center',
+                cursor: 'pointer',
+                background: dragging ? '#eff6ff' : parseError ? '#fef2f2' : '#f8fafc',
+                transition: 'all 0.2s',
+              }}
+            >
+              <p style={{ fontSize: '14px', fontWeight: 600, color: '#334155', marginBottom: '0.5rem' }}>
+                Rampa Excel dosyasini surukleyip birakin
+              </p>
+              <p style={{ fontSize: '12px', color: '#94a3b8' }}>
+                veya tiklayarak dosya secin (.xlsx)
+              </p>
+              <input
+                ref={fileRef}
+                type="file"
+                accept=".xlsx,.xls"
+                onChange={onFileInput}
+                style={{ display: 'none' }}
+              />
+            </div>
+          </Card>
+
+          {/* Parse error display */}
+          {parseError && (
+            <div style={{
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
+              borderRadius: '8px',
+              padding: '1rem 1.25rem',
+              marginTop: '0.5rem',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                <span style={{ fontSize: '20px', lineHeight: 1, flexShrink: 0, marginTop: '2px' }}>⚠️</span>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: '13px', fontWeight: 700, color: '#991b1b', marginBottom: '0.5rem' }}>
+                    Dosya Hatasi
+                  </p>
+                  <pre style={{
+                    fontSize: '12px', color: '#b91c1c', margin: 0, fontFamily: 'inherit',
+                    whiteSpace: 'pre-wrap', wordBreak: 'break-word', lineHeight: 1.5,
+                  }}>
+                    {parseError}
+                  </pre>
+                </div>
+                <button
+                  onClick={() => setParseError(null)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', color: '#b91c1c', padding: '2px' }}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       ) : (
         <>
+          {/* Parse warnings */}
+          {parseWarnings.length > 0 && (
+            <div style={{
+              background: '#fffbeb',
+              border: '1px solid #fde68a',
+              borderRadius: '8px',
+              padding: '0.75rem 1rem',
+              marginBottom: '0.25rem',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                <span style={{ fontSize: '16px', lineHeight: 1, flexShrink: 0 }}>⚠️</span>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: '12px', fontWeight: 700, color: '#92400e', marginBottom: '4px' }}>
+                    Dosya basariyla yuklendi, ancak bazi uyarilar var:
+                  </p>
+                  {parseWarnings.map((w, i) => (
+                    <p key={i} style={{ fontSize: '11px', color: '#a16207', margin: '2px 0', lineHeight: 1.4 }}>
+                      • {w}
+                    </p>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setParseWarnings([])}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: '#92400e', padding: '2px' }}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.75rem' }}>
             {[
