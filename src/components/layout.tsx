@@ -83,11 +83,11 @@ export function AppShell({ children }: PropsWithChildren) {
     roleKey === 'superadmin'
       ? ['/dashboard', '/talepler', '/raporlar', '/yukleme-bolgeleri', '/tedarikci-firmalar', '/rol-yonetimi', '/kullanici-rol-esleme', '/kullanici-yonetim', '/aktivite-log', '/ayarlar'].includes(item.path)
       : roleKey === 'admin'
-        ? ['/dashboard', '/talep-olustur', '/talepler', '/gecmis', '/raporlar'].includes(item.path)
+        ? ['/dashboard', '/talep-olustur', '/talepler', '/gecmis', '/raporlar', '/rampa-kontrol', '/vardiya-devir', '/magaza-bilgileri'].includes(item.path)
         : roleKey === 'supplier'
           ? ['/dashboard', '/talepler'].includes(item.path)
           : roleKey === 'control'
-            ? ['/dashboard', '/talepler', '/vardiya-devir'].includes(item.path)
+            ? ['/dashboard', '/talepler', '/rampa-kontrol', '/vardiya-devir', '/magaza-bilgileri'].includes(item.path)
             : roleKey === 'gate'
               ? ['/dashboard', '/kapi-operasyonu'].includes(item.path)
           : true,

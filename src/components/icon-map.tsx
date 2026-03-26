@@ -3,19 +3,26 @@ import {
   Bell,
   ChartNoAxesColumn,
   CircleDashed,
+  ClipboardCheck,
   ClipboardList,
   ClipboardPlus,
   Cog,
   History,
   LayoutDashboard,
+  MapPin,
   PackageCheck,
+  Repeat,
   ScanLine,
   ScrollText,
   Settings2,
+  Shield,
   ShieldCheck,
+  Store,
   Truck,
+  UserCheck,
   Users,
   Warehouse,
+  Building2,
 } from 'lucide-react'
 
 type Props = LucideProps & {
@@ -54,6 +61,20 @@ export function AppIcon({ name, ...props }: Props) {
       return <ScrollText {...props} />
     case 'cog':
       return <Cog {...props} />
+    case 'clipboard-check':
+      return <ClipboardCheck {...props} />
+    case 'repeat':
+      return <Repeat {...props} />
+    case 'store':
+      return <Store {...props} />
+    case 'map-pin':
+      return <MapPin {...props} />
+    case 'building-2':
+      return <Building2 {...props} />
+    case 'shield':
+      return <Shield {...props} />
+    case 'user-check':
+      return <UserCheck {...props} />
     default:
       return <CircleDashed {...props} />
   }

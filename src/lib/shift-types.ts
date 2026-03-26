@@ -33,6 +33,11 @@ export interface StoreInfo {
   kod: number
   ad: string
   bolge: string
+  acilisTarihi?: string
+  magazaTipi?: string
+  sinif?: string
+  bolgeMuduru?: string
+  satisMuduru?: string
 }
 
 export interface ProcessedData {

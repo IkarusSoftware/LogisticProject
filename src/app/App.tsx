@@ -19,12 +19,14 @@ import { RoleManagementPage } from '../pages/RoleManagementPage'
 import { SupplierCompaniesPage } from '../pages/SupplierCompaniesPage'
 import { UserRoleAssignmentPage } from '../pages/UserRoleAssignmentPage'
 import { LoginPage } from '../pages/LoginPage'
+import { RampaKontrolPage } from '../pages/RampaKontrolPage'
 import { RampPlanningPage } from '../pages/RampPlanningPage'
 import { ReportsPage } from '../pages/ReportsPage'
 import { SettingsPage } from '../pages/SettingsPage'
 import { ShipmentListPage } from '../pages/ShipmentListPage'
 import { SupplierAssignmentsPage } from '../pages/SupplierAssignmentsPage'
 import { UserManagementPage } from '../pages/UserManagementPage'
+import { MagazaBilgileriPage } from '../pages/MagazaBilgileriPage'
 import { VardiyaDevirPage } from '../pages/VardiyaDevirPage'
 import { VehicleControlPage } from '../pages/VehicleControlPage'
 import { useAppStore } from '../store/app-store'
@@ -114,10 +116,26 @@ export function App() {
           }
         />
         <Route
+          path="/rampa-kontrol"
+          element={
+            <ProtectedPage allowedRoles={['control', 'admin', 'superadmin']}>
+              <RampaKontrolPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
           path="/vardiya-devir"
           element={
             <ProtectedPage allowedRoles={['control', 'admin', 'superadmin']}>
               <VardiyaDevirPage />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path="/magaza-bilgileri"
+          element={
+            <ProtectedPage allowedRoles={['control', 'admin', 'superadmin']}>
+              <MagazaBilgileriPage />
             </ProtectedPage>
           }
         />

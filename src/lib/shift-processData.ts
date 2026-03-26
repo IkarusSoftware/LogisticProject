@@ -121,4 +121,54 @@ export function getRegionDetails(orders: OrderRow[], bolge: string): OrderRow[] 
   return orders.filter((o) => resolveRegion(o) === bolge)
 }
 
+/* ─── Dynamic store management ─── */
+
+const CUSTOM_STORES_KEY = 'flowdock-custom-stores'
+
+function loadCustomStores(): void {
+  try {
+    const raw = localStorage.getItem(CUSTOM_STORES_KEY)
+    if (raw) {
+      const customs = JSON.parse(raw) as StoreInfo[]
+      for (const s of customs) storeMap.set(s.kod, s)
+    }
+  } catch { /* ignore */ }
+}
+
+function saveCustomStores(): void {
+  const baseKods = new Set((storesData as StoreInfo[]).map(s => s.kod))
+  const customs: StoreInfo[] = []
+  for (const [kod, info] of storeMap) {
+    if (!baseKods.has(kod)) customs.push(info)
+  }
+  localStorage.setItem(CUSTOM_STORES_KEY, JSON.stringify(customs))
+}
+
+export function addStore(store: StoreInfo): void {
+  storeMap.set(store.kod, store)
+  saveCustomStores()
+}
+
+export function removeStore(kod: number): void {
+  storeMap.delete(kod)
+  saveCustomStores()
+}
+
+export function updateStore(store: StoreInfo): void {
+  storeMap.set(store.kod, store)
+  saveCustomStores()
+}
+
+export function getAllStores(): StoreInfo[] {
+  return Array.from(storeMap.values()).sort((a, b) => a.kod - b.kod)
+}
+
+export function isCustomStore(kod: number): boolean {
+  const baseKods = new Set((storesData as StoreInfo[]).map(s => s.kod))
+  return !baseKods.has(kod)
+}
+
+// Load custom stores on module init
+loadCustomStores()
+
 export { storeMap }

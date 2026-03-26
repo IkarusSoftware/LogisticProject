@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react'
 import * as XLSX from 'xlsx'
-import { Button, Card, MetricCard, PageHeader, InlineMessage } from '../components/ui'
+import { Button, Card, PageHeader, InlineMessage } from '../components/ui'
 import { parseExcelFile } from '../lib/shift-parseExcel'
 import { processOrders, getRegionDetails, storeMap } from '../lib/shift-processData'
 import { classifyLocation, REGIONS } from '../lib/shift-constants'
@@ -121,11 +121,11 @@ export function VardiyaDevirPage() {
 
       {/* Stats */}
       {data && (
-        <div className="metric-row">
-          <MetricCard label="Toplam Siparis" value={data.totalOrders.toLocaleString('tr-TR')} helper="Benzersiz siparis" tone="info" />
-          <MetricCard label="Toplam Kasa" value={data.totalBoxes.toLocaleString('tr-TR')} helper="Tum depolar" tone="success" />
-          <MetricCard label="Toplam Palet" value={data.totalPallets.toLocaleString('tr-TR')} helper="24 kasa/palet" tone="warning" />
-          <MetricCard label="Aktif Bolge" value={data.regionSummaries.length} helper="Veri iceren bolge" tone="neutral" />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
+          <StatChip label="Toplam Siparis" value={data.totalOrders.toLocaleString('tr-TR')} sub="benzersiz siparis" accent="#3b82f6" />
+          <StatChip label="Toplam Kasa" value={data.totalBoxes.toLocaleString('tr-TR')} sub="tum depolar" accent="#10b981" />
+          <StatChip label="Toplam Palet" value={data.totalPallets.toLocaleString('tr-TR')} sub="24 kasa / palet" accent="#f59e0b" />
+          <StatChip label="Aktif Bolge" value={data.regionSummaries.length} sub="veri iceren bolge" accent="#8b5cf6" />
         </div>
       )}
 
@@ -312,61 +312,78 @@ function RegionSummaryTable({ summaries, onRegionClick }: { summaries: RegionSum
 
   const fmt = (v: number) => (v === 0 ? '0' : v.toLocaleString('tr-TR'))
 
+  const border = '1px solid #e2e8f0'
+  const thStyle: React.CSSProperties = {
+    textAlign: 'center',
+    padding: '5px 6px',
+    fontSize: '10px',
+    fontWeight: 700,
+    letterSpacing: '0.05em',
+    textTransform: 'uppercase',
+    borderRight: border,
+  }
+  const tdBase: React.CSSProperties = {
+    textAlign: 'center',
+    padding: '3px 6px',
+    fontSize: '12px',
+    borderRight: border,
+    borderBottom: border,
+  }
+
   return (
     <Card>
-      <div className="table-shell">
-        <table className="data-table" style={{ tableLayout: 'fixed' }}>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
           <colgroup>
-            <col style={{ width: '140px' }} />
-            <col style={{ width: '80px' }} />
-            <col style={{ width: '80px' }} />
-            <col style={{ width: '80px' }} />
-            <col style={{ width: '80px' }} />
-            <col style={{ width: '80px' }} />
-            <col style={{ width: '85px' }} />
-            <col style={{ width: '60px' }} />
+            <col style={{ width: '120px' }} />
+            <col style={{ width: '68px' }} />
+            <col style={{ width: '68px' }} />
+            <col style={{ width: '68px' }} />
+            <col style={{ width: '68px' }} />
+            <col style={{ width: '68px' }} />
+            <col style={{ width: '72px' }} />
+            <col style={{ width: '50px' }} />
           </colgroup>
           <thead>
-            <tr>
-              <th>Bolge</th>
-              <th>Toplama</th>
-              <th>Kasalama</th>
-              <th>Sevkiyat</th>
-              <th>DAB Top.</th>
-              <th>DAB Ramp</th>
-              <th>Toplam</th>
-              <th>Palet</th>
+            <tr style={{ background: '#1e293b', color: '#fff' }}>
+              <th style={{ ...thStyle, textAlign: 'left', paddingLeft: '10px' }}>Bölge</th>
+              <th style={thStyle}>Toplama</th>
+              <th style={thStyle}>Kasalama</th>
+              <th style={thStyle}>Sevkiyat</th>
+              <th style={thStyle}>DAB Top.</th>
+              <th style={thStyle}>DAB Ramp</th>
+              <th style={{ ...thStyle, background: '#1e3a5f' }}>Toplam</th>
+              <th style={{ ...thStyle, background: '#1e2d6b', borderRight: 'none' }}>Palet</th>
             </tr>
           </thead>
           <tbody>
-            {summaries.map((s) => (
+            {summaries.map((s, idx) => (
               <tr
                 key={s.bolge}
-                className="data-table__row"
                 onClick={() => onRegionClick(s.bolge)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', background: idx % 2 === 0 ? '#fff' : '#f8fafc' }}
               >
-                <td style={{ fontWeight: 600, whiteSpace: 'nowrap' }}>{s.bolge}</td>
-                <td style={{ textAlign: 'center', ...heatBg(s.toplama, mx.toplama) }}>{fmt(s.toplama)}</td>
-                <td style={{ textAlign: 'center', ...heatBg(s.kasalama, mx.kasalama) }}>{fmt(s.kasalama)}</td>
-                <td style={{ textAlign: 'center', ...heatBg(s.sevkiyatKasa, mx.sevkiyatKasa) }}>{fmt(s.sevkiyatKasa)}</td>
-                <td style={{ textAlign: 'center', ...heatBg(s.dabToplama, mx.dabToplama) }}>{fmt(s.dabToplama)}</td>
-                <td style={{ textAlign: 'center', ...heatBg(s.dabRamp, mx.dabRamp) }}>{fmt(s.dabRamp)}</td>
-                <td style={{ textAlign: 'center', fontWeight: 700, ...heatBg(s.toplam, mx.toplam) }}>{fmt(s.toplam)}</td>
-                <td style={{ textAlign: 'center', fontWeight: 700, ...heatBg(s.paletSayisi, mx.palet) }}>{s.paletSayisi}</td>
+                <td style={{ ...tdBase, textAlign: 'left', paddingLeft: '10px', fontWeight: 600, whiteSpace: 'nowrap', color: '#1e293b' }}>{s.bolge}</td>
+                <td style={{ ...tdBase, ...heatBg(s.toplama, mx.toplama) }}>{fmt(s.toplama)}</td>
+                <td style={{ ...tdBase, ...heatBg(s.kasalama, mx.kasalama) }}>{fmt(s.kasalama)}</td>
+                <td style={{ ...tdBase, ...heatBg(s.sevkiyatKasa, mx.sevkiyatKasa) }}>{fmt(s.sevkiyatKasa)}</td>
+                <td style={{ ...tdBase, ...heatBg(s.dabToplama, mx.dabToplama) }}>{fmt(s.dabToplama)}</td>
+                <td style={{ ...tdBase, ...heatBg(s.dabRamp, mx.dabRamp) }}>{fmt(s.dabRamp)}</td>
+                <td style={{ ...tdBase, fontWeight: 700, ...heatBg(s.toplam, mx.toplam) }}>{fmt(s.toplam)}</td>
+                <td style={{ ...tdBase, fontWeight: 700, borderRight: 'none', ...heatBg(s.paletSayisi, mx.palet) }}>{s.paletSayisi}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
-            <tr style={{ fontWeight: 700 }}>
-              <td>Toplam</td>
-              <td style={{ textAlign: 'center' }}>{fmt(totals.toplama)}</td>
-              <td style={{ textAlign: 'center' }}>{fmt(totals.kasalama)}</td>
-              <td style={{ textAlign: 'center' }}>{fmt(totals.sevkiyatKasa)}</td>
-              <td style={{ textAlign: 'center' }}>{fmt(totals.dabToplama)}</td>
-              <td style={{ textAlign: 'center' }}>{fmt(totals.dabRamp)}</td>
-              <td style={{ textAlign: 'center' }}>{fmt(totals.toplam)}</td>
-              <td style={{ textAlign: 'center' }}>{fmt(totals.paletSayisi)}</td>
+            <tr style={{ background: '#1e293b', color: '#fff', fontWeight: 700 }}>
+              <td style={{ ...tdBase, textAlign: 'left', paddingLeft: '10px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: 'none' }}>Toplam</td>
+              <td style={{ ...tdBase, borderBottom: 'none' }}>{fmt(totals.toplama)}</td>
+              <td style={{ ...tdBase, borderBottom: 'none' }}>{fmt(totals.kasalama)}</td>
+              <td style={{ ...tdBase, borderBottom: 'none' }}>{fmt(totals.sevkiyatKasa)}</td>
+              <td style={{ ...tdBase, borderBottom: 'none' }}>{fmt(totals.dabToplama)}</td>
+              <td style={{ ...tdBase, borderBottom: 'none' }}>{fmt(totals.dabRamp)}</td>
+              <td style={{ ...tdBase, background: '#1e3a5f', borderBottom: 'none' }}>{fmt(totals.toplam)}</td>
+              <td style={{ ...tdBase, background: '#1e2d6b', borderRight: 'none', borderBottom: 'none' }}>{fmt(totals.paletSayisi)}</td>
             </tr>
           </tfoot>
         </table>
@@ -420,10 +437,10 @@ function RegionDetailModal({ bolge, orders, onClose }: { bolge: string; orders: 
         </header>
 
         {/* Summary cards */}
-        <div className="metric-row" style={{ padding: '1rem' }}>
-          <MetricCard label="Buyuk Kasa" value={buyuk} helper="B. Kasa" tone="info" />
-          <MetricCard label="Kucuk Kasa" value={kucuk} helper="K. Kasa" tone="success" />
-          <MetricCard label="Muhtelif Koli" value={muhtelif} helper="Koli" tone="warning" />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', padding: '1rem' }}>
+          <StatChip label="Buyuk Kasa" value={buyuk} sub="B. Kasa" accent="#3b82f6" />
+          <StatChip label="Kucuk Kasa" value={kucuk} sub="K. Kasa" accent="#10b981" />
+          <StatChip label="Muhtelif Koli" value={muhtelif} sub="Koli" accent="#f59e0b" />
         </div>
 
         {/* Store list */}
@@ -641,82 +658,137 @@ function ConveyorSummary({ orders }: { orders: OrderRow[] }) {
 
       {selectedRegion && (
         <>
-          <div className="metric-row">
-            <MetricCard label="Magaza" value={regionTotals.magaza} helper="Toplam magaza" tone="neutral" />
-            <MetricCard label="Buyuk Kasa" value={regionTotals.buyuk} helper="B. Kasa" tone="info" />
-            <MetricCard label="Kucuk Kasa" value={regionTotals.kucuk} helper="K. Kasa" tone="success" />
-            <MetricCard label="Muhtelif Koli" value={regionTotals.muhtelif} helper="Koli" tone="warning" />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
+            <StatChip label="Magaza" value={regionTotals.magaza} sub="toplam magaza" accent="#64748b" />
+            <StatChip label="Buyuk Kasa" value={regionTotals.buyuk} sub="B. Kasa" accent="#3b82f6" />
+            <StatChip label="Kucuk Kasa" value={regionTotals.kucuk} sub="K. Kasa" accent="#10b981" />
+            <StatChip label="Muhtelif Koli" value={regionTotals.muhtelif} sub="Koli" accent="#f59e0b" />
           </div>
 
-          <Card>
-            <div className="table-shell" style={{ maxHeight: '500px', overflowY: 'auto' }}>
-              <table className="data-table" style={{ tableLayout: 'fixed' }}>
+          <Card
+            actions={
+              <Button variant="secondary" size="sm" onClick={() => {
+                const wb = XLSX.utils.book_new()
+                const rows = storeGroups.flatMap(store =>
+                  store.mlps.map(mlp => ({
+                    'Depo': store.depo,
+                    'Magaza': store.magazaAdi || store.magazaKodu,
+                    'Magaza Kodu': store.magazaKodu,
+                    'PLT No': mlp.mlp || '-',
+                    'Lokasyon': mlp.lokasyon || '-',
+                    'Buyuk Kasa': mlp.buyuk,
+                    'Kucuk Kasa': mlp.kucuk,
+                    'Muhtelif Koli': mlp.muhtelif,
+                    'Toplam': mlp.toplam,
+                  }))
+                )
+                const ws = XLSX.utils.json_to_sheet(rows)
+                XLSX.utils.book_append_sheet(wb, ws, selectedRegion.substring(0, 31))
+                XLSX.writeFile(wb, `${selectedRegion}_detay_${new Date().toISOString().slice(0,10)}.xlsx`)
+              }}>
+                Excel Indir
+              </Button>
+            }
+          >
+            <div style={{ maxHeight: '520px', overflowY: 'auto' }}>
+              <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
                 <colgroup>
-                  <col style={{ width: '60px' }} />
+                  <col style={{ width: '58px' }} />
                   <col style={{ width: '180px' }} />
-                  <col style={{ width: '120px' }} />
-                  <col style={{ width: '90px' }} />
-                  <col style={{ width: '70px' }} />
-                  <col style={{ width: '70px' }} />
-                  <col style={{ width: '70px' }} />
-                  <col style={{ width: '70px' }} />
+                  <col style={{ width: '130px' }} />
+                  <col style={{ width: '88px' }} />
+                  <col style={{ width: '66px' }} />
+                  <col style={{ width: '66px' }} />
+                  <col style={{ width: '66px' }} />
+                  <col style={{ width: '66px' }} />
                 </colgroup>
-                <thead>
-                  <tr>
-                    <th>Depo</th>
-                    <th>Magaza</th>
-                    <th>PLT No</th>
-                    <th>Lokasyon</th>
-                    <th>B. Kasa</th>
-                    <th>K. Kasa</th>
-                    <th>Koli</th>
-                    <th>Toplam</th>
+                <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
+                  <tr style={{ background: '#1e293b', color: '#fff' }}>
+                    {[
+                      { label: 'DEPO',    align: 'center' },
+                      { label: 'MAGAZA',  align: 'left'   },
+                      { label: 'PLT NO',  align: 'center' },
+                      { label: 'LOKASYON',align: 'center' },
+                      { label: 'B. KASA', align: 'center' },
+                      { label: 'K. KASA', align: 'center' },
+                      { label: 'KOLI',    align: 'center' },
+                      { label: 'TOPLAM',  align: 'center' },
+                    ].map((col, i) => (
+                      <th key={col.label} style={{
+                        textAlign: col.align as React.CSSProperties['textAlign'],
+                        padding: '6px 8px',
+                        fontSize: '10px',
+                        fontWeight: 700,
+                        letterSpacing: '0.05em',
+                        borderRight: i < 7 ? '1px solid #334155' : 'none',
+                      }}>{col.label}</th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {storeGroups.map((store) =>
-                    store.mlps.map((mlp, mIdx) => (
-                      <tr key={`${store.magazaKodu}-${mlp.mlp}`} className="data-table__row">
-                        {mIdx === 0 && (
-                          <>
-                            <td rowSpan={store.mlps.length} style={{ textAlign: 'center', fontWeight: 700, verticalAlign: 'top' }}>
-                              {store.depo}
-                            </td>
-                            <td rowSpan={store.mlps.length} style={{ verticalAlign: 'top' }}>
-                              <div style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {store.magazaAdi || '-'}
-                              </div>
-                              <div className="muted-text" style={{ fontSize: '0.7rem' }}>{store.magazaKodu}</div>
-                            </td>
-                          </>
-                        )}
-                        <td style={{ textAlign: 'center', fontFamily: 'monospace', fontSize: '0.8rem' }}>{mlp.mlp || '-'}</td>
-                        <td style={{ textAlign: 'center' }}>
-                          <span className="badge badge--neutral">{mlp.lokasyon || '-'}</span>
-                        </td>
-                        <td style={{ textAlign: 'center', fontWeight: mlp.buyuk > 0 ? 600 : 400, color: mlp.buyuk > 0 ? 'var(--color-info)' : undefined }}>
-                          {mlp.buyuk || '0'}
-                        </td>
-                        <td style={{ textAlign: 'center', fontWeight: mlp.kucuk > 0 ? 600 : 400, color: mlp.kucuk > 0 ? 'var(--color-success)' : undefined }}>
-                          {mlp.kucuk || '0'}
-                        </td>
-                        <td style={{ textAlign: 'center', fontWeight: mlp.muhtelif > 0 ? 600 : 400, color: mlp.muhtelif > 0 ? 'var(--color-warning)' : undefined }}>
-                          {mlp.muhtelif || '0'}
-                        </td>
-                        <td style={{ textAlign: 'center', fontWeight: 700 }}>{mlp.toplam}</td>
-                      </tr>
-                    )),
+                  {storeGroups.map((store, sIdx) =>
+                    store.mlps.map((mlp, mIdx) => {
+                      const rowBg = sIdx % 2 === 0 ? '#fff' : '#f8fafc'
+                      const cellStyle: React.CSSProperties = {
+                        padding: '4px 8px',
+                        borderBottom: '1px solid #e2e8f0',
+                        borderRight: '1px solid #e2e8f0',
+                        verticalAlign: 'middle',
+                        textAlign: 'center',
+                        fontSize: '12px',
+                        background: rowBg,
+                      }
+                      return (
+                        <tr key={`${store.magazaKodu}-${mlp.mlp}`}>
+                          {mIdx === 0 && (
+                            <>
+                              <td rowSpan={store.mlps.length} style={{ ...cellStyle, fontWeight: 700, verticalAlign: 'top', paddingTop: '6px' }}>
+                                {store.depo}
+                              </td>
+                              <td rowSpan={store.mlps.length} style={{ ...cellStyle, textAlign: 'left', verticalAlign: 'top', paddingTop: '6px' }}>
+                                <div style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                  {store.magazaAdi || '-'}
+                                </div>
+                                <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '1px' }}>{store.magazaKodu}</div>
+                              </td>
+                            </>
+                          )}
+                          <td style={{ ...cellStyle, fontFamily: 'monospace', fontSize: '11px' }}>{mlp.mlp || '-'}</td>
+                          <td style={{ ...cellStyle }}>
+                            <span style={{ background: '#f1f5f9', color: '#475569', fontSize: '10px', fontWeight: 600, padding: '2px 6px', borderRadius: '4px', letterSpacing: '0.03em' }}>
+                              {mlp.lokasyon || '-'}
+                            </span>
+                          </td>
+                          <td style={{ ...cellStyle, fontWeight: mlp.buyuk > 0 ? 700 : 400, color: mlp.buyuk > 0 ? '#2563eb' : '#cbd5e1' }}>
+                            {mlp.buyuk || '0'}
+                          </td>
+                          <td style={{ ...cellStyle, fontWeight: mlp.kucuk > 0 ? 700 : 400, color: mlp.kucuk > 0 ? '#059669' : '#cbd5e1' }}>
+                            {mlp.kucuk || '0'}
+                          </td>
+                          <td style={{ ...cellStyle, fontWeight: mlp.muhtelif > 0 ? 700 : 400, color: mlp.muhtelif > 0 ? '#d97706' : '#cbd5e1' }}>
+                            {mlp.muhtelif || '0'}
+                          </td>
+                          <td style={{ ...cellStyle, fontWeight: 700, borderRight: 'none', background: mlp.toplam > 0 ? (sIdx % 2 === 0 ? '#f0f9ff' : '#e0f2fe') : rowBg }}>
+                            {mlp.toplam}
+                          </td>
+                        </tr>
+                      )
+                    }),
                   )}
                 </tbody>
                 <tfoot>
-                  <tr style={{ fontWeight: 700 }}>
-                    <td colSpan={2}>Toplam ({storeGroups.length} magaza)</td>
-                    <td style={{ textAlign: 'center' }}>{storeGroups.reduce((a, s) => a + s.mlps.length, 0)} PLT</td>
-                    <td style={{ textAlign: 'center' }}>-</td>
-                    <td style={{ textAlign: 'center' }}>{regionTotals.buyuk}</td>
-                    <td style={{ textAlign: 'center' }}>{regionTotals.kucuk}</td>
-                    <td style={{ textAlign: 'center' }}>{regionTotals.muhtelif}</td>
-                    <td style={{ textAlign: 'center' }}>{regionTotals.toplam}</td>
+                  <tr style={{ background: '#1e293b', color: '#fff', fontWeight: 700, fontSize: '11px' }}>
+                    <td colSpan={2} style={{ padding: '6px 8px', borderRight: '1px solid #334155' }}>
+                      Toplam ({storeGroups.length} magaza)
+                    </td>
+                    <td style={{ textAlign: 'center', padding: '6px 8px', borderRight: '1px solid #334155' }}>
+                      {storeGroups.reduce((a, s) => a + s.mlps.length, 0)} PLT
+                    </td>
+                    <td style={{ textAlign: 'center', padding: '6px 8px', borderRight: '1px solid #334155' }}>-</td>
+                    <td style={{ textAlign: 'center', padding: '6px 8px', borderRight: '1px solid #334155' }}>{regionTotals.buyuk}</td>
+                    <td style={{ textAlign: 'center', padding: '6px 8px', borderRight: '1px solid #334155' }}>{regionTotals.kucuk}</td>
+                    <td style={{ textAlign: 'center', padding: '6px 8px', borderRight: '1px solid #334155' }}>{regionTotals.muhtelif}</td>
+                    <td style={{ textAlign: 'center', padding: '6px 8px' }}>{regionTotals.toplam}</td>
                   </tr>
                 </tfoot>
               </table>
@@ -729,6 +801,27 @@ function ConveyorSummary({ orders }: { orders: OrderRow[] }) {
 }
 
 /* ─────────────────── Helpers ─────────────────── */
+
+/* ─────────────────── StatChip ─────────────────── */
+
+function StatChip({ label, value, sub, accent }: { label: string; value: number | string; sub: string; accent: string }) {
+  return (
+    <div style={{
+      background: '#fff',
+      border: '1px solid #e2e8f0',
+      borderRadius: '0.625rem',
+      padding: '0.75rem 1rem',
+      borderTop: `3px solid ${accent}`,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '0.125rem',
+    }}>
+      <span style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#94a3b8' }}>{label}</span>
+      <strong style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>{value}</strong>
+      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{sub}</span>
+    </div>
+  )
+}
 
 function getStoreName(order: OrderRow): string {
   if (order.magazaAdi && order.magazaAdi.trim()) return order.magazaAdi
